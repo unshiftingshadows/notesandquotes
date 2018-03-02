@@ -1,0 +1,170 @@
+<template>
+  <div>
+    <h4>{{ formType }} Quote</h4>
+    <q-input v-model="text" type="textarea" :max-height="100" :min-rows="2" float-label="Quote Text" autofocus ref="quoteInput" dark />
+    <q-input v-model="character" v-if="type === 'movie'" float-label="Character" dark />
+    <q-chips-input v-model="tags" float-label="Tags" dark />
+    <q-chips-input v-model="bibleRefs" float-label="Bible Refs" dark />
+    <q-input v-model="notes" type="textarea" :max-height="100" :min-rows="2" float-label="Notes" dark />
+    <q-select
+      float-label="Location Type"
+      v-model="locationType"
+      :options="selectOptions"
+      dark
+    />
+    <q-input type="number" v-model="location" v-if="locationType !== 'None'" :float-label="locationType" dark frame-color="secondary" />
+    <q-btn v-if="formType === 'Add'" color="primary" @click="addQuote">Add</q-btn>
+    <q-btn v-if="formType === 'Edit'" color="primary" @click="updateQuote">Update</q-btn>
+    <q-btn v-if="formType === 'Edit'" color="negative" @click="deleteQuote">Delete</q-btn>
+  </div>
+</template>
+
+<script>
+import * as Bible from '../statics/bible.js'
+export default {
+  props: ['mediaid', 'media', 'mediaType', 'quote', 'modalFin', 'formType'],
+  data () {
+    return {
+      id: this.mediaid,
+      text: '',
+      character: '',
+      tags: [],
+      bibleRefs: [],
+      notes: '',
+      locationType: 'None',
+      location: 0,
+      selectOptions: [
+        {
+          label: 'None',
+          value: 'None'
+        },
+        {
+          label: 'Page',
+          value: 'Page'
+        },
+        {
+          label: 'Chapter',
+          value: 'Chapter'
+        },
+        {
+          label: 'Kindle',
+          value: 'Kindle'
+        },
+        {
+          label: 'Other',
+          value: 'Other'
+        }
+      ],
+      mediaObj: this.media,
+      type: this.mediaType,
+      quoteObj: this.quote,
+      tagsObj: {},
+      bibleRefsParse: [],
+      bibleTags: {},
+      quotesCollection: this.$firestore.collection('quotes')
+    }
+  },
+  watch: {
+    media (value) {
+      this.mediaObj = value
+    },
+    mediaType (value) {
+      this.type = value
+    },
+    tags (value) {
+      this.tagsObj = {}
+      value.forEach((tag) => {
+        this.tagsObj[tag] = true
+      })
+    },
+    bibleRefs (value) {
+      this.bibleRefsParse = []
+      value.forEach((ref) => {
+        var refObj = Bible.parseBibleRef(ref)
+        this.bibleRefsParse.push(refObj)
+        var bibleTag = refObj.book + refObj.chapter
+        this.bibleTags[bibleTag] = true
+      })
+    }
+  },
+  methods: {
+    init (isNew) {
+      if (isNew) {
+        console.log('new')
+        this.text = ''
+        this.character = ''
+        this.tags = []
+        this.bibleRefs = []
+        this.notes = ''
+        this.locationType = 'None'
+        this.location = 0
+        this.$refs.quoteInput.focus()
+      } else {
+        this.text = this.quote.text
+        this.tags = Object.keys(this.quote.tags)
+        this.bibleRefs = []
+        this.quote.bibleRef.forEach((ref) => {
+          if (ref !== {}) {
+            this.bibleRefs.push(Bible.stringBibleRef(ref))
+          }
+        })
+        this.notes = this.quote.notes
+        this.locationType = this.quote.locationType
+        this.location = this.quote.location
+      }
+    },
+    addQuote () {
+      console.log('add quote')
+      var quoteObj = {
+        author: this.mediaObj.author,
+        date: new Date(),
+        location: this.location,
+        locationType: this.locationType,
+        mediaImageURL: this.mediaObj.imageURL,
+        mediaTitle: this.mediaObj.title,
+        mediaType: this.type,
+        mediaid: this.id,
+        text: this.text,
+        tags: this.tagsObj,
+        bibleRef: this.bibleRefsParse,
+        bibleTags: this.bibleTags,
+        notes: this.notes,
+        user: this.$firebase.auth().currentUser.uid
+      }
+      if (this.type === 'movie') {
+        quoteObj.author = this.character
+      }
+      this.quotesCollection.add(quoteObj).then(() => {
+        this.modalFin()
+      })
+    },
+    updateQuote () {
+      console.log('update quote')
+      var quoteObj = {
+        location: this.location,
+        locationType: this.locationType,
+        text: this.text,
+        tags: this.tagsObj,
+        bibleRef: this.bibleRefsParse,
+        bibleTags: this.bibleTags,
+        notes: this.notes
+      }
+      if (this.type === 'movie') {
+        quoteObj.author = this.character
+      }
+      this.quotesCollection.doc(this.quote['.key']).update(quoteObj).then(() => {
+        this.modalFin()
+      })
+    },
+    deleteQuote () {
+      console.log('delete quote')
+      this.quotesCollection.doc(this.quote['.key']).delete().then(() => {
+        this.modalFin()
+      })
+    }
+  }
+}
+</script>
+
+<style>
+</style>
