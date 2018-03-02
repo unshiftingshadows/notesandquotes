@@ -1,49 +1,47 @@
 <template>
   <q-page padding>
-    <div class="media-page">
-      <div class="row gutter-md items-center">
-        <div class="col-xs-12 col-md-4 justify-center">
-          <img :src="book.imageURL" width="100%" />
-        </div>
-        <div class="col-xs-12 col-md-8">
-          <h3>{{ book.title }}</h3>
-          <div class="row sm-gutter">
-            <div class="col-6">
-              <q-input v-model="book.author" float-label="Author" dark />
-            </div>
-            <div class="col-6">
-              <q-input v-model="book.isbn" float-label="ISBN" dark />
-            </div>
-            <div class="col-6">
-              <q-select v-model="book.status" float-label="Status" radio :options="statusOptions" dark />
-            </div>
-            <div class="col-6">
-              <q-rating v-model="book.rating" :max="5" icon="fa-star" size="1.5em" style="padding-top: 15px; padding-left: 20px" dark />
-            </div>
-            <div class="col-12">
-              <q-chips-input v-model="tagList" float-label="Tags" dark />
-            </div>
-            <div class="col-6">
-              <q-input v-model="book.publisher" float-label="Publisher" dark />
-            </div>
-            <div class="col-6">
-              <q-input v-model="book.pubYear" float-label="Publication Year" dark />
-            </div>
-            <div class="col-12">
-              <q-input v-model="book.citation" float-label="Citation" type="textarea" :max-height="100" :min-rows="2" dark />
-            </div>
-            <div class="col-12">
-              <q-btn color="primary" @click="update">Update</q-btn>
-              <q-btn color="negative" class="float-right" @click="remove">Delete</q-btn>
-            </div>
+    <div class="row gutter-md items-center">
+      <div class="col-xs-12 col-md-4 justify-center">
+        <img :src="book.imageURL" width="100%" />
+      </div>
+      <div class="col-xs-12 col-md-8">
+        <h3>{{ book.title }}</h3>
+        <div class="row gutter-sm">
+          <div class="col-6">
+            <q-input v-model="book.author" float-label="Author" dark />
+          </div>
+          <div class="col-6">
+            <q-input v-model="book.isbn" float-label="ISBN" dark />
+          </div>
+          <div class="col-6">
+            <q-select v-model="book.status" float-label="Status" radio :options="statusOptions" dark />
+          </div>
+          <div class="col-6">
+            <q-rating v-model="book.rating" :max="5" icon="fa-star" size="1.5em" style="padding-top: 15px; padding-left: 20px" dark />
+          </div>
+          <div class="col-12">
+            <q-chips-input v-model="tagList" float-label="Tags" dark />
+          </div>
+          <div class="col-6">
+            <q-input v-model="book.publisher" float-label="Publisher" dark />
+          </div>
+          <div class="col-6">
+            <q-input v-model="book.pubYear" float-label="Publication Year" dark />
+          </div>
+          <div class="col-12">
+            <q-input v-model="book.citation" float-label="Citation" type="textarea" :max-height="100" :min-rows="2" dark />
+          </div>
+          <div class="col-12">
+            <q-btn color="primary" @click="update">Update</q-btn>
+            <q-btn color="negative" class="float-right" @click="remove">Delete</q-btn>
           </div>
         </div>
-        <div class="col-12">
-          <quote-list :mediaid="id" :media="book" media-type="book"></quote-list>
-        </div>
-        <div class="col-12">
-          <media-notes :user-notes="userNotes" :mediaid="id" media-type="book"></media-notes>
-        </div>
+      </div>
+      <div class="col-12">
+        <quote-list :mediaid="id" :media="book" media-type="book"></quote-list>
+      </div>
+      <div class="col-12">
+        <media-notes :user-notes="userNotes" :mediaid="id" media-type="book"></media-notes>
       </div>
     </div>
   </q-page>
@@ -80,7 +78,7 @@ export default {
       userTags: {},
       tagList: [],
       userNotes: '',
-      booksCollection: this.$firestore.collection('books')
+      booksCollection: this.firebase.books
     }
   },
   watch: {
@@ -100,13 +98,13 @@ export default {
       }).catch((err) => {
         console.error(err)
       })
-      this.$binding('userData', this.booksCollection.doc(this.id).collection('userData').doc(this.$firebase.auth().currentUser.uid))
+      this.$binding('userData', this.booksCollection.doc(this.id).collection('userData').doc(this.firebase.auth.currentUser.uid))
         .then((userObserve) => {
           this.tagList = Object.keys(userObserve.tags)
           this.userNotes = userObserve.notes
         }).catch((err) => {
           console.error(err.message)
-          this.booksCollection.doc(this.id).collection('userData').doc(this.$firebase.auth().currentUser.uid).set({
+          this.booksCollection.doc(this.id).collection('userData').doc(this.firebase.auth.currentUser.uid).set({
             notes: '',
             tags: {}
           })

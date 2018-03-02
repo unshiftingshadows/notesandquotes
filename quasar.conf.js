@@ -5,7 +5,9 @@ module.exports = function (ctx) {
     plugins: [
       'axios',
       'firebase',
+      'fuse',
       'vuelidate',
+      'vuefire',
       'vue-firestore'
     ],
     css: [
@@ -51,6 +53,9 @@ module.exports = function (ctx) {
         'QLayoutHeader',
         'QLayoutDrawer',
         'QLayoutFooter',
+        'QTabs',
+        'QRouteTab',
+        'QScrollArea',
         'QPageContainer',
         'QPage',
         'QToolbar',
@@ -65,18 +70,22 @@ module.exports = function (ctx) {
         'QCard',
         'QCardMain',
         'QCardTitle',
+        'QCardMedia',
+        'QCardActions',
         'QInput',
         'QSelect',
         'QRating',
         'QChipsInput',
-        'QModal'
+        'QModal',
+        'QPopover'
       ],
       directives: [
         'Ripple'
       ],
       plugins: [
         'Notify'
-      ]
+      ],
+      iconSet: 'fontawesome'
     },
     // animations: 'all' --- includes all animations
     animations: [

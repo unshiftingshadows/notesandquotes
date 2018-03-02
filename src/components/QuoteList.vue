@@ -15,7 +15,7 @@
       </quote-list-item>
     </q-list>
     <q-modal v-model="addOpen" content-classes="add-quote-modal">
-      <q-icon name="fa-close" size="2rem" @click.native="closeAdd" class="float-right cursor-pointer" />
+      <!-- <q-icon name="fa-close" size="2rem" @click.native="closeAdd" class="float-right cursor-pointer" /> -->
       <quote-form ref="quoteForm" :mediaid="id" :media="mediaObj" :media-type="type" form-type="Add" :modal-fin="closeAdd" />
     </q-modal>
   </div>
@@ -39,7 +39,7 @@ export default {
       quotes: [],
       addOpen: false,
       showQuotes: false,
-      quotesCollection: this.$firestore.collection('quotes')
+      quotesCollection: this.firebase.quotes
     }
   },
   watch: {
@@ -51,9 +51,9 @@ export default {
     }
   },
   mounted () {
-    this.$binding('quotes', this.quotesCollection.where('mediaid', '==', this.mediaid).where('user', '==', this.$firebase.auth().currentUser.uid).orderBy('location'))
+    this.$binding('quotes', this.quotesCollection.where('mediaid', '==', this.mediaid).where('user', '==', this.firebase.auth.currentUser.uid).orderBy('location'))
       .then((quotes) => {
-        console.log(quotes)
+        // console.log(quotes)
       })
   },
   methods: {

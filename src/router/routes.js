@@ -2,10 +2,14 @@
 export default [
   {
     path: '/',
-    component: () => import('layouts/default'),
+    component: () => import('layouts/NQ'),
     children: [
+      { path: 'list/:type', name: 'list', component: () => import('pages/List') },
       { path: 'book/:id', name: 'book', component: () => import('pages/Book') }
-    ]
+    ],
+    meta: {
+      requiresAuth: true
+    }
   },
 
   {

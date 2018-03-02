@@ -1,26 +1,47 @@
 <template>
   <div>
-    <h4>{{ formType }} Quote</h4>
-    <q-input v-model="text" type="textarea" :max-height="100" :min-rows="2" float-label="Quote Text" autofocus ref="quoteInput" dark />
-    <q-input v-model="character" v-if="type === 'movie'" float-label="Character" dark />
-    <q-chips-input v-model="tags" float-label="Tags" dark />
-    <q-chips-input v-model="bibleRefs" float-label="Bible Refs" dark />
-    <q-input v-model="notes" type="textarea" :max-height="100" :min-rows="2" float-label="Notes" dark />
-    <q-select
-      float-label="Location Type"
-      v-model="locationType"
-      :options="selectOptions"
-      dark
-    />
-    <q-input type="number" v-model="location" v-if="locationType !== 'None'" :float-label="locationType" dark frame-color="secondary" />
-    <q-btn v-if="formType === 'Add'" color="primary" @click="addQuote">Add</q-btn>
-    <q-btn v-if="formType === 'Edit'" color="primary" @click="updateQuote">Update</q-btn>
-    <q-btn v-if="formType === 'Edit'" color="negative" @click="deleteQuote">Delete</q-btn>
+    <div class="row gutter-sm">
+      <div class="col-12">
+        <h4>{{ formType }} Quote</h4>
+      </div>
+      <div class="col-12">
+        <q-input v-model="text" type="textarea" :max-height="100" :min-rows="2" float-label="Quote Text" autofocus ref="quoteInput" dark />
+      </div>
+      <div class="col-12" v-if="type === 'movie'">
+        <q-input v-model="character" float-label="Character" dark />
+      </div>
+      <div class="col-12">
+        <q-chips-input v-model="tags" float-label="Tags" dark />
+      </div>
+      <div class="col-12">
+        <q-chips-input v-model="bibleRefs" float-label="Bible Refs" dark />
+      </div>
+      <div class="col-12">
+        <q-input v-model="notes" type="textarea" :max-height="100" :min-rows="2" float-label="Notes" dark />
+      </div>
+      <div class="col-12">
+        <q-select
+          float-label="Location Type"
+          v-model="locationType"
+          :options="selectOptions"
+          dark
+        />
+      </div>
+      <div class="col-12">
+        <q-input type="number" v-model="location" v-if="locationType !== 'None'" :float-label="locationType" dark frame-color="secondary" />
+      </div>
+      <div class="col-12">
+        <q-btn v-if="formType === 'Add'" color="primary" @click="addQuote">Add</q-btn>
+        <q-btn v-if="formType === 'Edit'" color="primary" @click="updateQuote">Update</q-btn>
+        <q-btn v-if="formType === 'Edit'" color="negative" @click="deleteQuote">Delete</q-btn>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import * as Bible from '../statics/bible.js'
+
 export default {
   props: ['mediaid', 'media', 'mediaType', 'quote', 'modalFin', 'formType'],
   data () {
@@ -61,7 +82,7 @@ export default {
       tagsObj: {},
       bibleRefsParse: [],
       bibleTags: {},
-      quotesCollection: this.$firestore.collection('quotes')
+      quotesCollection: this.firebase.quotes
     }
   },
   watch: {

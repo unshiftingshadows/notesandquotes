@@ -23,6 +23,7 @@ const Router = new VueRouter({
 })
 
 Router.beforeEach((to, from, next) => {
+  console.log('router before each')
   if (to.matched.some(record => record.meta.requiresAuth)) {
     firebase.auth().onAuthStateChanged(function (user) {
       if (!user) {
