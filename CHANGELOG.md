@@ -1,6 +1,13 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.3 - 2018-03-05
+### Added
+- started new database plugin!!
+    - still in initial stages
+    - custom built to access backside database
+- added Dashboard page (mostly being used to test database)
+
 ## 0.0.2 - 2018-03-02
 ### Added
 - NQ layout for most Notes and Quote pages

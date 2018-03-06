@@ -3,7 +3,8 @@
 module.exports = function (ctx) {
   return {
     plugins: [
-      'axios',
+      // 'axios',
+      'database',
       'firebase',
       'fuse',
       'vuelidate',

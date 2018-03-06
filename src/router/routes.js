@@ -4,6 +4,7 @@ export default [
     path: '/',
     component: () => import('layouts/NQ'),
     children: [
+      { path: 'dashboard', name: 'dashboard', component: () => import('pages/Dashboard') },
       { path: 'list/:type', name: 'list', component: () => import('pages/List') },
       { path: 'book/:id', name: 'book', component: () => import('pages/Book') }
     ],
