@@ -1,17 +1,17 @@
 <template>
   <q-page padding>
     <h2>{{ type }}</h2>
-    <q-card inline v-if="type != 'notes' && type != 'research'" v-for="item in items" :key="item['.key']" v-bind:class="[type]" class="media-card">
+    <q-card inline v-if="type != 'notes' && type != 'research'" v-for="item in items" :key="item['_id']" v-bind:class="[type]" class="media-card">
       <q-card-media>
         <img v-if="type != 'images'" :src="item.imageURL" />
-        <img v-if="type == 'images'" :src="item.thumbURL" class="image-card" @click="openItem(item['.key'])" />
+        <img v-if="type == 'images'" :src="item.thumbURL" class="image-card" @click="openItem(item['_id'])" />
         <q-card-title slot="overlay" v-if="type == 'books' || type == 'movies' || type == 'videos' || type == 'articles'">
           {{ item.title }}
-          <span slot="subtitle">{{ item.author }}</span>
+          <span v-for="author in item.author" :key="author.toString" slot="subtitle">{{ author.toString }}</span>
           <q-icon slot="right" name="fa-ellipsis-v" color="white">
             <q-popover ref="popover">
               <q-list link class="no-border">
-                <q-item @click.native="openItem(item['.key'])">
+                <q-item @click.native="openItem(item['_id'])">
                   <q-item-main label="Details" />
                 </q-item>
               </q-list>
@@ -63,13 +63,17 @@ export default {
   },
   methods: {
     init (type) {
-      this.$binding('items', this.firebase.store.collection(type))
-        .then((observe) => {
-          console.log('list loaded', type)
-        }).catch((err) => {
-          console.error('list not loaded', type)
-          console.error(err.message)
-        })
+      // this.$binding('items', this.firebase.store.collection(type))
+      //   .then((observe) => {
+      //     console.log('list loaded', type)
+      //   }).catch((err) => {
+      //     console.error('list not loaded', type)
+      //     console.error(err.message)
+      //   })
+      this.database.list(type, (data) => {
+        console.log('data', data, this)
+        this.items = data
+      })
     },
     openItem (id) {
       console.log(id)

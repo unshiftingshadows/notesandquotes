@@ -1,4 +1,5 @@
 import axios from 'axios'
+import firebase from 'firebase'
 
 axios.defaults.baseURL = 'https://database.unshiftingshadows.com'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
@@ -14,16 +15,19 @@ function testList (data, callback) {
 }
 
 function list (type, callback) {
-  axios.post('/list', {
-    type: type
+  firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+    axios.post('/list', {
+      type: type,
+      token: idToken
+    })
+      .then((res) => {
+        console.log(res.data)
+        callback(res.data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   })
-    .then((res) => {
-      console.log(res.data)
-      callback(res.data)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
 }
 
 export default ({ app, router, Vue }) => {

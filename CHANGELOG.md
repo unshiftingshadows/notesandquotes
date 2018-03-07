@@ -1,6 +1,14 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.4 - 2018-03-06
+### Added
+
+### Changed
+- database plugin
+    - updated to send user's authentication token to server
+- List now uses new database to get items rather than Firebase
+
 ## 0.0.3 - 2018-03-05
 ### Added
 - started new database plugin!!
