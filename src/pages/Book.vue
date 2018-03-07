@@ -2,13 +2,14 @@
   <q-page padding>
     <div class="row gutter-md items-center">
       <div class="col-xs-12 col-md-4 justify-center">
-        <img :src="book.imageURL" width="100%" />
+        <img :src="book.thumbURL" width="100%" />
       </div>
       <div class="col-xs-12 col-md-8">
         <h3>{{ book.title }}</h3>
         <div class="row gutter-sm">
           <div class="col-6">
-            <q-input v-model="book.author" float-label="Author" dark />
+            <!-- <q-input v-model="book.author" float-label="Author" dark /> -->
+            <p>{{ book.author }}</p>
           </div>
           <div class="col-6">
             <q-input v-model="book.isbn" float-label="ISBN" dark />
@@ -20,7 +21,7 @@
             <q-rating v-model="book.rating" :max="5" icon="fa-star" size="1.5em" style="padding-top: 15px; padding-left: 20px" dark />
           </div>
           <div class="col-12">
-            <q-chips-input v-model="tagList" float-label="Tags" dark />
+            <q-chips-input v-model="userData.tags" float-label="Tags" dark @blur="updateUserData" />
           </div>
           <div class="col-6">
             <q-input v-model="book.publisher" float-label="Publisher" dark />
@@ -33,7 +34,7 @@
           </div>
           <div class="col-12">
             <q-btn color="primary" @click="update">Update</q-btn>
-            <q-btn color="negative" class="float-right" @click="remove">Delete</q-btn>
+            <q-btn color="negative" class="float-right" @click="remove">Remove</q-btn>
           </div>
         </div>
       </div>
@@ -41,7 +42,7 @@
         <quote-list :mediaid="id" :media="book" media-type="book"></quote-list>
       </div>
       <div class="col-12">
-        <media-notes :user-notes="userNotes" :mediaid="id" media-type="book"></media-notes>
+        <media-notes :user-notes.sync="userData.notes" :update="updateNotes" :mediaid="id" media-type="book"></media-notes>
       </div>
     </div>
   </q-page>
@@ -60,7 +61,10 @@ export default {
     return {
       id: this.$route.params.id,
       book: {},
-      userData: {},
+      userData: {
+        tags: [],
+        notes: ''
+      },
       statusOptions: [
         {
           label: 'To Read',
@@ -74,19 +78,7 @@ export default {
           label: 'Read',
           value: 'read'
         }
-      ],
-      userTags: {},
-      tagList: [],
-      userNotes: '',
-      booksCollection: this.firebase.books
-    }
-  },
-  watch: {
-    tagList: function (userTagList) {
-      this.userTags = {}
-      userTagList.forEach((tag) => {
-        this.userTags[tag] = true
-      })
+      ]
     }
   },
   mounted () {
@@ -94,29 +86,27 @@ export default {
   },
   methods: {
     init () {
-      this.$binding('book', this.booksCollection.doc(this.id)).then((bookObserve) => {
-      }).catch((err) => {
-        console.error(err)
+      this.database.view('book', this.id, (resource, userData) => {
+        this.book = resource
+        this.userData = userData
       })
-      this.$binding('userData', this.booksCollection.doc(this.id).collection('userData').doc(this.firebase.auth.currentUser.uid))
-        .then((userObserve) => {
-          this.tagList = Object.keys(userObserve.tags)
-          this.userNotes = userObserve.notes
-        }).catch((err) => {
-          console.error(err.message)
-          this.booksCollection.doc(this.id).collection('userData').doc(this.firebase.auth.currentUser.uid).set({
-            notes: '',
-            tags: {}
-          })
-        })
+    },
+    updateNotes (notes) {
+      this.userData.notes = notes
+      this.updateUserData()
+    },
+    updateUserData () {
+      var userData = {
+        notes: this.userData.notes,
+        tags: this.userData.tags
+      }
+      this.database.update(this.id, 'book', userData, { updateUserData: true }, (res) => {
+        console.log(res)
+      })
     },
     update () {
-      console.log(this.book)
-      this.tagList.forEach((tag) => {
-        this.book.allTags[tag] = true
-      })
-      this.booksCollection.doc(this.id).update({
-        author: this.book.author,
+      console.log('update', this.book)
+      var resource = {
         isbn: this.book.isbn,
         status: this.book.status,
         rating: this.book.rating,
@@ -124,18 +114,15 @@ export default {
         pubYear: this.book.pubYear,
         citation: this.book.citation,
         allTags: this.book.allTags
-      })
-      this.booksCollection.doc(this.id).collection('userData').doc(this.$firebase.auth().currentUser.uid).update({
-        tags: this.userTags
-      })
-      this.$q.notify({
-        message: 'Book updated!',
-        type: 'positive'
+      }
+      this.database.update(this.id, 'book', resource, { updateUserData: false }, (res) => {
+        console.log(res)
       })
     },
     remove () {
-      this.booksCollection.doc(this.id).delete().then(() => {
-        this.$router.push('/dashboard')
+      console.log('remove')
+      this.database.remove(this.id, 'book', (res) => {
+        console.log(res)
       })
     }
   }

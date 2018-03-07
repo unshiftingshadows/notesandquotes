@@ -33,7 +33,7 @@
       <div class="col-12">
         <q-btn v-if="formType === 'Add'" color="primary" @click="addQuote">Add</q-btn>
         <q-btn v-if="formType === 'Edit'" color="primary" @click="updateQuote">Update</q-btn>
-        <q-btn v-if="formType === 'Edit'" color="negative" @click="deleteQuote">Delete</q-btn>
+        <q-btn v-if="formType === 'Edit'" color="negative" @click="removeQuote">Remove</q-btn>
       </div>
     </div>
   </div>
@@ -79,9 +79,8 @@ export default {
       mediaObj: this.media,
       type: this.mediaType,
       quoteObj: this.quote,
-      tagsObj: {},
       bibleRefsParse: [],
-      bibleTags: {},
+      // bibleTags: {},
       quotesCollection: this.firebase.quotes
     }
   },
@@ -93,18 +92,15 @@ export default {
       this.type = value
     },
     tags (value) {
-      this.tagsObj = {}
-      value.forEach((tag) => {
-        this.tagsObj[tag] = true
-      })
+      this.tags = value
     },
     bibleRefs (value) {
       this.bibleRefsParse = []
       value.forEach((ref) => {
         var refObj = Bible.parseBibleRef(ref)
         this.bibleRefsParse.push(refObj)
-        var bibleTag = refObj.book + refObj.chapter
-        this.bibleTags[bibleTag] = true
+        // var bibleTag = refObj.book + refObj.chapter
+        // this.bibleTags[bibleTag] = true
       })
     }
   },
@@ -122,9 +118,9 @@ export default {
         this.$refs.quoteInput.focus()
       } else {
         this.text = this.quote.text
-        this.tags = Object.keys(this.quote.tags)
+        this.tags = this.quote.tags
         this.bibleRefs = []
-        this.quote.bibleRef.forEach((ref) => {
+        this.quote.bibleRefs.forEach((ref) => {
           if (ref !== {}) {
             this.bibleRefs.push(Bible.stringBibleRef(ref))
           }
@@ -165,21 +161,23 @@ export default {
         location: this.location,
         locationType: this.locationType,
         text: this.text,
-        tags: this.tagsObj,
-        bibleRef: this.bibleRefsParse,
-        bibleTags: this.bibleTags,
+        tags: this.tags,
+        bibleRefs: this.bibleRefsParse,
         notes: this.notes
       }
       if (this.type === 'movie') {
         quoteObj.author = this.character
       }
-      this.quotesCollection.doc(this.quote['.key']).update(quoteObj).then(() => {
+      console.log(this.quote)
+      this.database.update(this.quote._id, 'quote', quoteObj, { updateUserData: false }, (res) => {
+        console.log(res)
         this.modalFin()
       })
     },
-    deleteQuote () {
-      console.log('delete quote')
-      this.quotesCollection.doc(this.quote['.key']).delete().then(() => {
+    removeQuote () {
+      console.log('remove quote')
+      this.database.remove(this.quote._id, 'quote', (res) => {
+        console.log(res)
         this.modalFin()
       })
     }

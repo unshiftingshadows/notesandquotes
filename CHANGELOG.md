@@ -1,9 +1,30 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
-## 0.0.4 - 2018-03-06
+## 0.0.5 - 2018-03-07
 ### Added
+- view function for database plugin
+- Book now uses new database view function
+- quotes function for database plugin
+- QuoteList now uses new database quotes function
+- remove function for database plugin - just a placeholder
 
+### Changed
+- List now pulls from author.fullName to render
+- Removed extra line in List to render Images differently - added same logic to a conditional class
+- Book now uses thumbURL rather than imageURL for thumbnail
+- Book now uses userData from new database
+- Book now updates to new database
+- Quotes are now updated in new database
+- "Delete" changed to "Remove" on Book
+- "Delete" changed to "Remove" on QuoteForm
+- User notes are kept updated between Book and MediaNotes component
+
+### Known Issues
+- Book, Movie, and Article authors are going to have issues with input fields...multiple authors means keeping track of multiple inputs
+- No way to add quotes to new database
+
+## 0.0.4 - 2018-03-06
 ### Changed
 - database plugin
     - updated to send user's authentication token to server

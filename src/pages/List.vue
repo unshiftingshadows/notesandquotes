@@ -1,17 +1,16 @@
 <template>
   <q-page padding>
     <h2>{{ type }}</h2>
-    <q-card inline v-if="type != 'notes' && type != 'research'" v-for="item in items" :key="item['_id']" v-bind:class="[type]" class="media-card">
+    <q-card inline v-if="type != 'notes' && type != 'research'" v-for="item in items" :key="item['id']" v-bind:class="[type]" class="media-card">
       <q-card-media>
-        <img v-if="type != 'images'" :src="item.imageURL" />
-        <img v-if="type == 'images'" :src="item.thumbURL" class="image-card" @click="openItem(item['_id'])" />
+        <img :src="item.thumbURL" :class="{ 'image-card': isImage }" @click="openItem(item['id'])" />
         <q-card-title slot="overlay" v-if="type == 'books' || type == 'movies' || type == 'videos' || type == 'articles'">
           {{ item.title }}
-          <span v-for="author in item.author" :key="author.toString" slot="subtitle">{{ author.toString }}</span>
+          <span v-for="author in item.author" :key="author.fullName" slot="subtitle">{{ author.fullName }}</span>
           <q-icon slot="right" name="fa-ellipsis-v" color="white">
             <q-popover ref="popover">
               <q-list link class="no-border">
-                <q-item @click.native="openItem(item['_id'])">
+                <q-item @click.native="openItem(item.id)">
                   <q-item-main label="Details" />
                 </q-item>
               </q-list>
@@ -44,7 +43,8 @@ export default {
   data () {
     return {
       type: this.$route.params.type,
-      items: []
+      items: [],
+      isImage: this.type === 'images'
     }
   },
   // firestore () {

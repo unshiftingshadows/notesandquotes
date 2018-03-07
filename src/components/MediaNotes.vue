@@ -12,7 +12,7 @@ export default {
   components: {
     markdownEditor
   },
-  props: ['userNotes', 'mediaid', 'mediaType'],
+  props: ['userNotes', 'mediaid', 'mediaType', 'update'],
   data () {
     return {
       notes: this.userNotes,
@@ -39,8 +39,7 @@ export default {
   },
   methods: {
     updateNotes: function () {
-      console.log(this.notes)
-      this.$firebase.firestore().collection(this.type + 's').doc(this.mediaid).collection('userData').doc(this.$firebase.auth().currentUser.uid).update({notes: this.notes})
+      this.update(this.notes)
     }
   }
 }

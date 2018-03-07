@@ -5,8 +5,8 @@
     <q-list separator multiline v-if="showQuotes">
       <quote-list-item
         v-for="quote in quotes"
-        v-bind:quote="quote"
-        v-bind:key="quote['.key']"
+        v-bind:quoteObj="quote"
+        v-bind:key="quote.id"
         location
         tags
         bible
@@ -51,10 +51,13 @@ export default {
     }
   },
   mounted () {
-    this.$binding('quotes', this.quotesCollection.where('mediaid', '==', this.mediaid).where('user', '==', this.firebase.auth.currentUser.uid).orderBy('location'))
-      .then((quotes) => {
-        // console.log(quotes)
-      })
+    // this.$binding('quotes', this.quotesCollection.where('mediaid', '==', this.mediaid).where('user', '==', this.firebase.auth.currentUser.uid).orderBy('location'))
+    //   .then((quotes) => {
+    //     // console.log(quotes)
+    //   })
+    this.database.quotes(this.id, (data) => {
+      this.quotes = data
+    })
   },
   methods: {
     openAdd () {
