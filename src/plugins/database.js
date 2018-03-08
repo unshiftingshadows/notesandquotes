@@ -53,6 +53,24 @@ function quotes (id, callback) {
   })
 }
 
+function add (type, data, callback) {
+  console.log('add: ' + type)
+  firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+    axios.post('/add', {
+      type: type,
+      data: data,
+      token: idToken
+    })
+      .then((res) => {
+        console.log(res.data)
+        callback(res.data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  })
+}
+
 function update (id, type, data, options, callback) {
   console.log('update id', id)
   firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
@@ -95,6 +113,7 @@ export default ({ app, router, Vue }) => {
     list: list,
     view: view,
     quotes: quotes,
+    add: add,
     update: update,
     remove: remove
   }

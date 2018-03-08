@@ -1,6 +1,14 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.6 = 2018-03-08
+### Added
+- add function for database plugin
+- new add functionality to QuoteForm
+
+### Notes
+- ids for new generated objects don't match ids of objects generated in Firebase -- might cause problems in future? -- update function still works with quotes generated with new add functionality
+
 ## 0.0.5 - 2018-03-07
 ### Added
 - view function for database plugin

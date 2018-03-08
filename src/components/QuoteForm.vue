@@ -133,25 +133,29 @@ export default {
     addQuote () {
       console.log('add quote')
       var quoteObj = {
-        author: this.mediaObj.author,
-        date: new Date(),
+        // author: this.mediaObj.author,
+        // date: new Date(),
         location: this.location,
         locationType: this.locationType,
-        mediaImageURL: this.mediaObj.imageURL,
-        mediaTitle: this.mediaObj.title,
+        // mediaImageURL: this.mediaObj.imageURL,
+        // mediaTitle: this.mediaObj.title,
         mediaType: this.type,
         mediaid: this.id,
         text: this.text,
-        tags: this.tagsObj,
-        bibleRef: this.bibleRefsParse,
-        bibleTags: this.bibleTags,
-        notes: this.notes,
-        user: this.$firebase.auth().currentUser.uid
+        tags: this.tags,
+        bibleRefs: this.bibleRefsParse,
+        // bibleTags: this.bibleTags,
+        notes: this.notes
+        // user: this.$firebase.auth().currentUser.uid
       }
       if (this.type === 'movie') {
         quoteObj.author = this.character
       }
-      this.quotesCollection.add(quoteObj).then(() => {
+      // this.quotesCollection.add(quoteObj).then(() => {
+      //   this.modalFin()
+      // })
+      this.database.add('quote', quoteObj, (res) => {
+        console.log(res)
         this.modalFin()
       })
     },
