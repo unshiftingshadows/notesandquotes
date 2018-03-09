@@ -1,7 +1,17 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
-## 0.0.6 = 2018-03-08
+## 0.0.7 - 2018-03-09
+### Added
+- lookup function for database plugin
+
+### Changed
+- adding or updating quotes will refresh the whole quote list
+
+### Notes
+- a full refresh isn't the most efficient way of adding new quotes - looking to add a system that would just add the new quote to the array in quote list after the data has been sent to the server - would reduce the number of calls made when adding a whole list of quotes
+
+## 0.0.6 - 2018-03-08
 ### Added
 - add function for database plugin
 - new add functionality to QuoteForm

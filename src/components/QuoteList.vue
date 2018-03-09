@@ -55,28 +55,25 @@ export default {
     //   .then((quotes) => {
     //     // console.log(quotes)
     //   })
-    this.database.quotes(this.id, (data) => {
-      this.quotes = data
-    })
+    this.init()
   },
   methods: {
+    init () {
+      this.database.quotes(this.id, (data) => {
+        this.quotes = data
+      })
+    },
     openAdd () {
       this.addOpen = true
       this.$refs.quoteForm.init(true)
     },
     closeAdd () {
       this.addOpen = false
+      // Call init to reload quotes with any updates
+      this.init()
     },
     toggleQuotes () {
       if (this.showQuotes) this.showQuotes = false; else this.showQuotes = true
-    },
-    fixQuotes () {
-      // NOTE: Temporary method to fix incorrect things inside of quote objects
-      this.quotes.forEach((quote) => {
-        this.quotesCollection.doc(quote['.key']).update({
-          mediaImageURL: this.mediaObj.imageURL
-        })
-      })
     }
   }
 }

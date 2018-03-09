@@ -91,6 +91,24 @@ function update (id, type, data, options, callback) {
   })
 }
 
+function lookup (searchTerm, type, callback) {
+  console.log('lookup', searchTerm, type)
+  firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+    axios.post('/lookup', {
+      type: type,
+      searchTerm: searchTerm,
+      token: idToken
+    })
+      .then((res) => {
+        console.log(res.data)
+        callback(res.data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  })
+}
+
 function remove (id, type, callback) {
   firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
     axios.post('/remove', {
@@ -115,6 +133,7 @@ export default ({ app, router, Vue }) => {
     quotes: quotes,
     add: add,
     update: update,
+    lookup: lookup,
     remove: remove
   }
 }
