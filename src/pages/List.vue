@@ -1,9 +1,9 @@
 <template>
   <q-page padding>
     <h2>{{ type }}</h2>
-    <q-card inline v-if="type != 'notes' && type != 'research'" v-for="item in items" :key="item['id']" v-bind:class="[type]" class="media-card">
+    <q-card inline v-if="type != 'notes' && type != 'research'" v-for="item in items" :key="item.id" v-bind:class="[type]" class="media-card">
       <q-card-media>
-        <img :src="item.thumbURL" :class="{ 'image-card': isImage }" @click="openItem(item['id'])" />
+        <img :src="item.thumbURL" :class="{ 'image-card': isImage }" @click="openItem(item._id)" />
         <q-card-title slot="overlay" v-if="type == 'books' || type == 'movies' || type == 'videos' || type == 'articles'">
           {{ item.title }}
           <span v-for="author in item.author" :key="author.fullName" slot="subtitle">{{ author.fullName }}</span>
@@ -44,7 +44,7 @@ export default {
     return {
       type: this.$route.params.type,
       items: [],
-      isImage: this.type === 'images'
+      isImage: this.$route.params.type === 'images'
     }
   },
   // firestore () {

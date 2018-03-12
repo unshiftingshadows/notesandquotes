@@ -29,7 +29,7 @@
           <q-item-side icon="fa-home" />
           <q-item-main label="Dashboard" />
         </q-item>
-        <q-item>
+        <q-item link @click.native="openAddModal">
           <q-item-side icon="fa-plus" />
           <q-item-main label="Add Media" />
         </q-item>
@@ -68,6 +68,11 @@
       </q-scroll-area>
     </q-layout-drawer>
 
+    <q-modal ref="addModal" v-model="showAdd" content-classes="add-media-modal">
+      <q-icon name="fa-close" size="2rem" @click.native="closeAddModal" class="float-right cursor-pointer" />
+      <add :modal-fin="closeAddModal" ref="addMedia" />
+    </q-modal>
+
     <q-page-container>
       <!-- This is where pages get injected -->
       <router-view />
@@ -77,7 +82,12 @@
 </template>
 
 <script>
+import Add from 'components/AddMedia.vue'
+
 export default {
+  components: {
+    Add
+  },
   data () {
     return {
       leftDrawer: true,
@@ -93,7 +103,7 @@ export default {
   methods: {
     logout () {
       console.log('signing out')
-      this.$firebase.auth().signOut().then(() => {
+      this.firebase.auth.signOut().then(() => {
         this.$router.replace('login')
       })
     },
@@ -150,4 +160,17 @@ export default {
 </script>
 
 <style>
+
+.add-media-modal {
+  padding: 30px;
+  width: 100%;
+}
+
+@media screen and (min-width: 1200px) {
+  .add-media-modal {
+    min-width: 500px;
+    width: 500px;
+  }
+}
+
 </style>

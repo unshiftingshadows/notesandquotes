@@ -1,6 +1,27 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.8 - 2018-03-12
+### Added
+- AddMedia component
+- add media modal added to the NQ layout
+- AddMedia for Books
+- Google books search works with new database plugin
+- Image page
+- Note page
+- Video page
+- AddMedia for wiki Images
+- AddMedia for Notes
+- AddMedia for Videos
+
+### Changed
+- Book gets rating and status from UserData
+- set login fields to dark
+- redesigned login layout
+- updated login to use new firebase method (this.firebase)
+
+Probably a lot more...this is all I could remember. Still just working towards full-functionality again.
+
 ## 0.0.7 - 2018-03-09
 ### Added
 - lookup function for database plugin

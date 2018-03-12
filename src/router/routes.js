@@ -6,7 +6,11 @@ export default [
     children: [
       { path: 'dashboard', name: 'dashboard', component: () => import('pages/Dashboard') },
       { path: 'list/:type', name: 'list', component: () => import('pages/List') },
-      { path: 'book/:id', name: 'book', component: () => import('pages/Book') }
+      { path: 'book/:id', name: 'book', component: () => import('pages/Book') },
+      { path: 'image/:id', name: 'image', component: () => import('pages/Image') },
+      { path: 'video/:id', name: 'video', component: () => import('pages/Video') },
+      { path: 'article/:id', name: 'article', component: () => import('pages/Article') },
+      { path: 'note/:id', name: 'note', component: () => import('pages/Note') }
     ],
     meta: {
       requiresAuth: true

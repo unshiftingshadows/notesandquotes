@@ -1,18 +1,19 @@
 <template>
   <q-page padding>
     <div class="row gutter-md items-center">
-      <div class="col-xs-12 col-md-4 justify-center">
-        <img :src="book.thumbURL" width="100%" />
+      <div class="col-xs-12 justify-center">
+        <div class="q-video">
+          <span v-html="video.embedHTML"></span>
+        </div>
       </div>
-      <div class="col-xs-12 col-md-8">
-        <h3>{{ book.title }}</h3>
+      <div class="col-xs-12">
+        <h3>{{ video.title }}</h3>
         <div class="row gutter-sm">
-          <div class="col-6">
-            <!-- <q-input v-model="book.author" float-label="Author" dark /> -->
-            <p>{{ book.author }}</p>
+          <div class="col-12">
+            <q-input v-model="video.description" type="textarea" :max-height="100" :min-rows="2" float-label="Description" dark />
           </div>
           <div class="col-6">
-            <q-input v-model="book.isbn" float-label="ISBN" dark />
+            <q-input v-model="video.author" float-label="Author" dark></q-input>
           </div>
           <div class="col-6">
             <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
@@ -21,16 +22,7 @@
             <q-rating v-model="userData.rating" :max="5" icon="fa-star" size="1.5em" style="padding-top: 15px; padding-left: 20px" dark />
           </div>
           <div class="col-12">
-            <q-chips-input v-model="userData.tags" float-label="Tags" dark @blur="updateUserData" />
-          </div>
-          <div class="col-6">
-            <q-input v-model="book.publisher" float-label="Publisher" dark />
-          </div>
-          <div class="col-6">
-            <q-input v-model="book.pubYear" float-label="Publication Year" dark />
-          </div>
-          <div class="col-12">
-            <q-input v-model="book.citation" float-label="Citation" type="textarea" :max-height="100" :min-rows="2" dark />
+            <q-chips-input v-model="userData.tags" float-label="Tags" dark />
           </div>
           <div class="col-12">
             <q-btn color="primary" @click="update">Update</q-btn>
@@ -39,10 +31,7 @@
         </div>
       </div>
       <div class="col-12">
-        <quote-list :mediaid="id" :media="book" media-type="book"></quote-list>
-      </div>
-      <div class="col-12">
-        <media-notes :user-notes.sync="userData.notes" :update="updateNotes" :mediaid="id" media-type="book"></media-notes>
+        <media-notes :user-notes="userData.notes" :update="updateNotes" :mediaid="id" media-type="video"></media-notes>
       </div>
     </div>
   </q-page>
@@ -50,18 +39,16 @@
 
 <script>
 import { Notify } from 'quasar'
-import QuoteList from 'components/QuoteList.vue'
-import MediaNotes from 'components/MediaNotes'
 
+import MediaNotes from 'components/MediaNotes.vue'
 export default {
   components: {
-    QuoteList,
     MediaNotes
   },
   data () {
     return {
       id: this.$route.params.id,
-      book: {},
+      video: {},
       userData: {
         tags: [],
         notes: '',
@@ -74,12 +61,8 @@ export default {
           value: 'new'
         },
         {
-          label: 'Current',
-          value: 'current'
-        },
-        {
-          label: 'Read',
-          value: 'read'
+          label: 'Watched',
+          value: 'watched'
         }
       ]
     }
@@ -89,8 +72,8 @@ export default {
   },
   methods: {
     init () {
-      this.database.view('book', this.id, (resource, userData) => {
-        this.book = resource
+      this.database.view('video', this.id, (resource, userData) => {
+        this.video = resource
         this.userData = userData
       })
     },
@@ -105,7 +88,7 @@ export default {
         rating: this.userData.rating,
         status: this.userData.status
       }
-      this.database.update(this.id, 'book', userData, { updateUserData: true }, (res) => {
+      this.database.update(this.id, 'video', userData, { updateUserData: true }, (res) => {
         Notify.create({
           message: 'User data updated!',
           type: 'positive',
@@ -114,16 +97,13 @@ export default {
       })
     },
     update () {
-      console.log('update', this.book)
       var resource = {
-        isbn: this.book.isbn,
-        publisher: this.book.publisher,
-        pubYear: this.book.pubYear,
-        citation: this.book.citation
+        description: this.video.description,
+        author: this.video.author
       }
-      this.database.update(this.id, 'book', resource, { updateUserData: false }, (res) => {
+      this.database.update(this.id, 'video', resource, { updateUserData: false }, (res) => {
         Notify.create({
-          message: 'Book updated!',
+          message: 'Video updated!',
           type: 'positive',
           position: 'bottom-left'
         })
@@ -131,7 +111,7 @@ export default {
       this.updateUserData()
     },
     remove () {
-      console.log('Remove not implemented...')
+      console.log('remove not implemented...')
     }
   }
 }
@@ -139,11 +119,18 @@ export default {
 
 <style>
 
-@media screen and (min-width: 1200px) {
-  .media-page {
-    margin: 0 auto;
-    max-width: 1000px;
-  }
+.q-video {
+  position: relative;
+  padding-bottom: 56.25%;
+  padding-top: 25px;
+  height: 0;
+}
+.q-video iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 </style>

@@ -5,22 +5,30 @@
         <h4>Login</h4>
       </q-card-title>
       <q-card-main>
-        <q-input
-          float-label="Email"
-          type="email"
-          :error="$v.form.email.$error"
-          v-model="form.email"
-          @blur="$v.form.email.$touch"
-          @keyup.enter="login"
-        />
-        <q-input
-          float-label="Password"
-          type="password"
-          :error="$v.form.pswd.$error"
-          v-model="form.pswd"
-          @blur="$v.form.pswd.$touch"
-          @keyup.enter="login"
-        />
+        <div class="row gutter-sm">
+          <div class="col-12">
+            <q-input
+              float-label="Email"
+              type="email"
+              :error="$v.form.email.$error"
+              v-model="form.email"
+              @blur="$v.form.email.$touch"
+              @keyup.enter="login"
+              dark
+            />
+          </div>
+          <div class="col-12">
+            <q-input
+              float-label="Password"
+              type="password"
+              :error="$v.form.pswd.$error"
+              v-model="form.pswd"
+              @blur="$v.form.pswd.$touch"
+              @keyup.enter="login"
+              dark
+            />
+          </div>
+        </div>
         <br/>
         <q-btn color="primary" @click="login" label="Login" class="full-width" />
       </q-card-main>
@@ -54,19 +62,19 @@ export default {
   },
   methods: {
     login () {
+      console.log('login')
       this.$v.form.$touch()
       if (this.$v.form.$error) {
         Notify.create('Please review fields again.')
         return
       }
-      this.$firebase.auth().signInWithEmailAndPassword(this.form.email, this.form.pswd).then(
-        (user) => {
+      this.firebase.auth.signInWithEmailAndPassword(this.form.email, this.form.pswd)
+        .then((user) => {
           this.$router.replace('/')
-        },
-        (err) => {
+        })
+        .catch((err) => {
           console.error(err.message)
-        }
-      )
+        })
     }
   }
 }
