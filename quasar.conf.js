@@ -7,6 +7,7 @@ module.exports = function (ctx) {
       'database',
       'firebase',
       'fuse',
+      'research',
       'vuelidate',
       'vuefire',
       'vue-firestore'
@@ -62,10 +63,13 @@ module.exports = function (ctx) {
         'QToolbar',
         'QToolbarTitle',
         'QBtn',
+        'QBtnDropdown',
+        'QBtnGroup',
         'QIcon',
         'QChip',
         'QList',
         'QListHeader',
+        'QCollapsible',
         'QItem',
         'QItemMain',
         'QItemSide',
@@ -80,7 +84,8 @@ module.exports = function (ctx) {
         'QRating',
         'QChipsInput',
         'QModal',
-        'QPopover'
+        'QPopover',
+        'QVideo'
       ],
       directives: [
         'Ripple'

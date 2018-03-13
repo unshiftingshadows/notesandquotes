@@ -34,10 +34,14 @@
         <q-btn color="primary" class="float-right" @click.native="addMovie">Add Movie</q-btn>
       </div>
       <div v-if="selectType === 'article'" class="col-12">
-        <q-input v-model="articleTitle" float-label="Title" dark />
-        <q-input v-model="articleAuthor" float-label="Author" dark />
-        <q-input v-model="articleURL" float-label="URL" dark />
-        <q-btn color="primary" class="float-right" @click.native="addArticle">Add Article</q-btn>
+        <div class="row gutter-sm">
+          <div class="col-12">
+            <q-input v-model="articleURL" float-label="URL" dark />
+          </div>
+          <div class="col-12">
+            <q-btn color="primary" class="float-right" @click.native="addArticle">Add Article</q-btn>
+          </div>
+        </div>
       </div>
       <div v-if="selectType === 'image'" class="col-12">
         <div class="row gutter-sm">
@@ -61,8 +65,14 @@
         </div>
       </div>
       <div v-if="selectType === 'video'" class="col-12">
-        <q-input v-model="videoURL" float-label="URL" dark />
-        <q-btn color="primary" class="float-right" @click.native="addVideo">Add Video</q-btn>
+        <div class="row gutter-sm">
+          <div class="col-12">
+            <q-input v-model="videoURL" float-label="URL" dark />
+          </div>
+          <div class="col-12">
+            <q-btn color="primary" class="float-right" @click.native="addVideo">Add Video</q-btn>
+          </div>
+        </div>
       </div>
       <div v-if="selectType === 'note'" class="col-12">
         <div class="row gutter-sm">
@@ -92,10 +102,7 @@ function initialState () {
     movieTitle: '',
     movieDirector: '',
     movieYear: '',
-    articleTitle: '',
-    articleAuthor: '',
     articleURL: '',
-    articleText: '',
     videoURL: '',
     imageType: 'wiki',
     imageSelectOptions: [
@@ -115,7 +122,6 @@ function initialState () {
     imageWikiTitle: '',
     imageURL: '',
     noteTitle: '',
-    researchTitle: '',
     selectType: '',
     selectOptions: [
       {
@@ -204,32 +210,8 @@ export default {
       console.log('add video')
       var videoObj = {
         url: this.videoURL
-        // title: video.title,
-        // author: video.author,
-        // authorurl: video.authorurl,
-        // description: video.description,
-        // duration: video.duration,
-        // embedurl: 'https://www.youtube.com/embed/' + video.videoID,
-        // embedhtml: video.embedHtml,
-        // imageURL: video.imageURL,
-        // postDate: video.postDate,
-        // provider: video.provider,
-        // rating: 0,
-        // status: 'new',
-        // url: video.url,
-        // videoID: video.videoID,
-        // allTags: {},
-        // allBibleRefs: [],
-        // dateAdded: new Date(),
-        // dateModified: new Date()
       }
       console.log(videoObj)
-      // Firebase.videosCollection.add(videoObj).then((docRef) => {
-      //   // console.log(docRef.id)
-      //   this.modalFin()
-      //   this.$router.push({ name: 'video', params: { id: docRef.id } })
-      //   return true
-      // })
       this.database.add('video', videoObj, (res) => {
         this.modalFin()
         Notify.create({
@@ -243,39 +225,23 @@ export default {
     addArticle () {
       console.log('add article')
       var articleObj = {
-        // title: article.title || this.articleTitle,
-        // author: article.author || this.articleAuthor,
-        // domain: article.domain,
-        // text: article.text,
-        // postDate: article.postDate,
-        // description: article.description,
-        // url: article.url,
-        // imageURL: article.imageURL,
-        // wordCount: article.wordCount,
-        // html: article.html,
-        // rating: 0,
-        // status: 'new',
-        // allTags: {},
-        // allBibleRefs: [],
-        // dateAdded: new Date(),
-        // dateModified: new Date()
+        url: this.articleURL
       }
       console.log(articleObj)
-      // Firebase.articlesCollection.add(articleObj).then((docRef) => {
-      //   this.modalFin()
-      //   this.$router.push({ name: 'article', params: { id: docRef.id } })
-      //   return true
-      // })
+      this.database.add('article', articleObj, (res) => {
+        this.modalFin()
+        Notify.create({
+          message: 'Article created!',
+          type: 'positive',
+          position: 'bottom-left'
+        })
+        this.$router.push({ name: 'article', params: { id: res._id } })
+      })
     },
     addNote () {
       console.log('add note')
       var noteObj = {
         title: this.noteTitle
-        // tags: {},
-        // bibleRef: [],
-        // text: '',
-        // dateAdded: new Date(),
-        // dateModified: new Date()
       }
       console.log(noteObj)
       this.database.add('note', noteObj, (res) => {
@@ -287,12 +253,6 @@ export default {
         })
         this.$router.push({ name: 'note', params: { id: res._id } })
       })
-      // Firebase.notesCollection.add(noteObj).then((docRef) => {
-      //   // console.log(docRef.id)
-      //   this.modalFin()
-      //   this.$router.push({ name: 'note', params: { id: docRef.id } })
-      //   return true
-      // })
     }
   }
 }

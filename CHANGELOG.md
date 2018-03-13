@@ -1,6 +1,29 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.9 - 2018-03-13
+### Added
+- new Research routes for List and Topic
+- Topic page
+- Topic list page under Research
+- AddResearch modal to add new Topics from the Topic list page
+- Sidebar in Research for Topic resources
+- TopicResources component to put in sidebar
+- resources functionality for database plugin
+- Topic resources divy up by type into collapsible list items
+- new plugin to manage selectedTopic to add resources to that topic
+- MediaList component that displays the media passed in an array as cards or lists, etc.
+- Add button now appears on every media (missing quotes) to add to the currently selected Topic
+- Selected topic button in header returns to the topic page
+- Select button on Topic page to set as selected topic and allow for user to add resources
+
+### Changed
+- updated AddMedia with row and col for input fields to have gutters when rendered
+- list of Notes now renders correctly
+
+### Issues
+- class names are not siloed properly between components - there's bleed over into other components - not ideal...
+
 ## 0.0.8 - 2018-03-12
 ### Added
 - AddMedia component

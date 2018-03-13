@@ -5,6 +5,10 @@
         <img :src="image.imageURL" class="responsive" />
       </div>
       <div class="col-xs-12">
+        <span class="float-right" v-if="this.$selectedTopic.get()">
+          <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
+          <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
+        </span>
         <h3>{{ image.title }} <a :href="image.pageURL" target="_blank"><q-icon name="fa-link" /></a></h3>
         <div class="row gutter-sm">
           <div class="col-12">
@@ -111,9 +115,19 @@ export default {
     },
     remove () {
       console.log('remove not implemented...')
-      // imagesCollection.doc(this.id).delete().then(() => {
-      //   this.$router.push('/dashboard')
-      // })
+    },
+    showTopicAdd () {
+      return this.$selectedTopic.get() && !this.$selectedTopic.find(this.image._id)
+    },
+    topicAdd () {
+      var obj = {
+        topic: this.$selectedTopic.get().id,
+        media: this.image._id,
+        type: 'image'
+      }
+      this.database.add('resource', obj, (res) => {
+        this.$selectedTopic.add(this.image._id)
+      })
     }
   }
 }

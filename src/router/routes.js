@@ -40,7 +40,8 @@ export default [
     path: '/research',
     component: () => import('layouts/Research'),
     children: [
-      { path: '', name: 'topic', component: () => import('pages/Topic') }
+      { path: 'list/:type', name: 'researchlist', component: () => import('pages/List') },
+      { path: 'topic/:id', name: 'topic', component: () => import('pages/Topic') }
     ],
     meta: {
       requiresAuth: true

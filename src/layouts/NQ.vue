@@ -1,7 +1,7 @@
 <template>
   <q-layout>
 
-    <q-layout-header>
+    <q-layout-header reveal>
       <q-toolbar>
         <q-btn
           flat
@@ -13,6 +13,21 @@
         <q-toolbar-title>
           <img src="statics/logo.png" style="max-height: 50px" />
         </q-toolbar-title>
+        <q-btn v-if="selectedTopic" :label="'Current Topic: ' + selectedTopic.title" style="margin-right: 15px" @click.native="returnTopic()" />
+        <q-btn-dropdown label="Notes and Quotes">
+          <q-list link>
+            <!-- <q-item>
+              <q-item-main>
+                <q-item-tile label>Notes and Quotes</q-item-tile>
+              </q-item-main>
+            </q-item> -->
+            <q-item @click.native="switchResearch">
+              <q-item-main>
+                <q-item-tile label>Research</q-item-tile>
+              </q-item-main>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
       </q-toolbar>
     </q-layout-header>
 
@@ -92,14 +107,15 @@ export default {
     return {
       leftDrawer: true,
       searchInput: '',
-      showAdd: false
+      showAdd: false,
+      selectedTopic: this.$selectedTopic.get()
     }
   },
-  firebase: function () {
-    return {
-      terms: this.firebase.searchTerms
-    }
-  },
+  // firebase: function () {
+  //   return {
+  //     terms: this.firebase.searchTerms
+  //   }
+  // },
   methods: {
     logout () {
       console.log('signing out')
@@ -154,6 +170,13 @@ export default {
     },
     closeAddModal (type, id) {
       this.showAdd = false
+    },
+    switchResearch () {
+      this.$router.push({ name: 'researchlist', params: { type: 'topics' } })
+    },
+    returnTopic () {
+      this.$router.push({ name: 'topic', params: { id: this.$selectedTopic.get().id } })
+      this.$selectedTopic.cancel()
     }
   }
 }
@@ -171,6 +194,10 @@ export default {
     min-width: 500px;
     width: 500px;
   }
+}
+
+@media screen and (min-width: 700px) {
+  /* Fix toolbar after this point... */
 }
 
 </style>

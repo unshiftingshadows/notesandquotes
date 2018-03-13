@@ -2,11 +2,16 @@
   <q-page padding>
     <div class="row gutter-md items-center">
       <div class="col-xs-12 justify-center">
-        <div class="q-video">
+        <!-- <div class="q-video">
           <span v-html="video.embedHTML"></span>
-        </div>
+        </div> -->
+        <q-video :src="video.embedURL" />
       </div>
       <div class="col-xs-12">
+        <span class="float-right" v-if="this.$selectedTopic.get()">
+          <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
+          <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
+        </span>
         <h3>{{ video.title }}</h3>
         <div class="row gutter-sm">
           <div class="col-12">
@@ -48,7 +53,9 @@ export default {
   data () {
     return {
       id: this.$route.params.id,
-      video: {},
+      video: {
+        embedURL: ''
+      },
       userData: {
         tags: [],
         notes: '',
@@ -68,6 +75,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.$selectedTopic.get())
     this.init()
   },
   methods: {
@@ -112,6 +120,19 @@ export default {
     },
     remove () {
       console.log('remove not implemented...')
+    },
+    showTopicAdd () {
+      return this.$selectedTopic.get() && !this.$selectedTopic.find(this.video._id)
+    },
+    topicAdd () {
+      var obj = {
+        topic: this.$selectedTopic.get().id,
+        media: this.video._id,
+        type: 'video'
+      }
+      this.database.add('resource', obj, (res) => {
+        this.$selectedTopic.add(this.video._id)
+      })
     }
   }
 }

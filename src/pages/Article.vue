@@ -1,20 +1,24 @@
 <template>
   <q-page padding>
-    <div class="row md-gutter justify-center">
+    <div class="row gutter-md justify-center">
       <div class="col-xs-12">
-        <h1>{{ article.title }} <a :href="article.url" target="_blank"><q-icon name="fa-link" /></a></h1>
+        <span class="float-right" v-if="this.$selectedTopic.get()">
+          <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
+          <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
+        </span>
+        <h3>{{ article.title }} <a :href="article.url" target="_blank"><q-icon name="fa-link" /></a></h3>
       </div>
       <div class="col-xs-12 col-md-10">
         <div class="article-content">
           <span v-html="article.html"></span>
         </div>
       </div>
-      <div class="row sm-gutter">
+      <div class="row gutter-sm">
         <div class="col-12">
           <q-input v-model="article.description" type="textarea" :max-height="100" :min-rows="2" float-label="Description" dark />
         </div>
         <div class="col-6">
-          <q-input v-model="article.author" float-label="Author" dark></q-input>
+          <q-chips-input v-model="article.author" float-label="Author" dark />
         </div>
         <div class="col-6">
           <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
@@ -48,8 +52,15 @@ export default {
   data () {
     return {
       id: this.$route.params.id,
-      article: {},
-      userData: {},
+      article: {
+        author: []
+      },
+      userData: {
+        tags: [],
+        notes: '',
+        rating: 0,
+        status: 'new'
+      },
       statusOptions: [
         {
           label: 'New',
@@ -107,6 +118,19 @@ export default {
     },
     remove () {
       console.log('remove not implemented...')
+    },
+    showTopicAdd () {
+      return this.$selectedTopic.get() && !this.$selectedTopic.find(this.article._id)
+    },
+    topicAdd () {
+      var obj = {
+        topic: this.$selectedTopic.get().id,
+        media: this.article._id,
+        type: 'article'
+      }
+      this.database.add('resource', obj, (res) => {
+        this.$selectedTopic.add(this.article._id)
+      })
     }
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
-    <h2>{{ type }}</h2>
-    <q-card inline v-if="type != 'notes' && type != 'research'" v-for="item in items" :key="item.id" v-bind:class="[type]" class="media-card">
+    <h3>{{ type }} <q-btn v-if="type == 'topics'" size="sm" icon="fa-plus" color="primary" @click.native="openAddTopic" /></h3>
+    <q-card inline v-if="type != 'notes' && type != 'topics'" v-for="item in items" :key="item._id" v-bind:class="[type]" class="media-card">
       <q-card-media>
         <img :src="item.thumbURL" :class="{ 'image-card': isImage }" @click="openItem(item._id)" />
         <q-card-title slot="overlay" v-if="type == 'books' || type == 'movies' || type == 'videos' || type == 'articles'">
@@ -10,7 +10,7 @@
           <q-icon slot="right" name="fa-ellipsis-v" color="white">
             <q-popover ref="popover">
               <q-list link class="no-border">
-                <q-item @click.native="openItem(item.id)">
+                <q-item @click.native="openItem(item._id)">
                   <q-item-main label="Details" />
                 </q-item>
               </q-list>
@@ -19,32 +19,34 @@
         </q-card-title>
       </q-card-media>
     </q-card>
-    <q-list v-if="type == 'notes'">
-      <q-item v-for="item in items" :key="item['.key']" link @click.native="openItem(item['.key'])">
+    <q-list v-if="type == 'notes' || type == 'topics'">
+      <q-item v-for="item in items" :key="item._id" link @click.native="openItem(item._id)">
         <q-item-main>
           <q-item-tile label>{{ item.title }}</q-item-tile>
-          <q-item-tile sublabel>{{ item.text }}</q-item-tile>
+          <q-item-tile sublabel v-if="type == 'notes'">{{ item.text }}</q-item-tile>
         </q-item-main>
       </q-item>
     </q-list>
-    <q-list v-if="type == 'research'">
-      <q-item v-for="item in items" :key="item['.key']" link @click.native="openItem(item['.key'])">
-        <q-item-main>
-          <q-item-tile label>{{ item.title }}</q-item-tile>
-          <q-item-tile sublabel>{{ item.dateModified }}</q-item-tile>
-        </q-item-main>
-      </q-item>
-    </q-list>
+    <q-modal ref="addModal" v-model="showTopic" content-classes="add-media-modal">
+      <!-- <q-icon name="fa-close" size="2rem" @click.native="closeAddModal" class="float-right cursor-pointer" /> -->
+      <add-research :modal-fin="closeAddTopic" ref="addTopic" />
+    </q-modal>
   </q-page>
 </template>
 
 <script>
+import AddResearch from 'components/AddResearch.vue'
+
 export default {
+  components: {
+    AddResearch
+  },
   data () {
     return {
       type: this.$route.params.type,
       items: [],
-      isImage: this.$route.params.type === 'images'
+      isImage: this.$route.params.type === 'images',
+      showTopic: false
     }
   },
   // firestore () {
@@ -63,13 +65,6 @@ export default {
   },
   methods: {
     init (type) {
-      // this.$binding('items', this.firebase.store.collection(type))
-      //   .then((observe) => {
-      //     console.log('list loaded', type)
-      //   }).catch((err) => {
-      //     console.error('list not loaded', type)
-      //     console.error(err.message)
-      //   })
       this.database.list(type, (data) => {
         console.log('data', data, this)
         this.items = data
@@ -97,13 +92,21 @@ export default {
         case 'notes':
           this.$router.push({ name: 'note', params: { id: id } })
           break
-        case 'research':
-          this.$router.push({ name: 'research', params: { id: id } })
+        case 'topics':
+          this.$router.push({ name: 'topic', params: { id: id } })
           break
         default:
           console.error('Incorrect item type for routing')
           break
       }
+    },
+    openAddTopic () {
+      console.log(this.$refs)
+      this.showTopic = true
+      this.$refs.addTopic.reset()
+    },
+    closeAddTopic () {
+      this.showTopic = false
     }
   }
 }
@@ -112,7 +115,7 @@ export default {
 <style>
 
 .media-card {
-  margin: 10px 0px;
+  margin: 10px;
   width: 100%;
 }
 
@@ -127,6 +130,11 @@ export default {
   opacity: 1;
 }
 
+.add-media-modal {
+  padding: 30px;
+  width: 100%;
+}
+
 @media screen and (min-width: 800px) {
   .books, .movies, .images, .videos, .articles {
     margin: 10px;
@@ -136,10 +144,14 @@ export default {
 
 @media screen and (min-width: 1200px) {
   .books, .movies {
-    width: 23%;
+    width: 23% !important;
   }
   .images, .videos, .articles {
-    width: 31%;
+    width: 31% !important;
+  }
+  .add-media-modal {
+    min-width: 500px;
+    width: 500px;
   }
 }
 

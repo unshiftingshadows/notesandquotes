@@ -2,6 +2,10 @@
   <q-page padding>
     <div class="row gutter-md items-center">
       <div class="col-12">
+        <span class="float-right" v-if="this.$selectedTopic.get()">
+          <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
+          <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
+        </span>
         <h3>{{ title }}</h3>
       </div>
       <div class="col-12">
@@ -109,6 +113,19 @@ export default {
             }
           }
         ]
+      })
+    },
+    showTopicAdd () {
+      return this.$selectedTopic.get() && !this.$selectedTopic.find(this.id)
+    },
+    topicAdd () {
+      var obj = {
+        topic: this.$selectedTopic.get().id,
+        media: this.id,
+        type: 'note'
+      }
+      this.database.add('resource', obj, (res) => {
+        this.$selectedTopic.add(this.id)
       })
     }
   }

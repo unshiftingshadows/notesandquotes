@@ -5,6 +5,10 @@
         <img :src="book.thumbURL" width="100%" />
       </div>
       <div class="col-xs-12 col-md-8">
+        <span class="float-right" v-if="this.$selectedTopic.get()">
+          <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
+          <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
+        </span>
         <h3>{{ book.title }}</h3>
         <div class="row gutter-sm">
           <div class="col-6">
@@ -132,6 +136,19 @@ export default {
     },
     remove () {
       console.log('Remove not implemented...')
+    },
+    showTopicAdd () {
+      return this.$selectedTopic.get() && !this.$selectedTopic.find(this.book._id)
+    },
+    topicAdd () {
+      var obj = {
+        topic: this.$selectedTopic.get().id,
+        media: this.book._id,
+        type: 'book'
+      }
+      this.database.add('resource', obj, (res) => {
+        this.$selectedTopic.add(this.book._id)
+      })
     }
   }
 }

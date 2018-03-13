@@ -126,6 +126,23 @@ function remove (id, type, callback) {
   })
 }
 
+function resources (type, id, callback) {
+  firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+    axios.post('/resources', {
+      id: id,
+      type: type,
+      token: idToken
+    })
+      .then((res) => {
+        // console.log(res.data.resources)
+        callback(res.data.resources)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  })
+}
+
 export default ({ app, router, Vue }) => {
   Vue.prototype.database = {
     list: list,
@@ -134,6 +151,7 @@ export default ({ app, router, Vue }) => {
     add: add,
     update: update,
     lookup: lookup,
-    remove: remove
+    remove: remove,
+    resources: resources
   }
 }
