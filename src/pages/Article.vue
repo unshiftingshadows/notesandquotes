@@ -104,8 +104,8 @@ export default {
     },
     update () {
       var resource = {
-        description: this.image.description,
-        author: this.image.author
+        description: this.article.description,
+        author: this.article.author
       }
       this.database.update(this.id, 'article', resource, { updateUserData: false }, (res) => {
         Notify.create({

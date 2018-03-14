@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- <q-btn color="negative" @click="fixQuotes">Fix Quotes</q-btn> -->
-    <h4>Quote List <small><q-icon color="primary" name="fa-plus" @click.native="openAdd" class="cursor-pointer" /> <q-icon color="primary" name="fa-toggle-down" @click.native="toggleQuotes" class="cursor-pointer" /></small></h4>
+    <h4>Snippet List <small><q-icon color="primary" name="fa-plus" @click.native="openAdd" class="cursor-pointer" /> <q-icon color="primary" name="fa-toggle-down" @click.native="toggleQuotes" class="cursor-pointer" /></small></h4>
     <q-list separator multiline v-if="showQuotes">
       <quote-list-item
         v-for="quote in quotes"
@@ -16,7 +16,21 @@
     </q-list>
     <q-modal v-model="addOpen" content-classes="add-quote-modal">
       <!-- <q-icon name="fa-close" size="2rem" @click.native="closeAdd" class="float-right cursor-pointer" /> -->
-      <quote-form ref="quoteForm" :mediaid="id" :media="mediaObj" :media-type="type" form-type="Add" :modal-fin="closeAdd" />
+      <q-tabs position="top" align="center" no-pane-border>
+        <q-tab default slot="title" label="Quote" name="quote-tab" icon="fa-quote-right" />
+        <q-tab slot="title" label="Outline" name="outline-tab" icon="fa-list-ul" />
+        <q-tab slot="title" label="Idea" name="idea-tab" icon="fa-lightbulb" />
+        <q-tab slot="title" name="close" icon="fa-close" :hidden="!isMobile" disable @click.native="closeAdd" />
+        <q-tab-pane name="quote-tab">
+          <quote-form ref="quoteForm" :mediaid="id" :media="mediaObj" :media-type="type" form-type="Add" :modal-fin="closeAdd" />
+        </q-tab-pane>
+        <q-tab-pane name="outline-tab">
+          <outline-form ref="outlineForm" :mediaid="id" :media="mediaObj" :media-type="type" form-type="Add" :modal-fin="closeAdd" />
+        </q-tab-pane>
+        <q-tab-pane name="idea-tab">
+          <idea-form ref="ideaForm" :mediaid="id" :media="mediaObj" :media-type="type" form-type="Add" :modal-fin="closeAdd" />
+        </q-tab-pane>
+      </q-tabs>
     </q-modal>
   </div>
 </template>
@@ -24,11 +38,15 @@
 <script>
 import QuoteListItem from 'components/QuoteListItem.vue'
 import QuoteForm from 'components/QuoteForm.vue'
+import OutlineForm from 'components/OutlineForm.vue'
+import IdeaForm from 'components/IdeaForm.vue'
 
 export default {
   components: {
     QuoteListItem,
-    QuoteForm
+    QuoteForm,
+    OutlineForm,
+    IdeaForm
   },
   props: ['mediaid', 'media', 'mediaType'],
   data () {
@@ -39,7 +57,7 @@ export default {
       quotes: [],
       addOpen: false,
       showQuotes: false,
-      quotesCollection: this.firebase.quotes
+      isMobile: this.$q.platform.is.mobile
     }
   },
   watch: {
@@ -51,15 +69,12 @@ export default {
     }
   },
   mounted () {
-    // this.$binding('quotes', this.quotesCollection.where('mediaid', '==', this.mediaid).where('user', '==', this.firebase.auth.currentUser.uid).orderBy('location'))
-    //   .then((quotes) => {
-    //     // console.log(quotes)
-    //   })
     this.init()
+    console.log(this.$q.platform)
   },
   methods: {
     init () {
-      this.database.quotes(this.id, (data) => {
+      this.database.snippets('quotes', this.id, (data) => {
         this.quotes = data
       })
     },
@@ -82,8 +97,9 @@ export default {
 <style>
 
 .add-quote-modal {
-  padding: 30px;
+  /* padding: 30px; */
   width: 100%;
+  height: 100%;
 }
 
 @media screen and (min-width: 1200px) {

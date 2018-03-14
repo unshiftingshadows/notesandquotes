@@ -7,7 +7,7 @@
         <q-card-title slot="overlay" v-if="type == 'books' || type == 'movies' || type == 'videos' || type == 'articles'">
           {{ item.title }}
           <span v-for="author in item.author" :key="author.fullName" slot="subtitle">{{ author.fullName }}</span>
-          <q-icon slot="right" name="fa-ellipsis-v" color="white">
+          <!-- <q-icon slot="right" name="fa-ellipsis-v" color="white">
             <q-popover ref="popover">
               <q-list link class="no-border">
                 <q-item @click.native="openItem(item._id)">
@@ -15,7 +15,7 @@
                 </q-item>
               </q-list>
             </q-popover>
-          </q-icon>
+          </q-icon> -->
         </q-card-title>
       </q-card-media>
     </q-card>
@@ -117,10 +117,10 @@ export default {
 .media-card {
   margin: 10px;
   width: 100%;
+  cursor: pointer;
 }
 
 .image-card {
-  cursor: pointer;
   opacity: 0.5;
   transition: opacity .25s;
   transition-timing-function: ease-in;

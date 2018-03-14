@@ -37,9 +37,10 @@ function view (type, id, callback) {
   })
 }
 
-function quotes (id, callback) {
+function snippets (type, id, callback) {
   firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
-    axios.post('/quotes', {
+    axios.post('/snippets', {
+      type: type,
       id: id,
       token: idToken
     })
@@ -147,7 +148,7 @@ export default ({ app, router, Vue }) => {
   Vue.prototype.database = {
     list: list,
     view: view,
-    quotes: quotes,
+    snippets: snippets,
     add: add,
     update: update,
     lookup: lookup,

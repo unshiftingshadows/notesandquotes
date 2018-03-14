@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-btn color="primary" label="Refresh" @click.native="init" />
-    <q-list no-border>
+    <!-- <q-list no-border>
       <q-collapsible label="Books">
         <media-list :items="resType('book')" type="books" />
       </q-collapsible>
@@ -23,7 +23,9 @@
       <q-collapsible label="Quotes">
         <media-list :items="resType('quote')" type="quotes" />
       </q-collapsible>
-    </q-list>
+    </q-list> -->
+    <q-resize-observable @resize="onResize" />
+    <media-list :items="resources" :width="size.width/2" />
   </div>
 </template>
 
@@ -38,7 +40,11 @@ export default {
   data () {
     return {
       id: this.$route.params.id,
-      resources: []
+      resources: [],
+      size: {
+        width: 0,
+        height: 0
+      }
     }
   },
   mounted () {
@@ -58,6 +64,9 @@ export default {
         }
       })
       return items
+    },
+    onResize (size) {
+      this.size = size
     }
   }
 }

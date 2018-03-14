@@ -56,6 +56,8 @@ module.exports = function (ctx) {
         'QLayoutDrawer',
         'QLayoutFooter',
         'QTabs',
+        'QTab',
+        'QTabPane',
         'QRouteTab',
         'QScrollArea',
         'QPageContainer',
@@ -83,9 +85,11 @@ module.exports = function (ctx) {
         'QSelect',
         'QRating',
         'QChipsInput',
+        'QCheckbox',
         'QModal',
         'QPopover',
-        'QVideo'
+        'QVideo',
+        'QResizeObservable'
       ],
       directives: [
         'Ripple'

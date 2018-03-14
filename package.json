@@ -14,8 +14,10 @@
     "axios": "^0.17.1",
     "firebase": "^4.10.1",
     "fuse.js": "^3.2.0",
+    "vue-bricks": "^1.0.7",
     "vue-firestore": "^0.2.6",
     "vue-simplemde": "^0.4.6",
+    "vue-waterfall": "^1.0.6",
     "vuefire": "^1.4.5",
     "vuelidate": "^0.6.2"
   },

@@ -2,10 +2,10 @@
   <div style="padding: 30px">
     <div class="row gutter-sm">
       <div class="col-12">
-        <h4>{{ formType }} Quote</h4>
+        <h4>{{ formType }} Idea</h4>
       </div>
       <div class="col-12">
-        <q-input v-model="text" type="textarea" :max-height="100" :min-rows="3" float-label="Quote Text" autofocus ref="quoteInput" dark />
+        <q-input v-model="text" type="textarea" :max-height="100" :min-rows="3" float-label="Idea Text" autofocus ref="ideaInput" dark />
       </div>
       <div class="col-12" v-if="type === 'movie'">
         <q-input v-model="character" float-label="Character" dark />
@@ -27,13 +27,16 @@
           dark
         />
       </div>
-      <div class="col-12">
-        <q-input type="number" v-model="location" v-if="locationType !== 'None'" :float-label="locationType" dark frame-color="secondary" />
+      <div class="col-6">
+        <q-input type="number" v-model="location.start" v-if="locationType !== 'None'" :float-label="locationType + ' Start'" dark frame-color="secondary" />
+      </div>
+      <div class="col-6">
+        <q-input type="number" v-model="location.end" v-if="locationType !== 'None'" :float-label="locationType + ' End'" dark frame-color="secondary" />
       </div>
       <div class="col-12">
-        <q-btn v-if="formType === 'Add'" color="primary" @click="addQuote">Add</q-btn>
-        <q-btn v-if="formType === 'Edit'" color="primary" @click="updateQuote">Update</q-btn>
-        <q-btn v-if="formType === 'Edit'" color="negative" @click="removeQuote">Remove</q-btn>
+        <q-btn v-if="formType === 'Add'" color="primary" @click="addIdea">Add</q-btn>
+        <q-btn v-if="formType === 'Edit'" color="primary" @click="updateIdea">Update</q-btn>
+        <q-btn v-if="formType === 'Edit'" color="negative" @click="removeIdea">Remove</q-btn>
       </div>
     </div>
   </div>
@@ -43,7 +46,7 @@
 import * as Bible from '../statics/bible.js'
 
 export default {
-  props: ['mediaid', 'media', 'mediaType', 'quote', 'modalFin', 'formType'],
+  props: ['mediaid', 'media', 'mediaType', 'idea', 'modalFin', 'formType'],
   data () {
     return {
       id: this.mediaid,
@@ -53,7 +56,10 @@ export default {
       bibleRefs: [],
       notes: '',
       locationType: 'None',
-      location: 0,
+      location: {
+        start: 0,
+        end: 0
+      },
       selectOptions: [
         {
           label: 'None',
@@ -78,10 +84,10 @@ export default {
       ],
       mediaObj: this.media,
       type: this.mediaType,
-      quoteObj: this.quote,
+      ideaObj: this.idea,
       bibleRefsParse: [],
       // bibleTags: {},
-      quotesCollection: this.firebase.quotes
+      ideasCollection: this.firebase.ideas
     }
   },
   watch: {
@@ -115,24 +121,24 @@ export default {
         this.notes = ''
         this.locationType = 'None'
         this.location = 0
-        this.$refs.quoteInput.focus()
+        this.$refs.ideaInput.focus()
       } else {
-        this.text = this.quote.text
-        this.tags = this.quote.tags
+        this.text = this.idea.text
+        this.tags = this.idea.tags
         this.bibleRefs = []
-        this.quote.bibleRefs.forEach((ref) => {
+        this.idea.bibleRefs.forEach((ref) => {
           if (ref !== {}) {
             this.bibleRefs.push(Bible.stringBibleRef(ref))
           }
         })
-        this.notes = this.quote.notes
-        this.locationType = this.quote.locationType
-        this.location = this.quote.location
+        this.notes = this.idea.notes
+        this.locationType = this.idea.locationType
+        this.location = this.idea.location
       }
     },
-    addQuote () {
-      console.log('add quote')
-      var quoteObj = {
+    addIdea () {
+      console.log('add idea')
+      var ideaObj = {
         location: this.location,
         locationType: this.locationType,
         mediaType: this.type,
@@ -143,16 +149,16 @@ export default {
         notes: this.notes
       }
       if (this.type === 'movie') {
-        quoteObj.character = this.character
+        ideaObj.character = this.character
       }
-      this.database.add('quote', quoteObj, (res) => {
+      this.database.add('idea', ideaObj, (res) => {
         console.log(res)
         this.modalFin()
       })
     },
-    updateQuote () {
-      console.log('update quote')
-      var quoteObj = {
+    updateIdea () {
+      console.log('update idea')
+      var ideaObj = {
         location: this.location,
         locationType: this.locationType,
         text: this.text,
@@ -161,17 +167,17 @@ export default {
         notes: this.notes
       }
       if (this.type === 'movie') {
-        quoteObj.author = this.character
+        ideaObj.author = this.character
       }
-      console.log(this.quote)
-      this.database.update(this.quote._id, 'quote', quoteObj, { updateUserData: false }, (res) => {
+      console.log(this.idea)
+      this.database.update(this.idea._id, 'idea', ideaObj, { updateUserData: false }, (res) => {
         console.log(res)
         this.modalFin()
       })
     },
-    removeQuote () {
-      console.log('remove quote')
-      this.database.remove(this.quote._id, 'quote', (res) => {
+    removeIdea () {
+      console.log('remove idea')
+      this.database.remove(this.idea._id, 'idea', (res) => {
         console.log(res)
         this.modalFin()
       })

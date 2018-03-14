@@ -28,10 +28,32 @@
         </div>
       </div>
       <div v-if="selectType === 'movie'" class="col-12">
-        <q-input v-model="movieTitle" float-label="Title" dark />
-        <q-input v-model="movieDirector" float-label="Director" dark />
-        <q-input v-model="movieYear" float-label="Year" dark />
-        <q-btn color="primary" class="float-right" @click.native="addMovie">Add Movie</q-btn>
+        <div class="row gutter-sm">
+          <div class="col-12">
+            <q-input v-model="movieSearch" :loading="movieResultsLoading" @keyup.enter="moviedbSearch" float-label="Search Movies" dark />
+          </div>
+          <div class="col-12">
+            <!-- <q-list separator link>
+              <q-item v-for="result in movieResults" :key="result.id" @click.native="addMovie(result)">
+                <q-item-main>
+                  <q-item-tile label>{{ result.title }}</q-item-tile>
+                  <q-item-tile sublabel><span v-for="author in result.volumeInfo.authors" :key="author">{{ author }}</span></q-item-tile>
+                </q-item-main>
+              </q-item>
+            </q-list> -->
+            <q-card inline v-for="result in movieResults" :key="result.id" @click.native="addMovie(result)" style="cursor: pointer; width: 47%; min-height: 200px; margin: 5px;">
+              <q-card-media v-if="result.poster_path !== null">
+                <img :src="'https://image.tmdb.org/t/p/w500' + result.poster_path" />
+                <q-card-title slot="overlay">
+                  {{ result.title }}
+                </q-card-title>
+              </q-card-media>
+              <q-card-title v-if="result.poster_path === null">
+                {{ result.title }}
+              </q-card-title>
+            </q-card>
+          </div>
+        </div>
       </div>
       <div v-if="selectType === 'article'" class="col-12">
         <div class="row gutter-sm">
@@ -99,9 +121,9 @@ function initialState () {
     bookResults: [],
     bookResultsLoading: false,
     bookSearch: '',
-    movieTitle: '',
-    movieDirector: '',
-    movieYear: '',
+    movieSearch: '',
+    movieResultsLoading: false,
+    movieResults: [],
     articleURL: '',
     videoURL: '',
     imageType: 'wiki',
@@ -167,8 +189,11 @@ export default {
         this.bookResults = res.items
       })
     },
-    movieSearch () {
-      // TODO: After
+    moviedbSearch () {
+      this.database.lookup(this.movieSearch, 'movie', (res) => {
+        console.log(res)
+        this.movieResults = res.results
+      })
     },
     addBook (book) {
       var bookObj = {
@@ -185,8 +210,21 @@ export default {
         this.$router.push({ name: 'book', params: { id: res._id } })
       })
     },
-    addMovie () {
+    addMovie (movie) {
       console.log('add movie')
+      var movieObj = {
+        moviedbid: movie.id
+      }
+      console.log(movieObj)
+      this.database.add('movie', movieObj, (res) => {
+        this.modalFin()
+        Notify.create({
+          message: 'Movie created!',
+          type: 'positive',
+          position: 'bottom-left'
+        })
+        this.$router.push({ name: 'movie', params: { id: res._id } })
+      })
     },
     addImage () {
       console.log('add image')

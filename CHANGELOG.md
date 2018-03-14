@@ -1,6 +1,28 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.10 - 2018-03-14
+### Added
+- IdeaForm to add and edit Ideas
+- OutlineForm to add and edit Outlines
+    - Outline functionality not finished
+- Movies can now be added
+- Movie page
+- Movie route
+- Started ability to add pieces to outlines
+- added blank ResourcePreview component for viewing resources from within a Topic
+
+### Changed
+- changed quotes function in database plugin to snippets, edited other places used accordingly
+- cleaned up some unused commented code in QuoteForm and QuoteList
+- Topic resources are now uncategorized
+- Topic resources use a waterfall/bricks layout
+- fixed incorrect variables in Article.vue
+- removed need to click through menu to view media when listing Books, Movies, Articles, and Movies
+
+### Issues
+- Topic resources waterfall/brick layout needs to be "packed" on every load...but can't seem to be done programatically without some user interaction
+
 ## 0.0.9 - 2018-03-13
 ### Added
 - new Research routes for List and Topic
