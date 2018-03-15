@@ -1,46 +1,46 @@
 <template>
   <q-item>
     <q-item-main>
-      <p>{{ quote.text }}</p>
-      <q-item-tile sublabel lines="3" v-if="quote.notes !== '' && showNotes">{{ quote.notes }}</q-item-tile>
+      <p>{{ idea.text }}</p>
+      <q-item-tile sublabel lines="3" v-if="idea.notes !== '' && showNotes">{{ idea.notes }}</q-item-tile>
       <br/>
       <span>
         <q-icon name="fa-pencil" @click.native="openEdit" class="cursor-pointer" />&nbsp;
       </span>
-      <span v-if="showLocation && quote.locationType !== 'None'" class="q-item-sublabel">
-        {{ quote.locationType }} {{ quote.location }}&nbsp;
+      <span v-if="showLocation && idea.locationType !== 'None'" class="q-item-sublabel">
+        {{ idea.locationType }} {{ idea.location }}&nbsp;
       </span>
       <span v-if="showTags">
-        <q-chip v-for="tag in quote.tags" small color="primary" :key="tag">{{ tag }}</q-chip>
+        <q-chip v-for="tag in idea.tags" small color="primary" :key="tag">{{ tag }}</q-chip>
       </span>
-      <span v-if="showTags && showBible && quote.tags.length !== 0 && quote.bibleRefs.length !== 0">
+      <span v-if="showTags && showBible && idea.tags.length !== 0 && idea.bibleRefs.length !== 0">
          |
       </span>
       <span v-if="showBible">
-        <q-chip v-for="bibleRef in quote.bibleRefs" small color="secondary" :key="bibleRef._id">{{ refString(bibleRef) }}</q-chip>
+        <q-chip v-for="bibleRef in idea.bibleRefs" small color="secondary" :key="bibleRef._id">{{ refString(bibleRef) }}</q-chip>
       </span>
     </q-item-main>
     <q-item-side right v-if="showCover" style="margin: 20px">
       <q-item-tile v-if="showCover" image>
-        <img :src="quote.mediaImageURL" class="cover-image" />
+        <img :src="idea.mediaImageURL" class="cover-image" />
       </q-item-tile>
-      <q-item-tile sublabel lines="1" v-if="showAuthor">{{ quote.author }}</q-item-tile>
+      <q-item-tile sublabel lines="1" v-if="showAuthor">{{ idea.author }}</q-item-tile>
     </q-item-side>
-    <q-modal v-model="editOpen" content-classes="edit-quote-modal">
+    <q-modal v-model="editOpen" content-classes="edit-idea-modal">
       <q-icon name="fa-close" size="2rem" @click="editOpen=false" class="float-right cursor-pointer" />
-      <quote-form ref="quoteForm" :quote="quote" :modal-fin="closeEdit" form-type="Edit" />
+      <idea-form ref="ideaForm" :idea="idea" :modal-fin="closeEdit" form-type="Edit" />
     </q-modal>
   </q-item>
 </template>
 
 <script>
-import QuoteForm from 'components/QuoteForm.vue'
+import IdeaForm from 'components/IdeaForm.vue'
 
 export default {
   components: {
-    QuoteForm
+    IdeaForm
   },
-  props: ['quoteObj', 'cover', 'author', 'location', 'tags', 'bible', 'notes'],
+  props: ['ideaObj', 'cover', 'author', 'location', 'tags', 'bible', 'notes'],
   data () {
     return {
       showCover: (this.cover === ''),
@@ -50,12 +50,12 @@ export default {
       showBible: (this.bible === ''),
       showNotes: (this.notes === ''),
       editOpen: false,
-      quote: this.quoteObj
+      idea: this.ideaObj
     }
   },
   watch: {
-    quote (value) {
-      this.quote = value
+    idea (value) {
+      this.idea = value
     }
   },
   methods: {
@@ -72,10 +72,10 @@ export default {
     },
     openEdit () {
       this.editOpen = true
-      this.$refs.quoteForm.init(false)
+      this.$refs.ideaForm.init(false)
     },
     closeEdit (value) {
-      this.quote = value
+      this.idea = value
       this.editOpen = false
     }
   }
@@ -91,12 +91,12 @@ export default {
   max-width: 50%;
   max-height: 50%;
 }
-.edit-quote-modal {
+.edit-idea-modal {
   padding: 30px;
   width: 100%;
 }
 @media screen and (min-width: 1200px) {
-  .edit-quote-modal {
+  .edit-idea-modal {
     min-width: 500px;
     width: 500px;
   }

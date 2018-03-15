@@ -17,7 +17,7 @@
         <q-input v-model="conclusion" type="textarea" :max-height="100" :min-rows="2" float-label="Conclusion" dark />
       </div>
       <div class="col-12">
-        <markdown-editor v-model="notes" :configs="editorConfigs" />
+        <markdown-editor v-model="notes" :configs="editorConfigs" @input="handleInput" ref="markdown" />
       </div>
       <div class="col-12">
         <q-chips-input v-model="tags" float-label="Tags" dark />
@@ -37,6 +37,7 @@
 import { Notify, Dialog } from 'quasar'
 import * as Bible from '../statics/bible.js'
 import markdownEditor from 'vue-simplemde/src/markdown-editor'
+import CodeMirror from 'codemirror'
 
 var refVal = Bible.refValidate
 
@@ -67,6 +68,11 @@ export default {
       }
     }
   },
+  computed: {
+    simplemde () {
+      return this.$refs.markdown.simplemde
+    }
+  },
   watch: {
     bibleRefs: function (userRefList) {
       this.bibleRefObj = {}
@@ -83,6 +89,42 @@ export default {
   },
   methods: {
     init () {
+      this.simplemde.codemirror.setOption('extraKeys', {
+        Tab: function (cm) {
+          console.log(cm)
+          cm.replaceSelection('new')
+        }
+      })
+      // Defines the mode...
+      // Right now it just selects things with double-quotes
+      // It also overrides the spellcheck mode that I was enjoying
+      // How to get 2 modes active
+      CodeMirror.defineMode('strings', function () {
+        return {
+          startState: function () { return { inString: false } },
+          token: function (stream, state) {
+            // If a string starts here
+            if (!state.inString && stream.peek() === '"') {
+              stream.next()
+              state.inString = true
+            }
+
+            if (state.inString) {
+              if (stream.skipTo('"')) {
+                stream.next()
+                state.inString = false
+              } else {
+                stream.skipToEnd()
+              }
+              return 'string'
+            } else {
+              stream.skipTo('"') || stream.skipToEnd()
+              return null
+            }
+          }
+        }
+      })
+      this.simplemde.codemirror.setOption('mode', 'strings')
       this.database.view('topic', this.id, (resource, userData) => {
         this.title = resource.title
         this.notes = resource.notes
@@ -145,12 +187,20 @@ export default {
     },
     openAdd () {
       console.log('not implemented...')
+    },
+    handleInput (value, other) {
+      console.log(value)
+      console.log(this.$refs)
     }
   }
 }
 </script>
 
 <style>
+
+.cm-string {
+  background: red;
+}
 
 /*@import '~simplemde/dist/simplemde.min.css'*/
 @import '../statics/simplemde-dark-theme.min.css'

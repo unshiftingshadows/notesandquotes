@@ -69,6 +69,7 @@ module.exports = function (ctx) {
         'QBtnGroup',
         'QIcon',
         'QChip',
+        'QSpinner',
         'QList',
         'QListHeader',
         'QCollapsible',

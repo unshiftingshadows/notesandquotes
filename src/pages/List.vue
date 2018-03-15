@@ -1,32 +1,51 @@
 <template>
   <q-page padding>
     <h3>{{ type }} <q-btn v-if="type == 'topics'" size="sm" icon="fa-plus" color="primary" @click.native="openAddTopic" /></h3>
-    <q-card inline v-if="type != 'notes' && type != 'topics'" v-for="item in items" :key="item._id" v-bind:class="[type]" class="media-card">
-      <q-card-media>
-        <img :src="item.thumbURL" :class="{ 'image-card': isImage }" @click="openItem(item._id)" />
-        <q-card-title slot="overlay" v-if="type == 'books' || type == 'movies' || type == 'videos' || type == 'articles'">
-          {{ item.title }}
-          <span v-for="author in item.author" :key="author.fullName" slot="subtitle">{{ author.fullName }}</span>
-          <!-- <q-icon slot="right" name="fa-ellipsis-v" color="white">
-            <q-popover ref="popover">
-              <q-list link class="no-border">
-                <q-item @click.native="openItem(item._id)">
-                  <q-item-main label="Details" />
-                </q-item>
-              </q-list>
-            </q-popover>
-          </q-icon> -->
-        </q-card-title>
-      </q-card-media>
-    </q-card>
-    <q-list v-if="type == 'notes' || type == 'topics'">
-      <q-item v-for="item in items" :key="item._id" link @click.native="openItem(item._id)">
-        <q-item-main>
-          <q-item-tile label>{{ item.title }}</q-item-tile>
-          <q-item-tile sublabel v-if="type == 'notes'">{{ item.text }}</q-item-tile>
-        </q-item-main>
-      </q-item>
-    </q-list>
+    <div v-if="loading">
+      <q-spinner color="primary" class="absolute-center" size="3rem" />
+    </div>
+    <div v-if="!loading">
+      <q-card inline v-if="type != 'images' && type != 'notes' && type != 'topics'" v-for="item in items" :key="item._id" v-bind:class="[type]" class="media-card" @click.native="openItem(item._id)">
+        <q-card-media>
+          <img :src="item.thumbURL" :class="{ 'image-card': isImage }" />
+          <q-card-title slot="overlay" v-if="type == 'books' || type == 'movies' || type == 'videos' || type == 'articles'">
+            {{ item.title }}
+            <span v-for="author in item.author" :key="author.fullName" slot="subtitle">{{ author.fullName }}</span>
+            <!-- <q-icon slot="right" name="fa-ellipsis-v" color="white">
+              <q-popover ref="popover">
+                <q-list link class="no-border">
+                  <q-item @click.native="openItem(item._id)">
+                    <q-item-main label="Details" />
+                  </q-item>
+                </q-list>
+              </q-popover>
+            </q-icon> -->
+          </q-card-title>
+        </q-card-media>
+      </q-card>
+      <bricks
+        ref="bricks"
+        :data="items"
+        :sizes="sizes"
+        v-if="type == 'images'"
+      >
+        <template slot-scope="scope">
+          <q-card inline v-bind:class="[type]" class="media-card" @click.native="openItem(scope.item._id)">
+            <q-card-media>
+              <img :src="scope.item.thumbURL" class="image-card" />
+            </q-card-media>
+          </q-card>
+        </template>
+      </bricks>
+      <q-list v-if="type == 'notes' || type == 'topics'">
+        <q-item v-for="item in items" :key="item._id" link @click.native="openItem(item._id)">
+          <q-item-main>
+            <q-item-tile label>{{ item.title }}</q-item-tile>
+            <q-item-tile sublabel v-if="type == 'notes'">{{ item.text }}</q-item-tile>
+          </q-item-main>
+        </q-item>
+      </q-list>
+    </div>
     <q-modal ref="addModal" v-model="showTopic" content-classes="add-media-modal">
       <!-- <q-icon name="fa-close" size="2rem" @click.native="closeAddModal" class="float-right cursor-pointer" /> -->
       <add-research :modal-fin="closeAddTopic" ref="addTopic" />
@@ -35,10 +54,12 @@
 </template>
 
 <script>
+import Bricks from 'vue-bricks'
 import AddResearch from 'components/AddResearch.vue'
 
 export default {
   components: {
+    Bricks,
     AddResearch
   },
   data () {
@@ -46,7 +67,14 @@ export default {
       type: this.$route.params.type,
       items: [],
       isImage: this.$route.params.type === 'images',
-      showTopic: false
+      showTopic: false,
+      loading: false,
+      sizes: [
+        { columns: 1, gutter: 20 },
+        { mq: '800px', columns: 2, gutter: 20 },
+        { mq: '1400px', columns: 3, gutter: 20 },
+        { mq: '1800px', columns: 4, gutter: 20 }
+      ]
     }
   },
   // firestore () {
@@ -65,9 +93,11 @@ export default {
   },
   methods: {
     init (type) {
+      this.loading = true
       this.database.list(type, (data) => {
         console.log('data', data, this)
         this.items = data
+        this.loading = false
       })
     },
     openItem (id) {
@@ -116,7 +146,7 @@ export default {
 
 .media-card {
   margin: 10px;
-  width: 100%;
+  width: 95%;
   cursor: pointer;
 }
 
@@ -135,8 +165,12 @@ export default {
   width: 100%;
 }
 
+.images {
+  width: 100%;
+}
+
 @media screen and (min-width: 800px) {
-  .books, .movies, .images, .videos, .articles {
+  .books, .movies, .videos, .articles {
     margin: 10px;
     width: 47%;
   }
@@ -146,8 +180,11 @@ export default {
   .books, .movies {
     width: 23% !important;
   }
-  .images, .videos, .articles {
+  .videos, .articles {
     width: 31% !important;
+  }
+  .images {
+    width: 300px;
   }
   .add-media-modal {
     min-width: 500px;

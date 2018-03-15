@@ -147,7 +147,7 @@ export default {
       }
       this.database.add('quote', quoteObj, (res) => {
         console.log(res)
-        this.modalFin()
+        this.modalFin(res, 'quote')
       })
     },
     updateQuote () {
@@ -166,7 +166,7 @@ export default {
       console.log(this.quote)
       this.database.update(this.quote._id, 'quote', quoteObj, { updateUserData: false }, (res) => {
         console.log(res)
-        this.modalFin()
+        this.modalFin(res)
       })
     },
     removeQuote () {

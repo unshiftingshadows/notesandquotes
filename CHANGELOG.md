@@ -1,6 +1,25 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.11 - 2018-03-15
+### Added
+- OutlineListItem - QCard
+- IdeaListItem - QItem
+- some functionality to ResourcePreview for Topics
+    - shows thumbURL, title, and snippets list for books and movies
+- bricks layout to Outline list items
+- bricks layout to Images list
+- started playing with getting clickable references/comments in Topic notes
+
+### Changed
+- fixed some spacing issues on OutlineForm
+- Outline points is now just an array of strings -- (fixed huge issues with updating the database)
+- After updating a quote or outline, the listed version is updated with the new data after clicking Update
+- After adding a new quote, outline, or idea, it is appended to the local list rather than needing a full refresh of snippets from the server
+
+### Issues
+- certain fields are automatically populated from the form for quotes, outlines, and ideas onto the listed versions...but if those changes aren't updated, they continue to show in the listed versions
+
 ## 0.0.10 - 2018-03-14
 ### Added
 - IdeaForm to add and edit Ideas

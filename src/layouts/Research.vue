@@ -79,17 +79,17 @@ export default {
   },
   // name: 'LayoutName',
   mounted () {
-    console.log(this.$route)
+    console.log(this.$q)
   },
   watch: {
     '$route.name': function (val) {
       this.pageType = val
-      this.rightDrawer = val !== 'researchlist'
+      this.rightDrawer = val !== 'researchlist' && this.$q.platform.is.desktop
     }
   },
   data () {
     return {
-      rightDrawer: this.$route.name !== 'researchlist',
+      rightDrawer: this.$route.name !== 'researchlist' && this.$q.platform.is.desktop,
       pageType: this.$route.name,
       resourceList: []
     }

@@ -85,9 +85,8 @@ export default {
       mediaObj: this.media,
       type: this.mediaType,
       ideaObj: this.idea,
-      bibleRefsParse: [],
+      bibleRefsParse: []
       // bibleTags: {},
-      ideasCollection: this.firebase.ideas
     }
   },
   watch: {
@@ -121,7 +120,6 @@ export default {
         this.notes = ''
         this.locationType = 'None'
         this.location = 0
-        this.$refs.ideaInput.focus()
       } else {
         this.text = this.idea.text
         this.tags = this.idea.tags
@@ -153,7 +151,7 @@ export default {
       }
       this.database.add('idea', ideaObj, (res) => {
         console.log(res)
-        this.modalFin()
+        this.modalFin(res, 'idea')
       })
     },
     updateIdea () {
@@ -172,7 +170,7 @@ export default {
       console.log(this.idea)
       this.database.update(this.idea._id, 'idea', ideaObj, { updateUserData: false }, (res) => {
         console.log(res)
-        this.modalFin()
+        this.modalFin(res)
       })
     },
     removeIdea () {

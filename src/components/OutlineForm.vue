@@ -20,16 +20,14 @@
             <q-item-side v-if="!numbered" icon="fa-chevron-right" />
             <q-item-side v-if="numbered" :letter="(index+1).toString()" />
             <q-item-main>
-              <q-input placeholder="Something..." ref="outlinepoint" v-model="item.point" dark />
-              <q-input v-model="item.note" type="textarea" :max-height="100" :min-rows="2" placeholder="Note..." ref="outlinenote" dark />
+              <q-input placeholder="Something..." ref="outlinepoint" v-model="points[index]" dark />
             </q-item-main>
           </q-item>
           <q-item>
             <q-item-side v-if="!numbered" icon="fa-chevron-right" />
             <q-item-side v-if="numbered" :letter="(points.length+1).toString()" />
             <q-item-main>
-              <q-input placeholder="Something..." ref="newpoint" v-model="newPoint.point" dark @keyup.enter="addPoint" :after="[{ icon: 'fa-plus', handler () {addPoint()} }]" />
-              <q-input v-model="item.note" type="textarea" :max-height="100" :min-rows="2" placeholder="Note..." ref="outlinenote" dark />
+              <q-input placeholder="Something..." ref="newpoint" v-model="newPoint" dark @keyup.enter="addPoint" :after="[{ icon: 'fa-plus', handler () {addPoint()} }]" />
             </q-item-main>
           </q-item>
         </q-list>
@@ -112,10 +110,7 @@ export default {
       outlineObj: this.outline,
       bibleRefsParse: [],
       // bibleTags: {}
-      newPoint: {
-        point: '',
-        note: ''
-      }
+      newPoint: ''
     }
   },
   watch: {
@@ -142,10 +137,8 @@ export default {
     init (isNew) {
       if (isNew) {
         console.log('new')
-        this.points = [{
-          point: '',
-          note: ''
-        }]
+        this.title = ''
+        this.points = []
         this.character = ''
         this.tags = []
         this.bibleRefs = []
@@ -156,7 +149,9 @@ export default {
           end: 0
         }
         this.numbered = false
+        this.newPoint = ''
       } else {
+        this.title = this.outline.title
         this.points = this.outline.points
         this.tags = this.outline.tags
         this.bibleRefs = []
@@ -169,11 +164,13 @@ export default {
         this.locationType = this.outline.locationType
         this.location = this.outline.location
         this.numbered = this.outline.numbered
+        this.newPoint = ''
       }
     },
     addOutline () {
       console.log('add outline')
       var outlineObj = {
+        title: this.title,
         location: this.location,
         locationType: this.locationType,
         mediaType: this.type,
@@ -189,12 +186,13 @@ export default {
       }
       this.database.add('outline', outlineObj, (res) => {
         console.log(res)
-        this.modalFin()
+        this.modalFin(res, 'outline')
       })
     },
     updateOutline () {
       console.log('update outline')
       var outlineObj = {
+        title: this.title,
         location: this.location,
         locationType: this.locationType,
         points: this.points,
@@ -209,7 +207,7 @@ export default {
       console.log(this.outline)
       this.database.update(this.outline._id, 'outline', outlineObj, { updateUserData: false }, (res) => {
         console.log(res)
-        this.modalFin()
+        this.modalFin(res)
       })
     },
     removeOutline () {
@@ -225,10 +223,7 @@ export default {
       //   point.focused = false
       // })
       this.points.push(this.newPoint)
-      this.newPoint = {
-        point: '',
-        note: ''
-      }
+      this.newPoint = ''
       this.$refs.newpoint.focus()
     }
   }
