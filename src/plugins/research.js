@@ -32,6 +32,20 @@ function addResource (res) {
   }
 }
 
+var events = {}
+
+function on (event, callback) {
+  console.log('event', event)
+  console.log('callback', callback)
+  events[event] = callback
+  console.log('events', events)
+}
+
+function emit (event, data) {
+  console.log('function?', events[event])
+  events[event](data)
+}
+
 // leave the export, even if you don't use it
 export default ({ app, router, Vue }) => {
   Vue.prototype.$selectedTopic = {
@@ -40,5 +54,9 @@ export default ({ app, router, Vue }) => {
     cancel: cancelState,
     find: findResource,
     add: addResource
+  }
+  Vue.prototype.$currentTopic = {
+    on: on,
+    emit: emit
   }
 }

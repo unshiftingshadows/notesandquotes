@@ -30,6 +30,11 @@
         <q-btn color="negative" class="float-right" @click="remove">Remove</q-btn>
       </div>
     </div>
+
+    <q-modal ref="addModal" v-model="showAdd" content-classes="add-media-modal">
+      <q-icon name="fa-close" size="2rem" @click.native="closeAdd" class="float-right cursor-pointer" />
+      <add :modal-fin="closeAdd" ref="addMedia" />
+    </q-modal>
   </q-page>
 </template>
 
@@ -37,12 +42,14 @@
 import { Notify, Dialog } from 'quasar'
 import * as Bible from '../statics/bible.js'
 import markdownEditor from 'vue-simplemde/src/markdown-editor'
-import CodeMirror from 'codemirror'
+import Add from 'components/AddMedia.vue'
+// import CodeMirror from 'codemirror'
 
 var refVal = Bible.refValidate
 
 export default {
   components: {
+    Add,
     markdownEditor
   },
   data () {
@@ -58,7 +65,8 @@ export default {
       resources: [],
       editorConfigs: {
         toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image']
-      }
+      },
+      showAdd: false
     }
   },
   validations: {
@@ -99,32 +107,40 @@ export default {
       // Right now it just selects things with double-quotes
       // It also overrides the spellcheck mode that I was enjoying
       // How to get 2 modes active
-      CodeMirror.defineMode('strings', function () {
-        return {
-          startState: function () { return { inString: false } },
-          token: function (stream, state) {
-            // If a string starts here
-            if (!state.inString && stream.peek() === '"') {
-              stream.next()
-              state.inString = true
-            }
+      // CodeMirror.defineMode('strings', function () {
+      //   return {
+      //     startState: function () { return { inString: false } },
+      //     token: function (stream, state) {
+      //       // If a string starts here
+      //       if (!state.inString && stream.peek() === '"') {
+      //         stream.next()
+      //         state.inString = true
+      //       }
 
-            if (state.inString) {
-              if (stream.skipTo('"')) {
-                stream.next()
-                state.inString = false
-              } else {
-                stream.skipToEnd()
-              }
-              return 'string'
-            } else {
-              stream.skipTo('"') || stream.skipToEnd()
-              return null
-            }
-          }
-        }
-      })
-      this.simplemde.codemirror.setOption('mode', 'strings')
+      //       if (state.inString) {
+      //         if (stream.skipTo('"')) {
+      //           stream.next()
+      //           state.inString = false
+      //         } else {
+      //           stream.skipToEnd()
+      //         }
+      //         return 'string'
+      //       } else {
+      //         stream.skipTo('"') || stream.skipToEnd()
+      //         return null
+      //       }
+      //     }
+      //   }
+      // })
+      // this.simplemde.codemirror.setOption('mode', 'strings')
+      // NOTE: Currently not being used -- in the future, moving to
+      // quill might be a better option for adding resources inline
+      //
+      // Otherwise, a complicated bracket notation could be used...
+      // but would really mess up the visual of adding notes cleanly
+      // and quickly
+      //
+      // Same needs to be considered when implementing in the Builder
       this.database.view('topic', this.id, (resource, userData) => {
         this.title = resource.title
         this.notes = resource.notes
@@ -186,7 +202,10 @@ export default {
       this.$router.push({ name: 'dashboard' })
     },
     openAdd () {
-      console.log('not implemented...')
+      this.showAdd = true
+    },
+    closeAdd () {
+      this.showAdd = false
     },
     handleInput (value, other) {
       console.log(value)

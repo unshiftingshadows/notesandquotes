@@ -33,7 +33,7 @@
     </q-layout-header>
 
     <!-- (Optional) The Footer -->
-    <q-layout-footer>
+    <!-- <q-layout-footer>
       <q-toolbar>
         <q-btn
           flat
@@ -47,7 +47,7 @@
           <span slot="subtitle">Subtile</span>
         </q-toolbar-title>
       </q-toolbar>
-    </q-layout-footer>
+    </q-layout-footer> -->
 
     <!-- (Optional) A Drawer; you can add one more with side="right" or change this one's side -->
     <q-layout-drawer

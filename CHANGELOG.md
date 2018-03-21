@@ -1,6 +1,15 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.12 - 2018-03-21
+### Added
+- Quotes, Outlines, and Ideas can now be selected when using the resource select option in Topic
+
+### Changed
+- Updated AddMedia to be usable within a Topic
+- Combined all AddMedia functions into a single function
+- Adding Media from a Topic now adds it to the database as well as to the Topic's media list
+
 ## 0.0.11 - 2018-03-15
 ### Added
 - OutlineListItem - QCard

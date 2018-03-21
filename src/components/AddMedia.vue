@@ -16,14 +16,27 @@
             <q-input v-model="bookSearch" :loading="bookResultsLoading" @keyup.enter="googleBookSearch" float-label="Search Books" dark />
           </div>
           <div class="col-12">
-            <q-list separator link>
-              <q-item v-for="result in bookResults" :key="result.id" @click.native="addBook(result)">
+            <!-- <q-list separator link>
+              <q-item v-for="result in bookResults" :key="result.id" @click.native="add(result)">
                 <q-item-main>
                   <q-item-tile label>{{ result.volumeInfo.title }}</q-item-tile>
                   <q-item-tile sublabel><span v-for="author in result.volumeInfo.authors" :key="author">{{ author }}</span></q-item-tile>
                 </q-item-main>
               </q-item>
-            </q-list>
+            </q-list> -->
+            <q-card inline v-for="result in bookResults" :key="result.id" @click.native="add(result)" style="cursor: pointer; width: 47%; min-height: 200px; margin: 5px;">
+              <q-card-media v-if="result.volumeInfo.imageLinks.thumbnail !== null">
+                <img :src="result.volumeInfo.imageLinks.thumbnail" />
+                <q-card-title slot="overlay">
+                  {{ result.volumeInfo.title }}
+                  <span slot="subtitle">{{ result.volumeInfo.authors[0] }}</span>
+                </q-card-title>
+              </q-card-media>
+              <q-card-title v-if="result.volumeInfo.imageLinks.thumbnail === null">
+                {{ result.volumeInfo.title }}
+                <span slot="subtitle">{{ result.volumeInfo.authors[0] }}</span>
+              </q-card-title>
+            </q-card>
           </div>
         </div>
       </div>
@@ -41,7 +54,7 @@
                 </q-item-main>
               </q-item>
             </q-list> -->
-            <q-card inline v-for="result in movieResults" :key="result.id" @click.native="addMovie(result)" style="cursor: pointer; width: 47%; min-height: 200px; margin: 5px;">
+            <q-card inline v-for="result in movieResults" :key="result.id" @click.native="add(result)" style="cursor: pointer; width: 47%; min-height: 200px; margin: 5px;">
               <q-card-media v-if="result.poster_path !== null">
                 <img :src="'https://image.tmdb.org/t/p/w500' + result.poster_path" />
                 <q-card-title slot="overlay">
@@ -61,7 +74,7 @@
             <q-input v-model="articleURL" float-label="URL" dark />
           </div>
           <div class="col-12">
-            <q-btn color="primary" class="float-right" @click.native="addArticle">Add Article</q-btn>
+            <q-btn color="primary" class="float-right" @click.native="add">Add Article</q-btn>
           </div>
         </div>
       </div>
@@ -82,7 +95,7 @@
             <q-input v-model="imageURL" v-if="imageType ==='link'" float-label="URL" dark />
           </div>
           <div class="col-12">
-            <q-btn color="primary" class="float-right" @click.native="addImage">Add Image</q-btn>
+            <q-btn color="primary" class="float-right" @click.native="add">Add Image</q-btn>
           </div>
         </div>
       </div>
@@ -92,7 +105,7 @@
             <q-input v-model="videoURL" float-label="URL" dark />
           </div>
           <div class="col-12">
-            <q-btn color="primary" class="float-right" @click.native="addVideo">Add Video</q-btn>
+            <q-btn color="primary" class="float-right" @click.native="add">Add Video</q-btn>
           </div>
         </div>
       </div>
@@ -102,7 +115,7 @@
             <q-input v-model="noteTitle" float-label="Title" dark />
           </div>
           <div class="col-12">
-            <q-btn color="primary" class="float-right" @click.native="addNote">Add Note</q-btn>
+            <q-btn color="primary" class="float-right" @click.native="add">Add Note</q-btn>
           </div>
         </div>
       </div>
@@ -195,102 +208,76 @@ export default {
         this.movieResults = res.results
       })
     },
-    addBook (book) {
-      var bookObj = {
-        googleid: book.id
+    add (item) {
+      var obj = {}
+      switch (this.selectType) {
+        case 'book':
+          obj = {
+            googleid: item.id
+          }
+          break
+        case 'movie':
+          obj = {
+            moviedbid: item.id
+          }
+          break
+        case 'image':
+          obj = {
+            title: this.imageWikiTitle,
+            type: this.imageType,
+            url: this.imageURL
+          }
+          break
+        case 'video':
+          obj = {
+            url: this.videoURL
+          }
+          break
+        case 'article':
+          obj = {
+            url: this.articleURL
+          }
+          break
+        case 'note':
+          obj = {
+            title: this.noteTitle
+          }
+          break
+        default:
+          console.error('incorrect add type')
       }
-      console.log(bookObj)
-      this.database.add('book', bookObj, (res) => {
-        this.modalFin()
-        Notify.create({
-          message: 'Book created!',
-          type: 'positive',
-          position: 'bottom-left'
+      if (obj !== {}) {
+        this.database.add(this.selectType, obj, (res) => {
+          this.modalFin()
+          Notify.create({
+            message: this.selectType + ' created!',
+            type: 'positive',
+            position: 'bottom-left'
+          })
+          if (this.$route.name === 'topic') {
+            console.log('topic page')
+            var obj = {
+              topic: this.$route.params.id,
+              media: res._id,
+              type: this.selectType
+            }
+            console.log(obj)
+            this.database.add('resource', obj, (resource) => {
+              Notify.create({
+                message: 'Added as resource to topic!',
+                type: 'positive',
+                position: 'bottom-left'
+              })
+              this.$currentTopic.emit('new-resource', {
+                media: res,
+                type: this.selectType
+              })
+            })
+          } else {
+            this.$router.push({ name: this.selectType, params: { id: res._id } })
+          }
         })
-        this.$router.push({ name: 'book', params: { id: res._id } })
-      })
-    },
-    addMovie (movie) {
-      console.log('add movie')
-      var movieObj = {
-        moviedbid: movie.id
       }
-      console.log(movieObj)
-      this.database.add('movie', movieObj, (res) => {
-        this.modalFin()
-        Notify.create({
-          message: 'Movie created!',
-          type: 'positive',
-          position: 'bottom-left'
-        })
-        this.$router.push({ name: 'movie', params: { id: res._id } })
-      })
-    },
-    addImage () {
-      console.log('add image')
-      var imageObj = {
-        title: this.imageWikiTitle,
-        type: this.imageType,
-        url: this.imageURL
-      }
-      console.log(imageObj)
-      this.database.add('image', imageObj, (res) => {
-        this.modalFin()
-        Notify.create({
-          message: 'Image created!',
-          type: 'positive',
-          position: 'bottom-left'
-        })
-        this.$router.push({ name: 'image', params: { id: res._id } })
-      })
-    },
-    addVideo () {
-      console.log('add video')
-      var videoObj = {
-        url: this.videoURL
-      }
-      console.log(videoObj)
-      this.database.add('video', videoObj, (res) => {
-        this.modalFin()
-        Notify.create({
-          message: 'Video created!',
-          type: 'positive',
-          position: 'bottom-left'
-        })
-        this.$router.push({ name: 'video', params: { id: res._id } })
-      })
-    },
-    addArticle () {
-      console.log('add article')
-      var articleObj = {
-        url: this.articleURL
-      }
-      console.log(articleObj)
-      this.database.add('article', articleObj, (res) => {
-        this.modalFin()
-        Notify.create({
-          message: 'Article created!',
-          type: 'positive',
-          position: 'bottom-left'
-        })
-        this.$router.push({ name: 'article', params: { id: res._id } })
-      })
-    },
-    addNote () {
-      console.log('add note')
-      var noteObj = {
-        title: this.noteTitle
-      }
-      console.log(noteObj)
-      this.database.add('note', noteObj, (res) => {
-        this.modalFin()
-        Notify.create({
-          message: 'Note created!',
-          type: 'positive',
-          position: 'bottom-left'
-        })
-        this.$router.push({ name: 'note', params: { id: res._id } })
-      })
     }
   }
 }

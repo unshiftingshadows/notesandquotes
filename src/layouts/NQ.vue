@@ -168,7 +168,7 @@ export default {
       this.showAdd = true
       this.$refs.addMedia.reset()
     },
-    closeAddModal (type, id) {
+    closeAddModal () {
       this.showAdd = false
     },
     switchResearch () {

@@ -32,6 +32,9 @@ export default {
       this.database.resources('topic', this.id, (res) => {
         this.resources = res
       })
+      this.$currentTopic.on('new-resource', (data) => {
+        this.resources.push(data)
+      })
     },
     resType (type) {
       var items = []

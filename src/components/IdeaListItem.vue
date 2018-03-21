@@ -4,6 +4,14 @@
       <p>{{ idea.text }}</p>
       <q-item-tile sublabel lines="3" v-if="idea.notes !== '' && showNotes">{{ idea.notes }}</q-item-tile>
       <br/>
+      <span v-if="this.$selectedTopic.get()">
+        <span v-if="showTopicAdd()">
+          <q-chip icon="fa-plus" @click.native="topicAdd" class="cursor-pointer" color="primary" small>Add</q-chip>&nbsp;
+        </span>
+        <span v-if="!showTopicAdd()">
+          <q-chip icon="fa-check" @click.native="topicAdd" color="positive" small>Added!</q-chip>&nbsp;
+        </span>
+      </span>
       <span>
         <q-icon name="fa-pencil" @click.native="openEdit" class="cursor-pointer" />&nbsp;
       </span>
@@ -77,6 +85,19 @@ export default {
     closeEdit (value) {
       this.idea = value
       this.editOpen = false
+    },
+    showTopicAdd () {
+      return this.$selectedTopic.get() && !this.$selectedTopic.find(this.idea._id)
+    },
+    topicAdd () {
+      var obj = {
+        topic: this.$selectedTopic.get().id,
+        media: this.idea._id,
+        type: 'idea'
+      }
+      this.database.add('resource', obj, (res) => {
+        this.$selectedTopic.add(this.idea._id)
+      })
     }
   }
 }
