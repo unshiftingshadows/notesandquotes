@@ -1,6 +1,10 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.13 - 2018-03-23
+### Changed
+- fixed the BibleRef duplication issue when watching for changes
+
 ## 0.0.12 - 2018-03-21
 ### Added
 - Quotes, Outlines, and Ideas can now be selected when using the resource select option in Topic
