@@ -1,7 +1,7 @@
 import axios from 'axios'
 import firebase from 'firebase'
 
-axios.defaults.baseURL = 'https://database.unshiftingshadows.com'
+axios.defaults.baseURL = 'https://database.unshiftingshadows.com/nq'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
 function list (type, callback) {

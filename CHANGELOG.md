@@ -1,6 +1,10 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.14 - 2018-03-23
+### Changed
+- updated database plugin to use new database url
+
 ## 0.0.13 - 2018-03-23
 ### Changed
 - fixed the BibleRef duplication issue when watching for changes
