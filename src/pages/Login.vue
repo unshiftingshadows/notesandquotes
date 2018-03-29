@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <q-card class="absolute-center" style="width:500px">
+    <q-card class="absolute-center login-card">
       <q-card-title align="center">
         <h4>Login</h4>
       </q-card-title>
@@ -81,4 +81,15 @@ export default {
 </script>
 
 <style>
+
+.login-card {
+  width: 100%
+}
+
+@media screen and (min-width: 800px) {
+  .login-card {
+    width: 500px;
+  }
+}
+
 </style>

@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.17.1",
-    "firebase": "^4.10.1",
+    "firebase": "^4.12.0",
     "fuse.js": "^3.2.0",
     "vue-bricks": "^1.0.7",
     "vue-firestore": "^0.2.6",
