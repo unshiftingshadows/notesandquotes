@@ -119,6 +119,44 @@
           </div>
         </div>
       </div>
+      <div v-if="selectType === 'document'" class="col-12">
+        <div class="row gutter-sm">
+          <div class="col-12">
+            <q-btn>Upload</q-btn>
+          </div>
+          <div class="col-12">
+            <q-btn color="primary" class="float-right">Add Document</q-btn>
+          </div>
+        </div>
+      </div>
+      <div v-if="selectType === 'discourse'" class="col-12">
+        <div class="row gutter-sm">
+          <div class="col-12">
+            <q-input v-model="discourseTitle" float-label="Title" dark />
+          </div>
+          <div class="col-12">
+            <q-btn color="primary" class="float-right" @click.native="add">Add Discourse</q-btn>
+          </div>
+        </div>
+      </div>
+      <div v-if="selectType === 'composition'" class="col-12">
+        <div class="row gutter-sm">
+          <div class="col-12">
+            <q-input v-model="compositionTitle" float-label="Title" dark />
+          </div>
+          <div class="col-12">
+            <q-select
+              v-model="compositionType"
+              float-label="Composition Type"
+              :options="compositionSelectOptions"
+              dark
+            />
+          </div>
+          <div class="col-12">
+            <q-btn color="primary" class="float-right" @click.native="add">Add Composition</q-btn>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -157,6 +195,20 @@ function initialState () {
     imageWikiTitle: '',
     imageURL: '',
     noteTitle: '',
+    documentRef: '',
+    discourseTitle: '',
+    compositionTitle: '',
+    compositionType: 'song',
+    compositionSelectOptions: [
+      {
+        label: 'Song',
+        value: 'song'
+      },
+      {
+        label: 'Poem',
+        value: 'poem'
+      }
+    ],
     selectType: '',
     selectOptions: [
       {
@@ -182,6 +234,18 @@ function initialState () {
       {
         label: 'Note',
         value: 'note'
+      },
+      {
+        label: 'Document',
+        value: 'document'
+      },
+      {
+        label: 'Discourse',
+        value: 'discourse'
+      },
+      {
+        label: 'Composition',
+        value: 'composition'
       }
     ]
   }
@@ -241,6 +305,20 @@ export default {
         case 'note':
           obj = {
             title: this.noteTitle
+          }
+          break
+        case 'document':
+          obj = {}
+          break
+        case 'discourse':
+          obj = {
+            title: this.discourseTitle
+          }
+          break
+        case 'composition':
+          obj = {
+            title: this.compositionTitle,
+            type: this.compositionType
           }
           break
         default:
