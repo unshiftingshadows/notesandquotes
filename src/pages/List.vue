@@ -37,7 +37,7 @@
           </q-card>
         </template>
       </bricks>
-      <q-list v-if="type == 'notes' || type == 'topics'">
+      <q-list v-if="type == 'notes' || type == 'topics' || type == 'documents' || type == 'discourses' || type == 'compositions'">
         <q-item v-for="item in items" :key="item._id" link @click.native="openItem(item._id)">
           <q-item-main>
             <q-item-tile label>{{ item.title }}</q-item-tile>
@@ -121,6 +121,15 @@ export default {
           break
         case 'notes':
           this.$router.push({ name: 'note', params: { id: id } })
+          break
+        case 'documents':
+          this.$router.push({ name: 'document', params: { id: id } })
+          break
+        case 'discourses':
+          this.$router.push({ name: 'discourse', params: { id: id } })
+          break
+        case 'compositions':
+          this.$router.push({ name: 'composition', params: { id: id } })
           break
         case 'topics':
           this.$router.push({ name: 'topic', params: { id: id } })

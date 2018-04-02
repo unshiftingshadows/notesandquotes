@@ -72,6 +72,18 @@
           <q-item-side icon="fa-sticky-note" />
           <q-item-main label="Notes" />
         </q-item>
+        <q-item :to="{ name: 'list', params: { type: 'documents' }}">
+          <q-item-side icon="fa-file" />
+          <q-item-main label="Documents" />
+        </q-item>
+        <q-item :to="{ name: 'list', params: { type: 'discourses' }}">
+          <q-item-side icon="fa-comment" />
+          <q-item-main label="Discourses" />
+        </q-item>
+        <q-item :to="{ name: 'list', params: { type: 'compositions' }}">
+          <q-item-side icon="fa-music" />
+          <q-item-main label="Compositions" />
+        </q-item>
         <q-item to="/settings">
           <q-item-side icon="fa-cog" />
           <q-item-main label="Settings" />

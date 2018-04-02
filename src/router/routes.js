@@ -11,9 +11,10 @@ export default [
       { path: 'image/:id', name: 'image', component: () => import('pages/Image') },
       { path: 'video/:id', name: 'video', component: () => import('pages/Video') },
       { path: 'article/:id', name: 'article', component: () => import('pages/Article') },
-      { path: 'note/:id', name: 'note', component: () => import('pages/Note') }
-      // { path: 'document/:id', name: 'document', component: () => import('pages/Document') },
-      // { path: 'discourse/:id', name: 'discourse', component: () => import('pages/Discourse') },
+      { path: 'note/:id', name: 'note', component: () => import('pages/Note') },
+      { path: 'document/:id', name: 'document', component: () => import('pages/Document') },
+      { path: 'discourse/:id', name: 'discourse', component: () => import('pages/Discourse') },
+      { path: 'composition/:id', name: 'composition', component: () => import('pages/Composition') }
     ],
     meta: {
       requiresAuth: true

@@ -49,6 +49,18 @@
           notes
         />
       </q-list>
+      <h5>Illustrations</h5>
+      <q-list separator multiline>
+        <illustration-list-item
+          v-for="illustration in illustrations"
+          v-bind:illustrationObj="illustration"
+          v-bind:key="illustration.id"
+          location
+          tags
+          bible
+          notes
+        />
+      </q-list>
     </div>
     <q-modal v-model="addOpen" content-classes="add-quote-modal">
       <!-- <q-icon name="fa-close" size="2rem" @click.native="closeAdd" class="float-right cursor-pointer" /> -->
@@ -56,6 +68,7 @@
         <q-tab default slot="title" label="Quote" name="quote-tab" icon="fa-quote-right" />
         <q-tab slot="title" label="Outline" name="outline-tab" icon="fa-list-ul" />
         <q-tab slot="title" label="Idea" name="idea-tab" icon="fa-lightbulb" />
+        <q-tab slot="title" label="Illustration" name="illustration-tab" icon="fa-info" />
         <q-tab slot="title" name="close" icon="fa-close" :hidden="!isMobile" disable @click.native="closeAdd" />
         <q-tab-pane name="quote-tab">
           <quote-form ref="quoteForm" :mediaid="id" :media="mediaObj" :media-type="type" form-type="Add" :modal-fin="closeAdd" />
@@ -65,6 +78,9 @@
         </q-tab-pane>
         <q-tab-pane name="idea-tab">
           <idea-form ref="ideaForm" :mediaid="id" :media="mediaObj" :media-type="type" form-type="Add" :modal-fin="closeAdd" />
+        </q-tab-pane>
+        <q-tab-pane name="illustration-tab">
+          <illustration-form ref="illustrationForm" :mediaid="id" :media="mediaObj" :media-type="type" form-type="Add" :modal-fin="closeAdd" />
         </q-tab-pane>
       </q-tabs>
     </q-modal>
@@ -79,6 +95,7 @@ import IdeaListItem from 'components/IdeaListItem.vue'
 import QuoteForm from 'components/QuoteForm.vue'
 import OutlineForm from 'components/OutlineForm.vue'
 import IdeaForm from 'components/IdeaForm.vue'
+import IllustrationForm from 'components/IllustrationForm.vue'
 
 export default {
   components: {
@@ -88,7 +105,8 @@ export default {
     IdeaListItem,
     QuoteForm,
     OutlineForm,
-    IdeaForm
+    IdeaForm,
+    IllustrationForm
   },
   props: ['mediaid', 'media', 'mediaType', 'modal'],
   data () {
@@ -99,6 +117,7 @@ export default {
       quotes: [],
       outlines: [],
       ideas: [],
+      illustrations: [],
       addOpen: false,
       showQuotes: false,
       loading: false,
@@ -141,6 +160,7 @@ export default {
         this.quotes = data[0]
         this.outlines = data[1]
         this.ideas = data[2]
+        this.illustrations = data[3]
         this.showQuotes = true
         this.loading = false
         // if (callback) callback()
@@ -158,6 +178,9 @@ export default {
         case 'idea-tab':
           this.$refs.ideaForm.init(true)
           break
+        case 'illustration-tab':
+          this.$refs.IllustrationForm.init(true)
+          break
         default:
           console.log('wrong tab...')
       }
@@ -173,6 +196,9 @@ export default {
           break
         case 'idea':
           this.ideas.push(newItem)
+          break
+        case 'illustration':
+          this.illustrations.push(newItem)
           break
         default:
           console.log('wrong new add...')

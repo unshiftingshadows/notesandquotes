@@ -1,6 +1,16 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.15 - 2018-04-02
+### Added
+- Document, Discourse, and Composition pages and routes
+- add options for Document, Discourse, and Composition
+- Illustration as a new snippet
+
+### Changed
+- changed test port to 3000
+- updated Login page to display properly on mobile
+
 ## 0.0.14 - 2018-03-23
 ### Changed
 - updated database plugin to use new database url
