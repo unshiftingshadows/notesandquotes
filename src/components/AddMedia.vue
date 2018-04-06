@@ -74,7 +74,7 @@
             <q-input v-model="articleURL" float-label="URL" dark />
           </div>
           <div class="col-12">
-            <q-btn color="primary" class="float-right" @click.native="add">Add Article</q-btn>
+            <q-btn color="primary" class="float-right" @click.native="add" disable="addDisabled">Add Article</q-btn>
           </div>
         </div>
       </div>
@@ -95,7 +95,7 @@
             <q-input v-model="imageURL" v-if="imageType ==='link'" float-label="URL" dark />
           </div>
           <div class="col-12">
-            <q-btn color="primary" class="float-right" @click.native="add">Add Image</q-btn>
+            <q-btn color="primary" class="float-right" @click.native="add" disable="addDisabled">Add Image</q-btn>
           </div>
         </div>
       </div>
@@ -105,7 +105,7 @@
             <q-input v-model="videoURL" float-label="URL" dark />
           </div>
           <div class="col-12">
-            <q-btn color="primary" class="float-right" @click.native="add">Add Video</q-btn>
+            <q-btn color="primary" class="float-right" @click.native="add" disable="addDisabled">Add Video</q-btn>
           </div>
         </div>
       </div>
@@ -115,7 +115,7 @@
             <q-input v-model="noteTitle" float-label="Title" dark />
           </div>
           <div class="col-12">
-            <q-btn color="primary" class="float-right" @click.native="add">Add Note</q-btn>
+            <q-btn color="primary" class="float-right" @click.native="add" disable="addDisabled">Add Note</q-btn>
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@
             <q-btn>Upload</q-btn>
           </div>
           <div class="col-12">
-            <q-btn color="primary" class="float-right">Add Document</q-btn>
+            <q-btn color="primary" class="float-right" disable="addDisabled">Add Document</q-btn>
           </div>
         </div>
       </div>
@@ -135,7 +135,7 @@
             <q-input v-model="discourseTitle" float-label="Title" dark />
           </div>
           <div class="col-12">
-            <q-btn color="primary" class="float-right" @click.native="add">Add Discourse</q-btn>
+            <q-btn color="primary" class="float-right" @click.native="add" disable="addDisabled">Add Discourse</q-btn>
           </div>
         </div>
       </div>
@@ -153,7 +153,7 @@
             />
           </div>
           <div class="col-12">
-            <q-btn color="primary" class="float-right" @click.native="add">Add Composition</q-btn>
+            <q-btn color="primary" class="float-right" @click.native="add" disable="addDisabled">Add Composition</q-btn>
           </div>
         </div>
       </div>
@@ -169,6 +169,7 @@ import { Notify } from 'quasar'
 
 function initialState () {
   return {
+    addDisabled: false,
     bookResults: [],
     bookResultsLoading: false,
     bookSearch: '',
@@ -273,6 +274,7 @@ export default {
       })
     },
     add (item) {
+      this.addDisabled = true
       var obj = {}
       switch (this.selectType) {
         case 'book':
