@@ -9,7 +9,7 @@
         <h3>{{ article.title }} <a :href="article.url" target="_blank"><q-icon name="fa-link" /></a></h3>
       </div>
       <div class="col-xs-12 col-md-10">
-        <div class="article-content">
+        <div class="article-content" @mouseup="checkSelected">
           <span v-html="article.html"></span>
         </div>
       </div>
@@ -38,17 +38,35 @@
         <media-notes :user-notes="userData.notes" :update="updateNotes" :mediaid="id" media-type="article"></media-notes>
       </div>
     </div>
+    <q-btn
+      round
+      color="primary"
+      @click="openAddQuote"
+      class="fixed"
+      icon="fas fa-plus"
+      style="right: 18px; bottom: 18px; z-index: 1000;"
+      v-if="showAddQuote"
+    />
+    <q-modal v-model="addQuoteOpen" content-classes="add-quote-modal">
+      <quote-form ref="quoteForm" :mediaid="id" :media="article" media-type="article" form-type="Add" :quote="{ text: selectedText }" :modal-fin="closeAddQuote" />
+    </q-modal>
   </q-page>
 </template>
 
 <script>
 import { Notify } from 'quasar'
+// import selection from 'vue-text-selection'
 import MediaNotes from 'components/MediaNotes.vue'
+import QuoteForm from 'components/QuoteForm.vue'
 
 export default {
   components: {
-    MediaNotes
+    MediaNotes,
+    QuoteForm
   },
+  // directives: {
+  //   selection
+  // },
   data () {
     return {
       id: this.$route.params.id,
@@ -70,7 +88,19 @@ export default {
           label: 'Read',
           value: 'read'
         }
-      ]
+      ],
+      selectedText: '',
+      showAddQuote: false,
+      addQuoteOpen: false
+    }
+  },
+  watch: {
+    'selectedText': function (text) {
+      if (text !== '') {
+        this.showAddQuote = true
+      } else {
+        this.showAddQuote = false
+      }
     }
   },
   mounted () {
@@ -131,10 +161,36 @@ export default {
       this.database.add('resource', obj, (res) => {
         this.$selectedTopic.add(this.article._id)
       })
+    },
+    checkSelected () {
+      if (window.getSelection) {
+        this.selectedText = window.getSelection().toString()
+      }
+    },
+    openAddQuote () {
+      this.addQuoteOpen = true
+    },
+    closeAddQuote () {
+      // NOTE: Would normally push a new item to the Quotes array here...
+      this.closeAddQuote = true
     }
   }
 }
 </script>
 
 <style>
+
+.add-quote-modal {
+  /* padding: 30px; */
+  width: 100%;
+  height: 100%;
+}
+
+@media screen and (min-width: 1200px) {
+  .add-quote-modal {
+    min-width: 500px;
+    width: 500px;
+  }
+}
+
 </style>

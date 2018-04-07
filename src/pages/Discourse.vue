@@ -15,6 +15,9 @@
           <div class="col-6">
             <q-input v-model="discourse.eventName" float-label="Event Name" dark />
           </div>
+          <div class="col-12">
+            <q-input v-model="discourse.url" float-label="Link" dark />
+          </div>
           <div class="col-6">
             <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
           </div>

@@ -1,6 +1,13 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.17 - 2018-04-06
+### Added
+- selection feature in Article to add Quotes -- still needs to finalize adding the Quote to the database
+
+### Changed
+- Discourse now has a space for a link
+
 ## 0.0.16 - 2018-04-06
 ### Fixed
 - when adding media, the add button is disabled after it is clicked the first time, preventing duplicate adds due to server process wait times

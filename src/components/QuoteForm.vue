@@ -47,7 +47,7 @@ export default {
   data () {
     return {
       id: this.mediaid,
-      text: '',
+      text: this.quote.text || '',
       character: '',
       tags: [],
       bibleRefs: [],
@@ -79,12 +79,14 @@ export default {
       mediaObj: this.media,
       type: this.mediaType,
       quoteObj: this.quote,
-      bibleRefsParse: [],
-      // bibleTags: {},
-      quotesCollection: this.firebase.quotes
+      bibleRefsParse: []
+      // bibleTags: {}
     }
   },
   watch: {
+    quote (value) {
+      this.text = value.text
+    },
     media (value) {
       this.mediaObj = value
     },
@@ -108,7 +110,11 @@ export default {
     init (isNew) {
       if (isNew) {
         console.log('new')
-        this.text = ''
+        if (this.quote) {
+          this.text = this.quote.text
+        } else {
+          this.text = ''
+        }
         this.character = ''
         this.tags = []
         this.bibleRefs = []
