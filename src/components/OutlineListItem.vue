@@ -39,7 +39,7 @@
       </span>
     </q-card-main>
     <q-modal v-model="editOpen" content-classes="edit-outline-modal">
-      <q-icon name="fa-close" size="2rem" @click="editOpen=false" class="float-right cursor-pointer" />
+      <q-icon name="fa-close" size="2rem" @click.native="editOpen=false" class="float-right cursor-pointer" />
       <outline-form ref="outlineForm" :outline.sync="outline" :modal-fin="closeEdit" form-type="Edit" />
     </q-modal>
   </q-card>

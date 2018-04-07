@@ -43,7 +43,7 @@
         </div>
       </div>
       <div class="col-12">
-        <quote-list :mediaid="id" :media="book" media-type="book"></quote-list>
+        <quote-list :mediaid="id" :media="book" media-type="book" />
       </div>
       <div class="col-12">
         <media-notes :user-notes.sync="userData.notes" :update="updateNotes" :mediaid="id" media-type="book"></media-notes>

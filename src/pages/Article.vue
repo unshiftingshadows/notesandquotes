@@ -9,7 +9,7 @@
         <h3>{{ article.title }} <a :href="article.url" target="_blank"><q-icon name="fa-link" /></a></h3>
       </div>
       <div class="col-xs-12 col-md-10">
-        <div class="article-content" @mouseup="checkSelected">
+        <div class="article-content">
           <span v-html="article.html"></span>
         </div>
       </div>
@@ -35,6 +35,9 @@
         </div>
       </div>
       <div class="col-12">
+        <quote-list :mediaid="id" :media="article" media-type="article" ref="snippets" />
+      </div>
+      <div class="col-12">
         <media-notes :user-notes="userData.notes" :update="updateNotes" :mediaid="id" media-type="article"></media-notes>
       </div>
     </div>
@@ -58,11 +61,13 @@ import { Notify } from 'quasar'
 // import selection from 'vue-text-selection'
 import MediaNotes from 'components/MediaNotes.vue'
 import QuoteForm from 'components/QuoteForm.vue'
+import QuoteList from 'components/QuoteList.vue'
 
 export default {
   components: {
     MediaNotes,
-    QuoteForm
+    QuoteForm,
+    QuoteList
   },
   // directives: {
   //   selection
@@ -108,6 +113,13 @@ export default {
   },
   methods: {
     init () {
+      document.addEventListener('selectionchange', () => {
+        if (window.getSelection().toString() === '' && this.$q.platform.is.mobile) {
+
+        } else {
+          this.selectedText = window.getSelection().toString()
+        }
+      })
       this.database.view('article', this.id, (resource, userData) => {
         this.article = resource
         this.userData = userData
@@ -162,17 +174,15 @@ export default {
         this.$selectedTopic.add(this.article._id)
       })
     },
-    checkSelected () {
-      if (window.getSelection) {
-        this.selectedText = window.getSelection().toString()
-      }
-    },
     openAddQuote () {
       this.addQuoteOpen = true
     },
-    closeAddQuote () {
+    closeAddQuote (newItem) {
       // NOTE: Would normally push a new item to the Quotes array here...
-      this.closeAddQuote = true
+      if (newItem && this.$refs.snippets.showQuotes) {
+        this.$refs.snippets.quotes.push(newItem)
+      }
+      this.addQuoteOpen = false
     }
   }
 }

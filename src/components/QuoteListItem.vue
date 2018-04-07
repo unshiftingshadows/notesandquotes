@@ -35,7 +35,7 @@
       <q-item-tile sublabel lines="1" v-if="showAuthor">{{ quote.author }}</q-item-tile>
     </q-item-side>
     <q-modal v-model="editOpen" content-classes="edit-quote-modal">
-      <q-icon name="fa-close" size="2rem" @click="editOpen=false" class="float-right cursor-pointer" />
+      <q-icon name="fa-close" size="2rem" @click.native="editOpen=false" class="float-right cursor-pointer" />
       <quote-form ref="quoteForm" :quote="quote" :modal-fin="closeEdit" form-type="Edit" />
     </q-modal>
   </q-item>

@@ -1,6 +1,14 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.18 - 2018-04-07
+### Changed
+- Articles now can add snippets
+- Quotes from Articles come from selecting text
+
+### Fixed
+- updated click functions for snippet list items to click.native
+
 ## 0.0.17 - 2018-04-06
 ### Added
 - selection feature in Article to add Quotes -- still needs to finalize adding the Quote to the database
