@@ -3,22 +3,28 @@
     <div class="row gutter-md items-center">
       <div class="col-xs-12 justify-center">
         <img :src="image.imageURL" class="responsive" />
+        <q-btn icon="fas fa-link" color="primary" class="float-right" @click.native="openLink">&nbsp;&nbsp;Original Image</q-btn>
       </div>
       <div class="col-xs-12">
         <span class="float-right" v-if="this.$selectedTopic.get()">
           <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
           <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
         </span>
-        <h3>{{ image.title }} <a :href="image.pageURL" target="_blank"><q-icon name="fa-link" /></a></h3>
         <div class="row gutter-sm">
+          <div class="col-12">
+            <h3>{{ image.title }}</h3>
+          </div>
           <div class="col-12">
             <q-input v-model="image.description" type="textarea" :max-height="100" :min-rows="2" float-label="Description" dark />
           </div>
-          <div class="col-6">
+          <div class="col-12">
             <q-chips-input v-model="image.author" float-label="Author" dark add-icon="fas fa-plus" />
           </div>
           <div class="col-6">
             <q-rating v-model="userData.rating" :max="5" icon="fa-star" size="1.5em" style="padding-top: 15px; padding-left: 20px" dark />
+          </div>
+          <div class="col-6">
+            <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
           </div>
           <div class="col-12">
             <q-chips-input v-model="userData.tags" float-label="Tags" dark />
@@ -41,7 +47,7 @@
 </template>
 
 <script>
-import { Notify } from 'quasar'
+import { Notify, openURL } from 'quasar'
 import MediaNotes from 'components/MediaNotes.vue'
 
 export default {
@@ -51,7 +57,9 @@ export default {
   data () {
     return {
       id: this.$route.params.id,
-      image: {},
+      image: {
+        author: []
+      },
       userData: {
         tags: [],
         notes: '',
@@ -112,6 +120,9 @@ export default {
         })
       })
       this.updateUserData()
+    },
+    openLink () {
+      openURL(this.image.pageURL)
     },
     remove () {
       console.log('remove not implemented...')

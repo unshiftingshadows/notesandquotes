@@ -83,7 +83,7 @@ export default {
   },
   watch: {
     bibleRefs: function (userRefList) {
-      this.bibleRefParse = {}
+      this.bibleRefParse = []
       userRefList.forEach((ref) => {
         var refObj = Bible.parseBibleRef(ref)
         this.bibleRefParse.push(refObj)
@@ -97,12 +97,12 @@ export default {
   },
   methods: {
     init () {
-      this.simplemde.codemirror.setOption('extraKeys', {
-        Tab: function (cm) {
-          console.log(cm)
-          cm.replaceSelection('new')
-        }
-      })
+      // this.simplemde.codemirror.setOption('extraKeys', {
+      //   Tab: function (cm) {
+      //     console.log(cm)
+      //     cm.replaceSelection('new')
+      //   }
+      // })
       // Defines the mode...
       // Right now it just selects things with double-quotes
       // It also overrides the spellcheck mode that I was enjoying
@@ -208,8 +208,8 @@ export default {
       this.showAdd = false
     },
     handleInput (value, other) {
-      console.log(value)
-      console.log(this.$refs)
+      // console.log(value)
+      // console.log(this.$refs)
     }
   }
 }

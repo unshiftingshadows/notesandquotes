@@ -30,7 +30,7 @@
         v-if="brickTypes.includes(type)"
       >
         <template slot-scope="scope">
-          <q-card inline v-bind:class="[type]" class="media-card" @click.native="openItem(scope.item._id)">
+          <q-card inline v-bind:class="[type]" @click.native="openItem(scope.item._id)">
             <q-card-media>
               <img :src="scope.item.thumbURL" class="image-card" />
             </q-card-media>
@@ -74,7 +74,7 @@ export default {
       showTopic: false,
       loading: false,
       sizes: [
-        { columns: 1, gutter: 20 },
+        { columns: 1, gutter: 10 },
         { mq: '800px', columns: 2, gutter: 20 },
         { mq: '1400px', columns: 3, gutter: 20 },
         { mq: '1800px', columns: 4, gutter: 20 }
@@ -161,12 +161,13 @@ export default {
 <style>
 
 .media-card {
-  margin: 10px;
-  width: 95%;
+  margin: 1%;
+  width: 98%;
   cursor: pointer;
 }
 
 .image-card {
+  cursor: pointer;
   opacity: 0.5;
   transition: opacity .25s;
   transition-timing-function: ease-in;
@@ -181,14 +182,19 @@ export default {
   width: 100%;
 }
 
+.books {
+  margin: 1%;
+  width: 48%;
+}
+
 .images {
   width: 100%;
 }
 
 @media screen and (min-width: 800px) {
   .books, .movies, .videos, .articles {
-    margin: 10px;
-    width: 47%;
+    margin: 1%;
+    width: 48%;
   }
 }
 

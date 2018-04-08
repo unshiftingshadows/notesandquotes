@@ -1,6 +1,26 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.1.0 - 2018-04-07
+WOHOO!! Finally made it to a version I can proudly say is usable! Version 0.1.0 still has a long ways to go before being ready for the world, but it is ready for single user testing. The main known issues are listed below, and there will surely be more to come...but it's workable! A big step forward :)
+
+### Added
+- manually updated version number shown in left drawer in NQ layout
+
+### Changed
+- margins and widths for Lists, books are now in 2 columns on small screens, margins are based on percentages to get a more consistent experience across devices
+- book cover images now display a much smaller thumbnail on mobile devices and small screens
+- rearranged fields on several Media screens for better viewing on mobile
+- QuoteList now uses buttons instead of icons for adding snippets and toggling all snippets
+- QuoteList now hides divs of snippets in which there are none
+- NQ Layout now keeps the left drawer sticky
+
+### Fixes
+- Topics and Notes now don't duplicate bibleRefs
+
+### Known Issues
+- sometimes images are not displaying in the List on mobile -- needs more testing
+
 ## 0.0.19 - 2018-04-07
 ### Added
 - get-video-id plugin for parsing video urls

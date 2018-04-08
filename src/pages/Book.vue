@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <div class="row gutter-md items-center">
-      <div class="col-xs-12 col-md-4 justify-center">
+      <div class="gt-sm col-md-4 justify-center">
         <img :src="book.thumbURL" width="100%" />
       </div>
       <div class="col-xs-12 col-md-8">
@@ -9,8 +9,13 @@
           <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
           <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
         </span>
-        <h3>{{ book.title }}</h3>
         <div class="row gutter-sm">
+          <div class="col-xs-4 lt-md justify-center">
+            <img :src="book.thumbURL" width="100%" />
+          </div>
+          <div class="col-xs-8 col-md-12">
+            <h3>{{ book.title }}</h3>
+          </div>
           <div class="col-xs-12 col-md-6">
             <q-chips-input v-model="book.author" float-label="Author" dark add-icon="fas fa-plus" />
           </div>

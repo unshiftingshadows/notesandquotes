@@ -1,66 +1,77 @@
 <template>
   <div>
-    <!-- <q-btn color="negative" @click="fixQuotes">Fix Quotes</q-btn> -->
-    <h4>Snippet List <small><q-icon color="primary" name="fa-plus" @click.native="openAdd" class="cursor-pointer" /> <q-icon color="primary" name="fa-toggle-down" @click.native="toggleQuotes" class="cursor-pointer" /></small>
+    <q-btn-group class="float-right">
+      <q-btn color="primary" icon="fas fa-plus" @click.native="openAdd" />
+      <q-btn color="primary" icon="fas fa-chevron-down" @click.native="toggleQuotes" />
+    </q-btn-group>
+    <h4>Snippet List
       <span v-if="loading">
         &nbsp;
         <q-spinner color="primary" />
       </span>
     </h4>
     <div v-if="showQuotes">
-      <h5>Ideas</h5>
-      <q-list separator multiline>
-        <idea-list-item
-          v-for="idea in ideas"
-          v-bind:ideaObj="idea"
-          v-bind:key="idea.id"
-          location
-          tags
-          bible
-          notes
-        />
-      </q-list>
-      <h5>Outlines</h5>
-      <bricks
-        ref="bricks"
-        :data="outlines"
-        :sizes="isModal ? subSizes : sizes"
-      >
-        <template slot-scope="scope">
-          <outline-list-item
-            v-bind:outlineObj="scope.item"
-            v-bind:key="scope.item.id"
+      <div v-if="ideas.length !== 0">
+        <h5>Ideas</h5>
+        <q-list separator multiline>
+          <idea-list-item
+            v-for="idea in ideas"
+            v-bind:ideaObj="idea"
+            v-bind:key="idea.id"
             location
             tags
             bible
             notes
           />
-        </template>
-      </bricks>
-      <h5>Quotes</h5>
-      <q-list separator multiline>
-        <quote-list-item
-          v-for="quote in quotes"
-          v-bind:quoteObj="quote"
-          v-bind:key="quote.id"
-          location
-          tags
-          bible
-          notes
-        />
-      </q-list>
-      <h5>Illustrations</h5>
-      <q-list separator multiline>
-        <illustration-list-item
-          v-for="illustration in illustrations"
-          v-bind:illustrationObj="illustration"
-          v-bind:key="illustration.id"
-          location
-          tags
-          bible
-          notes
-        />
-      </q-list>
+        </q-list>
+      </div>
+      <div v-if="outlines.length !== 0">
+        <h5>Outlines</h5>
+        <bricks
+          ref="bricks"
+          :data="outlines"
+          :sizes="isModal ? subSizes : sizes"
+        >
+          <template slot-scope="scope">
+            <outline-list-item
+              v-bind:outlineObj="scope.item"
+              v-bind:key="scope.item.id"
+              location
+              tags
+              bible
+              notes
+            />
+          </template>
+        </bricks>
+      </div>
+      <div v-if="quotes.length !== 0">
+        <h5>Quotes</h5>
+        <q-list separator multiline>
+          <quote-list-item
+            v-for="quote in quotes"
+            v-bind:quoteObj="quote"
+            v-bind:key="quote.id"
+            location
+            tags
+            bible
+            notes
+          />
+        </q-list>
+      </div>
+      <div v-if="illustrations.length !== 0">
+        <h5>Illustrations</h5>
+        <q-list separator multiline>
+          <illustration-list-item
+            v-for="illustration in illustrations"
+            v-bind:illustrationObj="illustration"
+            v-bind:key="illustration.id"
+            location
+            tags
+            bible
+            notes
+          />
+        </q-list>
+      </div>
     </div>
     <q-modal v-model="addOpen" content-classes="add-quote-modal">
       <!-- <q-icon name="fa-close" size="2rem" @click.native="closeAdd" class="float-right cursor-pointer" /> -->
@@ -92,6 +103,7 @@ import Bricks from 'vue-bricks'
 import QuoteListItem from 'components/QuoteListItem.vue'
 import OutlineListItem from 'components/OutlineListItem.vue'
 import IdeaListItem from 'components/IdeaListItem.vue'
+import IllustrationListItem from 'components/IllustrationListItem.vue'
 import QuoteForm from 'components/QuoteForm.vue'
 import OutlineForm from 'components/OutlineForm.vue'
 import IdeaForm from 'components/IdeaForm.vue'
@@ -103,6 +115,7 @@ export default {
     QuoteListItem,
     OutlineListItem,
     IdeaListItem,
+    IllustrationListItem,
     QuoteForm,
     OutlineForm,
     IdeaForm,
@@ -125,7 +138,7 @@ export default {
       isMobile: this.$q.platform.is.mobile,
       isModal: (this.modal === ''),
       sizes: [
-        { columns: 1, gutter: 20 },
+        { columns: 1, gutter: 0 },
         { mq: '800px', columns: 2, gutter: 20 },
         { mq: '1260px', columns: 3, gutter: 20 },
         { mq: '1600px', columns: 4, gutter: 20 }

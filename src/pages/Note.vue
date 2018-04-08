@@ -58,7 +58,7 @@ export default {
   },
   watch: {
     bibleRefs: function (userRefList) {
-      this.bibleRefObj = {}
+      this.bibleRefObj = []
       userRefList.forEach((ref) => {
         var refObj = Bible.parseBibleRef(ref)
         this.bibleRefParse.push(refObj)

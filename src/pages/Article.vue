@@ -6,18 +6,20 @@
           <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
           <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
         </span>
-        <h3>{{ article.title }} <a :href="article.url" target="_blank"><q-icon name="fa-link" /></a></h3>
+        <h3>{{ article.title }}</h3>
       </div>
       <div class="col-xs-12 col-md-10">
         <div class="article-content">
           <span v-html="article.html"></span>
+          <br />
+          <q-btn icon="fas fa-link" color="primary" class="float-right" @click.native="openLink">&nbsp;&nbsp;Original Article</q-btn>
         </div>
       </div>
       <div class="row gutter-sm">
         <div class="col-12">
           <q-input v-model="article.description" type="textarea" :max-height="100" :min-rows="2" float-label="Description" dark />
         </div>
-        <div class="col-6">
+        <div class="col-12">
           <q-chips-input v-model="article.author" float-label="Author" dark add-icon="fas fa-plus" />
         </div>
         <div class="col-6">
@@ -57,7 +59,7 @@
 </template>
 
 <script>
-import { Notify } from 'quasar'
+import { Notify, openURL } from 'quasar'
 // import selection from 'vue-text-selection'
 import MediaNotes from 'components/MediaNotes.vue'
 import QuoteForm from 'components/QuoteForm.vue'
@@ -158,6 +160,9 @@ export default {
       })
       this.updateUserData()
     },
+    openLink () {
+      openURL(this.article.pageURL)
+    },
     remove () {
       console.log('remove not implemented...')
     },
@@ -188,7 +193,9 @@ export default {
 }
 </script>
 
-<style>
+<style lang="stylus">
+
+@import '~variables'
 
 .add-quote-modal {
   /* padding: 30px; */
@@ -201,6 +208,14 @@ export default {
     min-width: 500px;
     width: 500px;
   }
+}
+
+.article-content a {
+  color: $primary;
+}
+
+.article-content img {
+  width: 100%;
 }
 
 </style>

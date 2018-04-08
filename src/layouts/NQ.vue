@@ -1,6 +1,5 @@
 <template>
-  <q-layout>
-
+  <q-layout view="hHh Lpr lFf">
     <q-layout-header reveal>
       <q-toolbar>
         <q-btn
@@ -92,6 +91,7 @@
           <q-item-side icon="fa-sign-out" />
           <q-item-main label="Log Out" />
         </q-item>
+        <span class="fixed-bottom-left">v0.1.0</span>
       </q-scroll-area>
     </q-layout-drawer>
 

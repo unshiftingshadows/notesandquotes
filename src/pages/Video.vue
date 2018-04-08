@@ -14,7 +14,7 @@
           <div class="col-12">
             <q-input v-model="video.description" type="textarea" :max-height="100" :min-rows="2" float-label="Description" dark />
           </div>
-          <div class="col-6">
+          <div class="col-12">
             <q-chips-input v-model="video.author" float-label="Author" dark add-icon="fas fa-plus" />
           </div>
           <div class="col-6">
@@ -51,7 +51,8 @@ export default {
     return {
       id: this.$route.params.id,
       video: {
-        embedURL: ''
+        embedURL: '',
+        author: []
       },
       userData: {
         tags: [],
