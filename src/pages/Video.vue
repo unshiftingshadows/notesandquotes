@@ -2,9 +2,6 @@
   <q-page padding>
     <div class="row gutter-md items-center">
       <div class="col-xs-12 justify-center">
-        <!-- <div class="q-video">
-          <span v-html="video.embedHTML"></span>
-        </div> -->
         <q-video :src="video.embedURL" />
       </div>
       <div class="col-xs-12">
@@ -18,7 +15,7 @@
             <q-input v-model="video.description" type="textarea" :max-height="100" :min-rows="2" float-label="Description" dark />
           </div>
           <div class="col-6">
-            <q-input v-model="video.author" float-label="Author" dark></q-input>
+            <q-chips-input v-model="video.author" float-label="Author" dark add-icon="fas fa-plus" />
           </div>
           <div class="col-6">
             <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />

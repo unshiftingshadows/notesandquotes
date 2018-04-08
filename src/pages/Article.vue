@@ -18,7 +18,7 @@
           <q-input v-model="article.description" type="textarea" :max-height="100" :min-rows="2" float-label="Description" dark />
         </div>
         <div class="col-6">
-          <q-chips-input v-model="article.author" float-label="Author" dark />
+          <q-chips-input v-model="article.author" float-label="Author" dark add-icon="fas fa-plus" />
         </div>
         <div class="col-6">
           <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />

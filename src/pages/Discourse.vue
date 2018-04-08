@@ -1,6 +1,9 @@
 <template>
   <q-page padding>
     <div class="row gutter-md items-center">
+      <div class="col-xs-12 justify-center" v-if="linkIsVideo">
+        <q-video :src="embedURL" />
+      </div>
       <div class="col-12">
         <span class="float-right" v-if="this.$selectedTopic.get()">
           <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
@@ -9,13 +12,15 @@
         <h3>{{ discourse.title }}</h3>
         <div class="row gutter-sm">
           <div class="col-6">
-            <!-- <q-input v-model="discourse.author" float-label="Author" dark /> -->
-            <p>{{ discourse.author }}</p>
-          </div>
-          <div class="col-6">
             <q-input v-model="discourse.eventName" float-label="Event Name" dark />
           </div>
-          <div class="col-12">
+          <div class="col-6">
+            <q-datetime v-model="discourse.dateOccurred" type="date" float-label="Event Date" dark />
+          </div>
+          <div class="col-6">
+            <q-chips-input v-model="discourse.author" float-label="Author" dark add-icon="fas fa-plus" />
+          </div>
+          <div class="col-6">
             <q-input v-model="discourse.url" float-label="Link" dark />
           </div>
           <div class="col-6">
@@ -59,7 +64,9 @@ export default {
   data () {
     return {
       id: this.$route.params.id,
-      discourse: {},
+      discourse: {
+        author: []
+      },
       userData: {
         tags: [],
         notes: '',
@@ -72,14 +79,12 @@ export default {
           value: 'new'
         },
         {
-          label: 'Current',
-          value: 'current'
-        },
-        {
-          label: 'Read',
-          value: 'read'
+          label: 'Viewed',
+          value: 'viewed'
         }
-      ]
+      ],
+      linkIsVideo: false,
+      embedURL: ''
     }
   },
   mounted () {
@@ -89,6 +94,7 @@ export default {
     init () {
       this.database.view('discourse', this.id, (resource, userData) => {
         this.discourse = resource
+        this.checkVideo()
         this.userData = userData
       })
     },
@@ -114,10 +120,14 @@ export default {
     update () {
       console.log('update', this.discourse)
       var resource = {
+        author: this.discourse.author,
+        dateOccurred: this.discourse.dateOccurred,
         eventName: this.discourse.eventName,
-        citation: this.discourse.citation
+        citation: this.discourse.citation,
+        url: this.discourse.url
       }
       this.database.update(this.id, 'discourse', resource, { updateUserData: false }, (res) => {
+        this.checkVideo()
         Notify.create({
           message: 'Discourse updated!',
           type: 'positive',
@@ -125,6 +135,18 @@ export default {
         })
       })
       this.updateUserData()
+    },
+    checkVideo () {
+      var {id, service} = this.$videoId(this.discourse.url)
+      if (service === 'youtube') {
+        this.embedURL = 'https://www.youtube.com/embed/' + id
+        this.linkIsVideo = true
+      } else if (service === 'vimeo') {
+        this.embedURL = 'https://player.vimeo.com/video/' + id
+        this.linkIsVideo = true
+      } else {
+        this.linkIsVideo = false
+      }
     },
     remove () {
       console.log('Remove not implemented...')
@@ -148,11 +170,18 @@ export default {
 
 <style>
 
-@media screen and (min-width: 1200px) {
-  .media-page {
-    margin: 0 auto;
-    max-width: 1000px;
-  }
+.q-video {
+  position: relative;
+  padding-bottom: 56.25%;
+  padding-top: 25px;
+  height: 0;
+}
+.q-video iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 </style>

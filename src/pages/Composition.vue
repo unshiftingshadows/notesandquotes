@@ -1,6 +1,9 @@
 <template>
   <q-page padding>
     <div class="row gutter-md justify-center">
+      <div class="col-xs-12 justify-center" v-if="linkIsVideo">
+        <q-video :src="embedURL" />
+      </div>
       <div class="col-xs-12">
         <span class="float-right" v-if="this.$selectedTopic.get()">
           <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
@@ -20,11 +23,11 @@
         <div class="col-12">
           <q-input v-model="composition.description" type="textarea" :max-height="100" :min-rows="2" float-label="Description" dark />
         </div>
-        <div class="col-12">
-          <q-input v-model="composition.url" float-label="Link" dark />
+        <div class="col-6">
+          <q-chips-input v-model="composition.author" float-label="Author" dark add-icon="fas fa-plus" />
         </div>
         <div class="col-6">
-          <q-chips-input v-model="composition.author" float-label="Author" dark />
+          <q-input v-model="composition.url" float-label="Link" dark />
         </div>
         <div class="col-6">
           <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
@@ -88,7 +91,9 @@ export default {
       editorConfigs: {
         spellChecker: true,
         toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image']
-      }
+      },
+      linkIsVideo: false,
+      embedURL: ''
     }
   },
   mounted () {
@@ -98,6 +103,7 @@ export default {
     init () {
       this.database.view('composition', this.id, (resource, userData) => {
         this.composition = resource
+        this.checkVideo()
         this.userData = userData
       })
     },
@@ -128,6 +134,7 @@ export default {
         text: this.composition.text
       }
       this.database.update(this.id, 'composition', resource, { updateUserData: false }, (res) => {
+        this.checkVideo()
         Notify.create({
           message: 'Composition updated!',
           type: 'positive',
@@ -135,6 +142,18 @@ export default {
         })
       })
       this.updateUserData()
+    },
+    checkVideo () {
+      var {id, service} = this.$videoId(this.composition.url)
+      if (service === 'youtube') {
+        this.embedURL = 'https://www.youtube.com/embed/' + id
+        this.linkIsVideo = true
+      } else if (service === 'vimeo') {
+        this.embedURL = 'https://player.vimeo.com/video/' + id
+        this.linkIsVideo = true
+      } else {
+        this.linkIsVideo = false
+      }
     },
     remove () {
       console.log('remove not implemented...')
@@ -168,6 +187,20 @@ export default {
     min-width: 500px;
     width: 500px;
   }
+}
+
+.q-video {
+  position: relative;
+  padding-bottom: 56.25%;
+  padding-top: 25px;
+  height: 0;
+}
+.q-video iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 </style>

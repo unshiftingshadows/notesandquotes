@@ -1,6 +1,21 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.19 - 2018-04-07
+### Added
+- get-video-id plugin for parsing video urls
+
+### Changed
+- Discourse now shows Authors in a chips input and Date Occurred in a Datetime input
+- Discourse url now shows embedded video if link is a youtube or vimeo link
+- List now has a better system for determining whether to use cards, bricks, or a list to display the items
+- Composition url now shows embedded video if link is a youtube or vimeo link
+- ALL Media now uses chips input for Author with the add icon being a plus sign
+
+### Fixed
+- AddMedia button disabling works properly now
+- cleaned up some messy code here and there
+
 ## 0.0.18 - 2018-04-07
 ### Changed
 - Articles now can add snippets

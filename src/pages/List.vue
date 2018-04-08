@@ -5,7 +5,7 @@
       <q-spinner color="primary" class="absolute-center" size="3rem" />
     </div>
     <div v-if="!loading">
-      <q-card inline v-if="type != 'images' && type != 'notes' && type != 'topics'" v-for="item in items" :key="item._id" v-bind:class="[type]" class="media-card" @click.native="openItem(item._id)">
+      <q-card inline v-if="cardTypes.includes(type)" v-for="item in items" :key="item._id" v-bind:class="[type]" class="media-card" @click.native="openItem(item._id)">
         <q-card-media>
           <img :src="item.thumbURL" :class="{ 'image-card': isImage }" />
           <q-card-title slot="overlay" v-if="type == 'books' || type == 'movies' || type == 'videos' || type == 'articles'">
@@ -27,7 +27,7 @@
         ref="bricks"
         :data="items"
         :sizes="sizes"
-        v-if="type == 'images'"
+        v-if="brickTypes.includes(type)"
       >
         <template slot-scope="scope">
           <q-card inline v-bind:class="[type]" class="media-card" @click.native="openItem(scope.item._id)">
@@ -37,12 +37,16 @@
           </q-card>
         </template>
       </bricks>
-      <q-list v-if="type == 'notes' || type == 'topics' || type == 'documents' || type == 'discourses' || type == 'compositions'">
+      <q-list v-if="listTypes.includes(type)">
         <q-item v-for="item in items" :key="item._id" link @click.native="openItem(item._id)">
           <q-item-main>
             <q-item-tile label>{{ item.title }}</q-item-tile>
-            <q-item-tile sublabel v-if="type == 'notes'">{{ item.text }}</q-item-tile>
+            <q-item-tile sublabel v-if="type === 'notes'">{{ item.text }}</q-item-tile>
+            <q-item-tile sublabel v-if="type === 'compositions' || type ==='discourses'"><span v-for="author in item.author" :key="author">{{ author }}</span></q-item-tile>
           </q-item-main>
+          <q-item-side right v-if="type === 'compositions'">
+            <q-item-tile stamp>{{ item.type }}</q-item-tile>
+          </q-item-side>
         </q-item>
       </q-list>
     </div>
@@ -74,7 +78,10 @@ export default {
         { mq: '800px', columns: 2, gutter: 20 },
         { mq: '1400px', columns: 3, gutter: 20 },
         { mq: '1800px', columns: 4, gutter: 20 }
-      ]
+      ],
+      cardTypes: [ 'books', 'movies', 'videos', 'articles' ],
+      brickTypes: [ 'images' ],
+      listTypes: [ 'notes', 'documents', 'discourses', 'compositions', 'topics' ]
     }
   },
   // firestore () {

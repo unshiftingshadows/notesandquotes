@@ -11,11 +11,10 @@
         </span>
         <h3>{{ book.title }}</h3>
         <div class="row gutter-sm">
-          <div class="col-6">
-            <!-- <q-input v-model="book.author" float-label="Author" dark /> -->
-            <p>{{ book.author }}</p>
+          <div class="col-xs-12 col-md-6">
+            <q-chips-input v-model="book.author" float-label="Author" dark add-icon="fas fa-plus" />
           </div>
-          <div class="col-6">
+          <div class="col-xs-12 col-md-6">
             <q-input v-model="book.isbn" float-label="ISBN" dark />
           </div>
           <div class="col-6">
@@ -65,7 +64,9 @@ export default {
   data () {
     return {
       id: this.$route.params.id,
-      book: {},
+      book: {
+        author: []
+      },
       userData: {
         tags: [],
         notes: '',

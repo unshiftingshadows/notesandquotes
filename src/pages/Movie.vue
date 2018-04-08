@@ -12,8 +12,7 @@
         <h3>{{ movie.title }}</h3>
         <div class="row gutter-sm">
           <div class="col-6">
-            <!-- <q-input v-model="movie.author" float-label="Author" dark /> -->
-            <p>{{ movie.author }}</p>
+            <q-chips-input v-model="movie.author" float-label="Author" dark add-icon="fas fa-plus" />
           </div>
           <div class="col-6">
             <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />

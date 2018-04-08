@@ -15,7 +15,7 @@
             <q-input v-model="image.description" type="textarea" :max-height="100" :min-rows="2" float-label="Description" dark />
           </div>
           <div class="col-6">
-            <q-input v-model="image.author" float-label="Author" dark></q-input>
+            <q-chips-input v-model="image.author" float-label="Author" dark add-icon="fas fa-plus" />
           </div>
           <div class="col-6">
             <q-rating v-model="userData.rating" :max="5" icon="fa-star" size="1.5em" style="padding-top: 15px; padding-left: 20px" dark />
