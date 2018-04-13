@@ -47,39 +47,39 @@
           <q-item-side icon="fa-plus" />
           <q-item-main label="Add Media" />
         </q-item>
-        <q-item :to="{ name: 'list', params: { type: 'books' }}">
+        <q-item :to="{ name: 'list', params: { type: 'book' }}">
           <q-item-side icon="book" />
           <q-item-main label="Books" />
         </q-item>
-        <q-item :to="{ name: 'list', params: { type: 'movies' }}">
+        <q-item :to="{ name: 'list', params: { type: 'movie' }}">
           <q-item-side icon="fa-film" />
           <q-item-main label="Movies" />
         </q-item>
-        <q-item :to="{ name: 'list', params: { type: 'images' }}">
+        <q-item :to="{ name: 'list', params: { type: 'image' }}">
           <q-item-side icon="fa-image" />
           <q-item-main label="Images" />
         </q-item>
-        <q-item :to="{ name: 'list', params: { type: 'videos' }}">
+        <q-item :to="{ name: 'list', params: { type: 'video' }}">
           <q-item-side icon="fa-video-camera" />
           <q-item-main label="Videos" />
         </q-item>
-        <q-item :to="{ name: 'list', params: { type: 'articles' }}">
+        <q-item :to="{ name: 'list', params: { type: 'article' }}">
           <q-item-side icon="fa-file-text" />
           <q-item-main label="Articles" />
         </q-item>
-        <q-item :to="{ name: 'list', params: { type: 'notes' }}">
+        <q-item :to="{ name: 'list', params: { type: 'note' }}">
           <q-item-side icon="fa-sticky-note" />
           <q-item-main label="Notes" />
         </q-item>
-        <q-item :to="{ name: 'list', params: { type: 'documents' }}">
+        <q-item :to="{ name: 'list', params: { type: 'document' }}">
           <q-item-side icon="fa-file" />
           <q-item-main label="Documents" />
         </q-item>
-        <q-item :to="{ name: 'list', params: { type: 'discourses' }}">
+        <q-item :to="{ name: 'list', params: { type: 'discourse' }}">
           <q-item-side icon="fa-comment" />
           <q-item-main label="Discourses" />
         </q-item>
-        <q-item :to="{ name: 'list', params: { type: 'compositions' }}">
+        <q-item :to="{ name: 'list', params: { type: 'composition' }}">
           <q-item-side icon="fa-music" />
           <q-item-main label="Compositions" />
         </q-item>
@@ -184,7 +184,7 @@ export default {
       this.showAdd = false
     },
     switchResearch () {
-      this.$router.push({ name: 'researchlist', params: { type: 'topics' } })
+      this.$router.push({ name: 'researchlist', params: { type: 'topic' } })
     },
     returnTopic () {
       this.$router.push({ name: 'topic', params: { id: this.$selectedTopic.get().id } })

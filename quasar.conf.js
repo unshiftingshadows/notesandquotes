@@ -8,6 +8,7 @@ module.exports = function (ctx) {
       'firebase',
       'fuse',
       'get-video-id',
+      'masonry',
       'research',
       'vuelidate',
       'vuefire',

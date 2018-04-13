@@ -1,6 +1,15 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.1.1 - 2018-04-13
+### Added
+- masonry plugin
+
+### Changed
+- List now uses singular types rather than plural
+- all lists (save notes and topics which use qlist) use the new masonry layout
+- resources list (MediaList) now uses the new masonry layout
+
 ## 0.1.0 - 2018-04-07
 WOHOO!! Finally made it to a version I can proudly say is usable! Version 0.1.0 still has a long ways to go before being ready for the world, but it is ready for single user testing. The main known issues are listed below, and there will surely be more to come...but it's workable! A big step forward :)
 

@@ -1,25 +1,16 @@
 <template>
   <q-page padding>
-    <h3>{{ type }} <q-btn v-if="type == 'topics'" size="sm" icon="fa-plus" color="primary" @click.native="openAddTopic" /></h3>
+    <h3>{{ type }} <q-btn v-if="type == 'topic'" size="sm" icon="fa-plus" color="primary" @click.native="openAddTopic" /></h3>
     <div v-if="loading">
       <q-spinner color="primary" class="absolute-center" size="3rem" />
     </div>
     <div v-if="!loading">
-      <q-card inline v-if="cardTypes.includes(type)" v-for="item in items" :key="item._id" v-bind:class="[type]" class="media-card" @click.native="openItem(item._id)">
+      <!-- <q-card inline v-if="cardTypes.includes(type)" v-for="item in items" :key="item._id" v-bind:class="[type]" class="media-card" @click.native="openItem(item._id)">
         <q-card-media>
           <img :src="item.thumbURL" :class="{ 'image-card': isImage }" />
           <q-card-title slot="overlay" v-if="type == 'books' || type == 'movies' || type == 'videos' || type == 'articles'">
             {{ item.title }}
             <span v-for="author in item.author" :key="author.fullName" slot="subtitle">{{ author.fullName }}</span>
-            <!-- <q-icon slot="right" name="fa-ellipsis-v" color="white">
-              <q-popover ref="popover">
-                <q-list link class="no-border">
-                  <q-item @click.native="openItem(item._id)">
-                    <q-item-main label="Details" />
-                  </q-item>
-                </q-list>
-              </q-popover>
-            </q-icon> -->
           </q-card-title>
         </q-card-media>
       </q-card>
@@ -48,6 +39,30 @@
             <q-item-tile stamp>{{ item.type }}</q-item-tile>
           </q-item-side>
         </q-item>
+      </q-list> -->
+      <div v-masonry transition-duration="0.3s" item-selector=".media-item">
+        <q-card inline v-bind:class="[type]" v-masonry-tile v-for="item in items" :key="item._id" class="media-card media-item" @click.native="openItem(item._id, item)">
+          <q-card-media v-if="imageTypes.includes(type) || titleTypes.includes(type)">
+            <img :src="item.thumbURL" class="image-card" />
+            <q-card-title slot="overlay" v-if="titleTypes.includes(type)">{{ item.title }}</q-card-title>
+          </q-card-media>
+          <q-card-title v-if="textTypes.includes(type)">{{ item.title }}</q-card-title>
+          <q-card-main v-if="textTypes.includes(type)">
+            <p>| <span v-for="author in item.author" :key="author">{{ author }} | </span></p>
+          </q-card-main>
+        </q-card>
+      </div>
+      <q-list v-if="listTypes.includes(type)">
+        <q-item v-for="item in items" :key="item._id" link @click.native="openItem(item._id)">
+          <q-item-main>
+            <q-item-tile label>{{ item.title }}</q-item-tile>
+            <q-item-tile sublabel v-if="type === 'notes'">{{ item.text }}</q-item-tile>
+            <q-item-tile sublabel v-if="type === 'compositions' || type ==='discourses'"><span v-for="author in item.author" :key="author">{{ author }}</span></q-item-tile>
+          </q-item-main>
+          <q-item-side right v-if="type === 'compositions'">
+            <q-item-tile stamp>{{ item.type }}</q-item-tile>
+          </q-item-side>
+        </q-item>
       </q-list>
     </div>
     <q-modal ref="addModal" v-model="showTopic" content-classes="add-media-modal">
@@ -58,19 +73,19 @@
 </template>
 
 <script>
-import Bricks from 'vue-bricks'
+// import Bricks from 'vue-bricks'
 import AddResearch from 'components/AddResearch.vue'
 
 export default {
   components: {
-    Bricks,
+    // Bricks,
     AddResearch
   },
   data () {
     return {
       type: this.$route.params.type,
       items: [],
-      isImage: this.$route.params.type === 'images',
+      isImage: this.$route.params.type === 'image',
       showTopic: false,
       loading: false,
       sizes: [
@@ -79,9 +94,10 @@ export default {
         { mq: '1400px', columns: 3, gutter: 20 },
         { mq: '1800px', columns: 4, gutter: 20 }
       ],
-      cardTypes: [ 'books', 'movies', 'videos', 'articles' ],
-      brickTypes: [ 'images' ],
-      listTypes: [ 'notes', 'documents', 'discourses', 'compositions', 'topics' ]
+      imageTypes: [ 'book', 'movie', 'image', 'article' ],
+      titleTypes: [ 'video', 'article' ],
+      textTypes: [ 'document', 'discourse', 'composition' ],
+      listTypes: [ 'note', 'topic' ]
     }
   },
   // firestore () {
@@ -111,34 +127,34 @@ export default {
       console.log(id)
       console.log(this.type)
       switch (this.type) {
-        case 'books':
+        case 'book':
           this.$router.push({ name: 'book', params: { id: id } })
           break
-        case 'movies':
+        case 'movie':
           this.$router.push({ name: 'movie', params: { id: id } })
           break
-        case 'articles':
+        case 'article':
           this.$router.push({ name: 'article', params: { id: id } })
           break
-        case 'videos':
+        case 'video':
           this.$router.push({ name: 'video', params: { id: id } })
           break
-        case 'images':
+        case 'image':
           this.$router.push({ name: 'image', params: { id: id } })
           break
-        case 'notes':
+        case 'note':
           this.$router.push({ name: 'note', params: { id: id } })
           break
-        case 'documents':
+        case 'document':
           this.$router.push({ name: 'document', params: { id: id } })
           break
-        case 'discourses':
+        case 'discourse':
           this.$router.push({ name: 'discourse', params: { id: id } })
           break
-        case 'compositions':
+        case 'composition':
           this.$router.push({ name: 'composition', params: { id: id } })
           break
-        case 'topics':
+        case 'topic':
           this.$router.push({ name: 'topic', params: { id: id } })
           break
         default:
@@ -161,13 +177,12 @@ export default {
 <style>
 
 .media-card {
-  margin: 1%;
-  width: 98%;
+  margin: 10px;
+  width: 95%;
   cursor: pointer;
 }
 
 .image-card {
-  cursor: pointer;
   opacity: 0.5;
   transition: opacity .25s;
   transition-timing-function: ease-in;
@@ -182,31 +197,24 @@ export default {
   width: 100%;
 }
 
-.books {
+.book, .movie {
   margin: 1%;
   width: 48%;
 }
 
-.images {
+.image {
   width: 100%;
 }
 
 @media screen and (min-width: 800px) {
-  .books, .movies, .videos, .articles {
-    margin: 1%;
-    width: 48%;
+  .media-card {
+    width: 47%;
   }
 }
 
 @media screen and (min-width: 1200px) {
-  .books, .movies {
-    width: 23% !important;
-  }
-  .videos, .articles {
-    width: 31% !important;
-  }
-  .images {
-    width: 300px;
+  .media-card {
+    width: 31%;
   }
   .add-media-modal {
     min-width: 500px;
