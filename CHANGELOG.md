@@ -1,6 +1,18 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.1.2 - 2018-04-14 - Deployed
+### Added
+- pwa mode for quasar
+- NQ icons instead of the default quasar icons
+- vue2-editor for Topics
+- vue2-edtior for MediaNotes
+- vue2-editor for Composition editing
+- code in App.vue to disable FastClick -- important to editors working on pwas
+
+### Changed
+- removed testing code from Dashboard
+
 ## 0.1.1 - 2018-04-13
 ### Added
 - masonry plugin
@@ -10,7 +22,7 @@ All notable changes for this project will be documented in this file.
 - all lists (save notes and topics which use qlist) use the new masonry layout
 - resources list (MediaList) now uses the new masonry layout
 
-## 0.1.0 - 2018-04-07
+## 0.1.0 - 2018-04-07 - Deployed
 WOHOO!! Finally made it to a version I can proudly say is usable! Version 0.1.0 still has a long ways to go before being ready for the world, but it is ready for single user testing. The main known issues are listed below, and there will surely be more to come...but it's workable! A big step forward :)
 
 ### Added

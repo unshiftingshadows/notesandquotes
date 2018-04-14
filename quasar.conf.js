@@ -114,37 +114,42 @@ module.exports = function (ctx) {
     pwa: {
       cacheExt: 'js,html,css,ttf,eot,otf,woff,woff2,json,svg,gif,jpg,jpeg,png,wav,ogg,webm,flac,aac,mp4,mp3',
       manifest: {
-        // name: 'Quasar App',
-        // short_name: 'Quasar-PWA',
-        // description: 'Best PWA App in town!',
-        display: 'standalone',
+        name: 'Notes and Quotes',
+        short_name: 'NQ-PWA',
+        description: 'A personal research platform',
+        display: 'fullscreen',
         orientation: 'portrait',
-        background_color: '#ffffff',
+        background_color: '#333333',
         theme_color: '#027be3',
         icons: [
           {
-            'src': 'statics/icons/icon-128x128.png',
+            'src': 'statics/icons/icon-128x128-20180414.png',
             'sizes': '128x128',
             'type': 'image/png'
           },
           {
-            'src': 'statics/icons/icon-192x192.png',
+            'src': 'statics/icons/icon-192x192-20180414.png',
             'sizes': '192x192',
             'type': 'image/png'
           },
           {
-            'src': 'statics/icons/icon-256x256.png',
+            'src': 'statics/icons/icon-256x256-20180414.png',
             'sizes': '256x256',
             'type': 'image/png'
           },
           {
-            'src': 'statics/icons/icon-384x384.png',
+            'src': 'statics/icons/icon-384x384-20180414.png',
             'sizes': '384x384',
             'type': 'image/png'
           },
           {
-            'src': 'statics/icons/icon-512x512.png',
+            'src': 'statics/icons/icon-512x512-20180414.png',
             'sizes': '512x512',
+            'type': 'image/png'
+          },
+          {
+            'src': 'statics/icons/icon-1024x1024-20180414.png',
+            'sizes': '1024x1024',
             'type': 'image/png'
           }
         ]

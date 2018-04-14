@@ -50,7 +50,12 @@
     <q-modal v-model="editText" content-classes="edit-modal" @hide="update">
       <q-icon name="fa-close" size="2rem" @click.native="editText = false" class="float-right cursor-pointer" />
       <h4>Edit Text</h4>
-      <markdown-editor v-model="composition.text" :configs="editorConfigs" ref="markdownEditor" />
+      <!-- <markdown-editor v-model="composition.text" :configs="editorConfigs" ref="markdownEditor" /> -->
+      <vue-editor
+        ref="editor"
+        :editorToolbar="toolbarContent"
+        v-model="composition.text"
+      />
     </q-modal>
   </q-page>
 </template>
@@ -58,12 +63,14 @@
 <script>
 import { Notify } from 'quasar'
 import MediaNotes from 'components/MediaNotes.vue'
-import markdownEditor from 'vue-simplemde/src/markdown-editor'
+// import markdownEditor from 'vue-simplemde/src/markdown-editor'
+import { VueEditor } from 'vue2-editor'
 
 export default {
   components: {
     MediaNotes,
-    markdownEditor
+    // markdownEditor
+    VueEditor
   },
   data () {
     return {
@@ -88,6 +95,13 @@ export default {
         }
       ],
       editText: false,
+      toolbarContent: [
+        [{ 'header': [] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        ['blockquote'],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        ['clean']
+      ],
       editorConfigs: {
         spellChecker: true,
         toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image']
@@ -201,6 +215,18 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.ql-picker-label {
+  color: #bbb !important;
+}
+
+.ql-fill {
+  fill: #bbb !important;
+}
+
+.ql-stroke {
+  stroke: #bbb !important;
 }
 
 </style>

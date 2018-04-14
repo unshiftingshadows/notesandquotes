@@ -17,7 +17,12 @@
         <q-input v-model="conclusion" type="textarea" :max-height="100" :min-rows="2" float-label="Conclusion" dark />
       </div>
       <div class="col-12">
-        <markdown-editor v-model="notes" :configs="editorConfigs" @input="handleInput" ref="markdown" />
+        <!-- <markdown-editor v-model="notes" :configs="editorConfigs" @input="handleInput" ref="markdown" /> -->
+        <vue-editor
+          ref="editor"
+          :editorToolbar="toolbarContent"
+          v-model="notes"
+        />
       </div>
       <div class="col-12">
         <q-chips-input v-model="tags" float-label="Tags" dark />
@@ -41,7 +46,8 @@
 <script>
 import { Notify, Dialog } from 'quasar'
 import * as Bible from '../statics/bible.js'
-import markdownEditor from 'vue-simplemde/src/markdown-editor'
+import { VueEditor } from 'vue2-editor'
+// import markdownEditor from 'vue-simplemde/src/markdown-editor'
 import Add from 'components/AddMedia.vue'
 // import CodeMirror from 'codemirror'
 
@@ -50,7 +56,8 @@ var refVal = Bible.refValidate
 export default {
   components: {
     Add,
-    markdownEditor
+    // markdownEditor
+    VueEditor
   },
   data () {
     return {
@@ -63,9 +70,16 @@ export default {
       bibleRefParse: [],
       bibleRefs: [],
       resources: [],
-      editorConfigs: {
-        toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image']
-      },
+      toolbarContent: [
+        [{ 'header': [] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        ['blockquote'],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        ['clean']
+      ],
+      // editorConfigs: {
+      //   toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image']
+      // },
       showAdd: false
     }
   },
@@ -76,11 +90,11 @@ export default {
       }
     }
   },
-  computed: {
-    simplemde () {
-      return this.$refs.markdown.simplemde
-    }
-  },
+  // computed: {
+  //   simplemde () {
+  //     return this.$refs.markdown.simplemde
+  //   }
+  // },
   watch: {
     bibleRefs: function (userRefList) {
       this.bibleRefParse = []
@@ -217,11 +231,29 @@ export default {
 
 <style>
 
-.cm-string {
+/* .cm-string {
   background: red;
+} */
+.ql-editor {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.ql-picker-label {
+  color: #bbb !important;
+}
+
+.ql-fill {
+  fill: #bbb !important;
+}
+
+.ql-stroke {
+  stroke: #bbb !important;
 }
 
 /*@import '~simplemde/dist/simplemde.min.css'*/
-@import '../statics/simplemde-dark-theme.min.css'
+/* @import '../statics/simplemde-dark-theme.min.css' */
 
 </style>

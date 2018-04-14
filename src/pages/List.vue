@@ -203,7 +203,7 @@ export default {
 }
 
 .image {
-  width: 100%;
+  width: 95%;
 }
 
 @media screen and (min-width: 800px) {
