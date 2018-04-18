@@ -1,6 +1,16 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.1.3 - 2018-04-18
+### Changed
+- outlines now have a "title" and "text" for each point
+- books in the list view now work a bit better on large screens
+
+### Fixed
+- book searches complete even if a result has no thumbnail links
+- outlines with more than 9 items no longer throw errors
+- menu icons should now be fixed
+
 ## 0.1.2 - 2018-04-14 - Deployed
 ### Added
 - pwa mode for quasar

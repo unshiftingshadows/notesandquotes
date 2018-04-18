@@ -4,26 +4,26 @@
     <q-card-main>
       <ol v-if="outline.numbered">
         <li v-for="(point, index) in outline.points" :key="index">
-          {{ point }}
+          {{ point.split('%%')[0] }}<br/><span class="q-caption">{{ point.split('%%')[1] }}</span>
         </li>
       </ol>
       <ul v-if="!outline.numbered">
         <li v-for="(point, index) in outline.points" :key="index">
-          {{ point }}
+          {{ point.split('%%')[0] }}<br/><span class="q-caption">{{ point.split('%%')[1] }}</span>
         </li>
       </ul>
       <q-item-tile sublabel lines="3" v-if="outline.notes !== '' && showNotes">{{ outline.notes }}</q-item-tile>
       <br/>
       <span v-if="this.$selectedTopic.get()">
         <span v-if="showTopicAdd()">
-          <q-chip icon="fa-plus" @click.native="topicAdd" class="cursor-pointer" color="primary" small>Add</q-chip>&nbsp;
+          <q-chip icon="fas fa-plus" @click.native="topicAdd" class="cursor-pointer" color="primary" small>Add</q-chip>&nbsp;
         </span>
         <span v-if="!showTopicAdd()">
-          <q-chip icon="fa-check" @click.native="topicAdd" color="positive" small>Added!</q-chip>&nbsp;
+          <q-chip icon="fas fa-check" @click.native="topicAdd" color="positive" small>Added!</q-chip>&nbsp;
         </span>
       </span>
       <span>
-        <q-icon name="fa-pencil" @click.native="openEdit" class="cursor-pointer" />&nbsp;
+        <q-icon name="fas fa-edit" @click.native="openEdit" class="cursor-pointer" />&nbsp;
       </span>
       <span v-if="showLocation && outline.locationType !== 'None'" class="q-item-sublabel">
         {{ outline.locationType }} {{ outline.location.start }}&nbsp; - &nbsp; {{ outline.location.end }}

@@ -18,16 +18,17 @@
         <q-list no-border dense>
           <q-item v-for="(item, index) in points" :key="index">
             <q-item-side v-if="!numbered" icon="fa-chevron-right" />
-            <q-item-side v-if="numbered" :letter="(index+1).toString()" />
+            <q-item-side v-if="numbered">{{ (index+1).toString() }}</q-item-side>
             <q-item-main>
-              <q-input placeholder="Something..." ref="outlinepoint" v-model="points[index]" dark />
+              <q-input placeholder="Some title..." ref="outlinepointtitle" v-model="points[index].title" dark /><br/>
+              <q-input placeholder="Some text..." ref="outlinepointtext" type="textarea" v-model="points[index].text" dark :min-rows="2" :max-height="100" />
             </q-item-main>
           </q-item>
           <q-item>
             <q-item-side v-if="!numbered" icon="fa-chevron-right" />
-            <q-item-side v-if="numbered" :letter="(points.length+1).toString()" />
+            <q-item-side v-if="numbered">{{ (points.length+1).toString() }}</q-item-side>
             <q-item-main>
-              <q-input placeholder="Something..." ref="newpoint" v-model="newPoint" dark @keyup.enter="addPoint" :after="[{ icon: 'fa-plus', handler () {addPoint()} }]" />
+              <q-input placeholder="Some title..." ref="newpoint" v-model="newPoint" dark @keyup.enter="addPoint" :after="[{ icon: 'fa-plus', handler () {addPoint()} }]" />
             </q-item-main>
           </q-item>
         </q-list>
@@ -152,7 +153,7 @@ export default {
         this.newPoint = ''
       } else {
         this.title = this.outline.title
-        this.points = this.outline.points
+        this.points = this.outline.points.map(e => { return { title: e.split('%%')[0], text: e.split('%%')[1] || '' } })
         this.tags = this.outline.tags
         this.bibleRefs = []
         this.outline.bibleRefs.forEach((ref) => {
@@ -175,7 +176,7 @@ export default {
         locationType: this.locationType,
         mediaType: this.type,
         mediaid: this.id,
-        points: this.points,
+        points: this.points.map(e => { return e.title + '%%' + e.text }),
         tags: this.tags,
         bibleRefs: this.bibleRefsParse,
         notes: this.notes,
@@ -195,7 +196,7 @@ export default {
         title: this.title,
         location: this.location,
         locationType: this.locationType,
-        points: this.points,
+        points: this.points.map(e => { return e.title + '%%' + e.text }),
         tags: this.tags,
         bibleRefs: this.bibleRefsParse,
         notes: this.notes,
@@ -222,7 +223,7 @@ export default {
       //   console.log(point)
       //   point.focused = false
       // })
-      this.points.push(this.newPoint)
+      this.points.push({ title: this.newPoint, text: '' })
       this.newPoint = ''
       this.$refs.newpoint.focus()
     }

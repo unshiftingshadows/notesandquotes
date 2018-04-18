@@ -7,14 +7,14 @@
       <br/>
       <span v-if="this.$selectedTopic.get()">
         <span v-if="showTopicAdd()">
-          <q-chip icon="fa-plus" @click.native="topicAdd" class="cursor-pointer" color="primary" small>Add</q-chip>&nbsp;
+          <q-chip icon="fas fa-plus" @click.native="topicAdd" class="cursor-pointer" color="primary" small>Add</q-chip>&nbsp;
         </span>
         <span v-if="!showTopicAdd()">
-          <q-chip icon="fa-check" @click.native="topicAdd" color="positive" small>Added!</q-chip>&nbsp;
+          <q-chip icon="fas fa-check" @click.native="topicAdd" color="positive" small>Added!</q-chip>&nbsp;
         </span>
       </span>
       <span>
-        <q-icon name="fa-pencil" @click.native="openEdit" class="cursor-pointer" />&nbsp;
+        <q-icon name="fas fa-edit" @click.native="openEdit" class="cursor-pointer" />&nbsp;
       </span>
       <span v-if="showLocation && illustration.locationType !== 'None'" class="q-item-sublabel">
         {{ illustration.locationType }} {{ illustration.location }}&nbsp;

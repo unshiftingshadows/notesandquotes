@@ -25,14 +25,14 @@
               </q-item>
             </q-list> -->
             <q-card inline v-for="result in bookResults" :key="result.id" @click.native="add(result)" style="cursor: pointer; width: 47%; min-height: 200px; margin: 5px;">
-              <q-card-media v-if="result.volumeInfo.imageLinks.thumbnail !== null">
+              <q-card-media v-if="result.volumeInfo.imageLinks !== undefined && result.volumeInfo.imageLinks.thumbnail !== null">
                 <img :src="result.volumeInfo.imageLinks.thumbnail" />
                 <q-card-title slot="overlay">
                   {{ result.volumeInfo.title }}
                   <span slot="subtitle">{{ result.volumeInfo.authors[0] }}</span>
                 </q-card-title>
               </q-card-media>
-              <q-card-title v-if="result.volumeInfo.imageLinks.thumbnail === null">
+              <q-card-title v-if="result.volumeInfo.imageLinks === undefined || result.volumeInfo.imageLinks.thumbnail === null">
                 {{ result.volumeInfo.title }}
                 <span slot="subtitle">{{ result.volumeInfo.authors[0] }}</span>
               </q-card-title>

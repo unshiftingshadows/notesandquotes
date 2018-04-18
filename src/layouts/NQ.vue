@@ -40,58 +40,58 @@
       <q-scroll-area class="fit q-pa-sm">
         <!-- Content here -->
         <q-item to="/dashboard">
-          <q-item-side icon="fa-home" />
+          <q-item-side icon="fas fa-home" />
           <q-item-main label="Dashboard" />
         </q-item>
         <q-item link @click.native="openAddModal">
-          <q-item-side icon="fa-plus" />
+          <q-item-side icon="fas fa-plus" />
           <q-item-main label="Add Media" />
         </q-item>
         <q-item :to="{ name: 'list', params: { type: 'book' }}">
-          <q-item-side icon="book" />
+          <q-item-side icon="fas fa-book" />
           <q-item-main label="Books" />
         </q-item>
         <q-item :to="{ name: 'list', params: { type: 'movie' }}">
-          <q-item-side icon="fa-film" />
+          <q-item-side icon="fas fa-film" />
           <q-item-main label="Movies" />
         </q-item>
         <q-item :to="{ name: 'list', params: { type: 'image' }}">
-          <q-item-side icon="fa-image" />
+          <q-item-side icon="fas fa-image" />
           <q-item-main label="Images" />
         </q-item>
         <q-item :to="{ name: 'list', params: { type: 'video' }}">
-          <q-item-side icon="fa-video-camera" />
+          <q-item-side icon="fas fa-video" />
           <q-item-main label="Videos" />
         </q-item>
         <q-item :to="{ name: 'list', params: { type: 'article' }}">
-          <q-item-side icon="fa-file-text" />
+          <q-item-side icon="fas fa-file-alt" />
           <q-item-main label="Articles" />
         </q-item>
         <q-item :to="{ name: 'list', params: { type: 'note' }}">
-          <q-item-side icon="fa-sticky-note" />
+          <q-item-side icon="fas fa-sticky-note" />
           <q-item-main label="Notes" />
         </q-item>
         <q-item :to="{ name: 'list', params: { type: 'document' }}">
-          <q-item-side icon="fa-file" />
+          <q-item-side icon="fas fa-file" />
           <q-item-main label="Documents" />
         </q-item>
         <q-item :to="{ name: 'list', params: { type: 'discourse' }}">
-          <q-item-side icon="fa-comment" />
+          <q-item-side icon="fas fa-comment" />
           <q-item-main label="Discourses" />
         </q-item>
         <q-item :to="{ name: 'list', params: { type: 'composition' }}">
-          <q-item-side icon="fa-music" />
+          <q-item-side icon="fas fa-music" />
           <q-item-main label="Compositions" />
         </q-item>
         <q-item to="/settings">
-          <q-item-side icon="fa-cog" />
+          <q-item-side icon="fas fa-cog" />
           <q-item-main label="Settings" />
         </q-item>
         <q-item link @click.native="logout">
-          <q-item-side icon="fa-sign-out" />
+          <q-item-side icon="fas fa-sign-out-alt" />
           <q-item-main label="Log Out" />
         </q-item>
-        <span class="fixed-bottom-left">v0.1.2final</span>
+        <span class="fixed-bottom-left">v0.1.3final</span>
       </q-scroll-area>
     </q-layout-drawer>
 

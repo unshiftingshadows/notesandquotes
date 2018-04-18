@@ -5,41 +5,6 @@
       <q-spinner color="primary" class="absolute-center" size="3rem" />
     </div>
     <div v-if="!loading">
-      <!-- <q-card inline v-if="cardTypes.includes(type)" v-for="item in items" :key="item._id" v-bind:class="[type]" class="media-card" @click.native="openItem(item._id)">
-        <q-card-media>
-          <img :src="item.thumbURL" :class="{ 'image-card': isImage }" />
-          <q-card-title slot="overlay" v-if="type == 'books' || type == 'movies' || type == 'videos' || type == 'articles'">
-            {{ item.title }}
-            <span v-for="author in item.author" :key="author.fullName" slot="subtitle">{{ author.fullName }}</span>
-          </q-card-title>
-        </q-card-media>
-      </q-card>
-      <bricks
-        ref="bricks"
-        :data="items"
-        :sizes="sizes"
-        v-if="brickTypes.includes(type)"
-      >
-        <template slot-scope="scope">
-          <q-card inline v-bind:class="[type]" @click.native="openItem(scope.item._id)">
-            <q-card-media>
-              <img :src="scope.item.thumbURL" class="image-card" />
-            </q-card-media>
-          </q-card>
-        </template>
-      </bricks>
-      <q-list v-if="listTypes.includes(type)">
-        <q-item v-for="item in items" :key="item._id" link @click.native="openItem(item._id)">
-          <q-item-main>
-            <q-item-tile label>{{ item.title }}</q-item-tile>
-            <q-item-tile sublabel v-if="type === 'notes'">{{ item.text }}</q-item-tile>
-            <q-item-tile sublabel v-if="type === 'compositions' || type ==='discourses'"><span v-for="author in item.author" :key="author">{{ author }}</span></q-item-tile>
-          </q-item-main>
-          <q-item-side right v-if="type === 'compositions'">
-            <q-item-tile stamp>{{ item.type }}</q-item-tile>
-          </q-item-side>
-        </q-item>
-      </q-list> -->
       <div v-masonry transition-duration="0.3s" item-selector=".media-item">
         <q-card inline v-bind:class="[type]" v-masonry-tile v-for="item in items" :key="item._id" class="media-card media-item" @click.native="openItem(item._id, item)">
           <q-card-media v-if="imageTypes.includes(type) || titleTypes.includes(type)">
@@ -66,19 +31,16 @@
       </q-list>
     </div>
     <q-modal ref="addModal" v-model="showTopic" content-classes="add-media-modal">
-      <!-- <q-icon name="fa-close" size="2rem" @click.native="closeAddModal" class="float-right cursor-pointer" /> -->
       <add-research :modal-fin="closeAddTopic" ref="addTopic" />
     </q-modal>
   </q-page>
 </template>
 
 <script>
-// import Bricks from 'vue-bricks'
 import AddResearch from 'components/AddResearch.vue'
 
 export default {
   components: {
-    // Bricks,
     AddResearch
   },
   data () {
@@ -100,11 +62,6 @@ export default {
       listTypes: [ 'note', 'topic' ]
     }
   },
-  // firestore () {
-  //   return {
-  //     items: this.firebase.store.collection(this.$route.params.type)
-  //   }
-  // },
   mounted () {
     this.init(this.$route.params.type)
   },
@@ -214,11 +171,23 @@ export default {
 
 @media screen and (min-width: 1200px) {
   .media-card {
-    width: 31%;
+    width: 30%;
   }
   .add-media-modal {
     min-width: 500px;
     width: 500px;
+  }
+}
+
+@media screen and (min-width: 1400px) {
+  .book {
+    width: 23%;
+  }
+}
+
+@media screen and (min-width: 1600px) {
+  .book {
+    width: 18%;
   }
 }
 
