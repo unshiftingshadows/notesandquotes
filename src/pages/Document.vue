@@ -47,7 +47,9 @@ export default {
   data () {
     return {
       id: this.$route.params.id,
-      document: {},
+      document: {
+        author: []
+      },
       userData: {
         tags: [],
         notes: '',

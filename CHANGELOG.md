@@ -1,6 +1,12 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.1.4 - 2018-06-05
+### Added
+- images can now be links
+- images can now be uploaded
+- documents can be added
+
 ## 0.1.3 - 2018-04-18
 ### Changed
 - outlines now have a "title" and "text" for each point

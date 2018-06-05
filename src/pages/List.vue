@@ -76,7 +76,22 @@ export default {
       this.loading = true
       this.database.list(type, (data) => {
         console.log('data', data, this)
-        this.items = data
+        if (type === 'image') {
+          data.forEach((image) => {
+            if (image.source === 'upload') {
+              this.firebase.imagesRef.child(image._id).getDownloadURL().then((url) => {
+                image.thumbURL = url
+                image.imageURL = url
+                image.pageURL = url
+                this.items.push(image)
+              })
+            } else {
+              this.items.push(image)
+            }
+          })
+        } else {
+          this.items = data
+        }
         this.loading = false
       })
     },

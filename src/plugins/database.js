@@ -32,7 +32,7 @@ function view (type, id, callback) {
         callback(res.data.resource, res.data.userData)
       })
       .catch((err) => {
-        console.log(err)
+        console.error(err)
       })
   })
 }

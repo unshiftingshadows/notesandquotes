@@ -84,7 +84,18 @@ export default {
   methods: {
     init () {
       this.database.view('image', this.id, (resource, userData) => {
-        this.image = resource
+        console.log(resource, userData)
+        if (resource.source === 'upload') {
+          this.firebase.imagesRef.child(this.id).getDownloadURL().then((url) => {
+            console.log('this', this)
+            resource.thumbURL = url
+            resource.imageURL = url
+            resource.pageURL = url
+            this.image = resource
+          })
+        } else {
+          this.image = resource
+        }
         this.userData = userData
       })
     },

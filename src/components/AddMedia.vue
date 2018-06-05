@@ -88,13 +88,24 @@
               dark
             />
           </div>
-          <div class="col-12">
-            <q-input v-model="imageWikiTitle" v-if="imageType === 'wiki'" float-label="Wiki Title" dark />
+          <div class="col-12" v-if="imageType === 'wiki'">
+            <q-input v-model="imageWikiTitle"  float-label="Wiki Title" dark />
           </div>
-          <div class="col-12">
-            <q-input v-model="imageURL" v-if="imageType ==='link'" float-label="URL" dark />
+          <div class="col-12" v-if="imageType === 'link'">
+            <q-input v-model="imageURL" float-label="URL" dark />
           </div>
-          <div class="col-12">
+          <div class="col-12" v-if="imageType === 'upload'">
+            <FilePond
+              name="image-upload"
+              ref="image-upload"
+              labelIdle="Drop images here..."
+              allowMultiple="false"
+              :acceptedFileTypes="['image/jpeg', 'image/png', 'image/gif', 'image/tiff']"
+              :files="images"
+              :server="imageServer()"
+            />
+          </div>
+          <div class="col-12" v-if="imageType !== 'upload'">
             <q-btn color="primary" class="float-right" @click.native="add" :disable="addDisabled">Add Image</q-btn>
           </div>
         </div>
@@ -122,10 +133,15 @@
       <div v-if="selectType === 'document'" class="col-12">
         <div class="row gutter-sm">
           <div class="col-12">
-            <q-btn>Upload</q-btn>
-          </div>
-          <div class="col-12">
-            <q-btn color="primary" class="float-right" :disable="addDisabled">Add Document</q-btn>
+            <FilePond
+              name="document-upload"
+              ref="document-upload"
+              labelIdle="Drop documents here..."
+              allowMultiple="false"
+              :acceptedFileTypes="['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/pdf', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/xml', 'text/html', 'text/csv', 'application/epub+zip', 'application/json', 'application/rtf']"
+              :files="documents"
+              :server="documentServer()"
+            />
           </div>
         </div>
       </div>
@@ -166,6 +182,14 @@ import { Notify } from 'quasar'
 // import * as getVideoId from 'get-video-id'
 // import * as unfluff from 'unfluff'
 // NOTE: Could use unfluff to generate tags
+import vueFilePond from 'vue-filepond'
+import FilePondImagePreview from 'filepond-plugin-image-preview'
+import FilePondValidateType from 'filepond-plugin-file-validate-type'
+
+const FilePond = vueFilePond(FilePondImagePreview, FilePondValidateType)
+
+import 'filepond/dist/filepond.css'
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css'
 
 function initialState () {
   return {
@@ -189,14 +213,15 @@ function initialState () {
         value: 'link'
       },
       {
-        label: 'Storage',
-        value: 'storage'
+        label: 'Upload',
+        value: 'upload'
       }
     ],
     imageWikiTitle: '',
     imageURL: '',
+    images: [],
     noteTitle: '',
-    documentRef: '',
+    documents: [],
     discourseTitle: '',
     compositionTitle: '',
     compositionType: 'song',
@@ -253,6 +278,9 @@ function initialState () {
 }
 
 export default {
+  components: {
+    FilePond
+  },
   props: ['modalFin'],
   data () {
     return initialState()
@@ -272,6 +300,112 @@ export default {
         console.log(res)
         this.movieResults = res.results
       })
+    },
+    imageServer () {
+      return {
+        process: (fieldName, file, metadata, load, error, progress, abort) => {
+          console.log('process started', this)
+          // Should do custom file upload or local storing here
+          // this.loading = true
+          this.database.add('image', { title: file.name, type: 'upload' }, (res) => {
+            console.log('database image added')
+            var uploadProcess = this.firebase.imagesRef.child(res._id).put(file)
+            uploadProcess.on('state_changed', (snapshot) => {
+              progress(true, snapshot.bytesTransferred, snapshot.totalBytes)
+            }, (err) => {
+              error(err)
+            }, () => {
+              load(uploadProcess.snapshot.ref.name)
+              // uploadProcess.snapshot.ref.getDownloadURL().then((url) => {
+              //   res.thumbURL = url
+              //   res.imageURL = url
+              //   res.pageURL = url
+              // this.loading = false
+              this.modalFin()
+              this.$router.push({ name: this.selectType, params: { id: res._id } })
+              // })
+            })
+          })
+
+          // Can call the error method if something is wrong, should exit after
+          // error('oh my goodness');
+
+          // Should call the progress method to update the progress to 100% before calling load
+          // (endlessMode, processedSize, totalSize)
+          // progress(true, 0, 1024);
+
+          // Should call the load method when done and pass the returned server file id
+          // the unique server file id is used by revert and restore functions
+          // load('unique-file-id');
+
+          // Should expose an abort method so the request can be cancelled
+          return {
+            abort: () => {
+              // User tapped abort, cancel our ongoing actions here
+
+              // Let FilePond know the request has been cancelled
+              abort()
+            }
+          }
+        },
+        revert: './revert',
+        restore: './restore/',
+        load: './load/',
+        fetch: './fetch/'
+      }
+    },
+    documentServer () {
+      return {
+        process: (fieldName, file, metadata, load, error, progress, abort) => {
+          console.log('file started', file)
+          // Should do custom file upload or local storing here
+          // this.loading = true
+          this.database.add('document', { title: file.name, fileType: file.type }, (res) => {
+            console.log('database document added')
+            var uploadProcess = this.firebase.documentsRef.child(res._id).put(file)
+            uploadProcess.on('state_changed', (snapshot) => {
+              progress(true, snapshot.bytesTransferred, snapshot.totalBytes)
+            }, (err) => {
+              error(err)
+            }, () => {
+              load(uploadProcess.snapshot.ref.name)
+              // uploadProcess.snapshot.ref.getDownloadURL().then((url) => {
+              //   res.thumbURL = url
+              //   res.imageURL = url
+              //   res.pageURL = url
+              // this.loading = false
+              this.modalFin()
+              this.$router.push({ name: this.selectType, params: { id: res._id } })
+              // })
+            })
+          })
+
+          // Can call the error method if something is wrong, should exit after
+          // error('oh my goodness');
+
+          // Should call the progress method to update the progress to 100% before calling load
+          // (endlessMode, processedSize, totalSize)
+          // progress(true, 0, 1024);
+
+          // Should call the load method when done and pass the returned server file id
+          // the unique server file id is used by revert and restore functions
+          // load('unique-file-id');
+
+          // Should expose an abort method so the request can be cancelled
+          return {
+            abort: () => {
+              // User tapped abort, cancel our ongoing actions here
+
+              // Let FilePond know the request has been cancelled
+              abort()
+            }
+          }
+        },
+        revert: './revert',
+        restore: './restore/',
+        load: './load/',
+        fetch: './fetch/'
+      }
     },
     add (item) {
       this.addDisabled = true

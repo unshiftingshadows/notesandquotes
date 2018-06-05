@@ -17,7 +17,9 @@ export default ({ app, router, Vue }) => {
     store: fbapp.firestore(),
     searchTerms: fbapp.database().ref('searchTerms'),
     quotes: fbapp.firestore().collection('quotes'),
-    books: fbapp.firestore().collection('books')
+    books: fbapp.firestore().collection('books'),
+    imagesRef: fbapp.storage().ref('images'),
+    documentsRef: fbapp.storage().ref('documents')
   }
   // Vue.prototype.$searchTerms = fbapp.database().ref('searchTerms')
   // Vue.prototype.$firestore = fbapp.firestore()
