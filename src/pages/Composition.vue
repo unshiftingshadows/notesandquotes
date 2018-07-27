@@ -19,28 +19,30 @@
       <div class="col-xs-12 col-md-10">
         <q-btn color="primary" @click.native="editText = true" class="float-right">Edit Text</q-btn>
       </div>
-      <div class="row gutter-sm">
-        <div class="col-12">
-          <q-input v-model="composition.description" type="textarea" :max-height="100" :min-rows="2" float-label="Description" dark />
-        </div>
-        <div class="col-6">
-          <q-chips-input v-model="composition.author" float-label="Author" dark add-icon="fas fa-plus" />
-        </div>
-        <div class="col-6">
-          <q-input v-model="composition.url" float-label="Link" dark />
-        </div>
-        <div class="col-6">
-          <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
-        </div>
-        <div class="col-6">
-          <q-rating v-model="userData.rating" :max="5" icon="fa-star" size="1.5em" style="padding-top: 15px; padding-left: 20px" dark />
-        </div>
-        <div class="col-12">
-          <q-chips-input v-model="userData.tags" float-label="Tags" dark />
-        </div>
-        <div class="col-12">
-          <q-btn color="primary" @click="update">Update</q-btn>
-          <q-btn color="negative" class="float-right" @click="remove">Delete</q-btn>
+      <div class="col-xs-12">
+        <div class="row gutter-sm">
+          <div class="col-12">
+            <q-input v-model="composition.description" type="textarea" :max-height="100" :min-rows="2" float-label="Description" dark />
+          </div>
+          <div class="col-6">
+            <q-chips-input v-model="composition.author" float-label="Author" dark add-icon="fas fa-plus" />
+          </div>
+          <div class="col-6">
+            <q-input v-model="composition.url" float-label="Link" dark />
+          </div>
+          <div class="col-6">
+            <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
+          </div>
+          <div class="col-6">
+            <q-rating v-model="userData.rating" :max="5" icon="fa-star" size="1.5em" style="padding-top: 15px; padding-left: 20px" dark />
+          </div>
+          <div class="col-12">
+            <q-chips-input v-model="userData.tags" float-label="Tags" dark />
+          </div>
+          <div class="col-12">
+            <q-btn color="primary" @click="update">Update</q-btn>
+            <q-btn color="negative" class="float-right" @click="remove">Delete</q-btn>
+          </div>
         </div>
       </div>
       <div class="col-12">
@@ -50,9 +52,9 @@
     <q-modal v-model="editText" content-classes="edit-modal" @hide="update">
       <q-icon name="fa-close" size="2rem" @click.native="editText = false" class="float-right cursor-pointer" />
       <h4>Edit Text</h4>
-      <!-- <markdown-editor v-model="composition.text" :configs="editorConfigs" ref="markdownEditor" /> -->
       <vue-editor
-        ref="editor"
+        id="editor-composition"
+        ref="editor-composition"
         :editorToolbar="toolbarContent"
         v-model="composition.text"
       />
@@ -63,7 +65,6 @@
 <script>
 import { Notify } from 'quasar'
 import MediaNotes from 'components/MediaNotes.vue'
-// import markdownEditor from 'vue-simplemde/src/markdown-editor'
 import { VueEditor } from 'vue2-editor'
 
 export default {

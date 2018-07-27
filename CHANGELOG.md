@@ -1,6 +1,15 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.1.5 - 2018-07-27
+### Changed
+- filter in Topic works much better
+
+### Fixed
+- mobile users can now search for books and movies when an 'enter' key is not present
+- tags don't screw up design when being added to certain media
+- composition notes are no longer overridden by composition text
+
 ## 0.1.4 - 2018-06-05
 ### Added
 - images can now be links

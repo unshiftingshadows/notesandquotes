@@ -3,7 +3,8 @@
     <h4>Notes</h4>
     <!-- <markdown-editor v-model="notes" :configs="editorConfigs" ref="markdownEditor" /> -->
     <vue-editor
-      ref="editor"
+      id="editormn"
+      ref="editormn"
       :editorToolbar="toolbarContent"
       v-model="notes"
     />
@@ -43,8 +44,9 @@ export default {
   //   }
   // },
   mounted () {
+    console.log(this.notes)
     // this.simplemde.codemirror.on('blur', this.updateNotes)
-    this.$refs.editor.quill.on('selection-change', (range, oldRange, source) => {
+    this.$refs.editormn.quill.on('selection-change', (range, oldRange, source) => {
       if (range === null && oldRange !== null) {
         this.updateNotes()
       }
@@ -52,6 +54,7 @@ export default {
   },
   watch: {
     userNotes (value) {
+      console.log('update user notes', value)
       this.notes = value
     }
   },

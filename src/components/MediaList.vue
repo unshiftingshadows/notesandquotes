@@ -56,10 +56,12 @@ export default {
       titleTypes: [ 'video', 'article' ],
       textTypes: [ 'document', 'discourse', 'composition' ],
       listTypes: [ 'note', 'quote', 'idea', 'illustration' ],
-      selectedTypes: [
-        'book', 'movie', 'image', 'article', 'video', 'article', 'document', 'discourse', 'composition', 'note', 'quote', 'idea', 'illustration', 'outline'
-      ],
+      selectedTypes: [ 'all' ],
       types: [
+        {
+          label: 'All',
+          value: 'all'
+        },
         {
           label: 'Book',
           value: 'book'
@@ -116,7 +118,16 @@ export default {
     }
   },
   watch: {
-    'selectedTypes': function () {
+    'selectedTypes': function (newVal, oldVal) {
+      if (newVal.includes('all')) {
+        if (newVal.length > 1) {
+          if (oldVal.includes('all')) {
+            this.selectedTypes.splice(0, 1)
+          } else {
+            this.selectedTypes = ['all']
+          }
+        }
+      }
       this.showItems = this.items.filter(this.checkType)
     },
     'items': function (value) {
@@ -166,7 +177,11 @@ export default {
     //   this.$refs.bricks.pack()
     // },
     checkType (item) {
-      return this.selectedTypes.includes(item.type)
+      if (this.selectedTypes.includes('all')) {
+        return true
+      } else {
+        return this.selectedTypes.includes(item.type)
+      }
     }
   }
 }

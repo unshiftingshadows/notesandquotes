@@ -13,23 +13,15 @@
       <div v-if="selectType === 'book'" class="col-12">
         <div class="row gutter-sm">
           <div class="col-12">
-            <q-input v-model="bookSearch" :loading="bookResultsLoading" @keyup.enter="googleBookSearch" float-label="Search Books" dark />
+            <q-input v-model="bookSearch" :loading="bookResultsLoading" @keyup.enter="googleBookSearch" float-label="Search Books" dark :after="[{ icon: 'fas fa-arrow-right', handler: googleBookSearch }]" />
           </div>
           <div class="col-12">
-            <!-- <q-list separator link>
-              <q-item v-for="result in bookResults" :key="result.id" @click.native="add(result)">
-                <q-item-main>
-                  <q-item-tile label>{{ result.volumeInfo.title }}</q-item-tile>
-                  <q-item-tile sublabel><span v-for="author in result.volumeInfo.authors" :key="author">{{ author }}</span></q-item-tile>
-                </q-item-main>
-              </q-item>
-            </q-list> -->
             <q-card inline v-for="result in bookResults" :key="result.id" @click.native="add(result)" style="cursor: pointer; width: 47%; min-height: 200px; margin: 5px;">
               <q-card-media v-if="result.volumeInfo.imageLinks !== undefined && result.volumeInfo.imageLinks.thumbnail !== null">
                 <img :src="result.volumeInfo.imageLinks.thumbnail" />
                 <q-card-title slot="overlay">
                   {{ result.volumeInfo.title }}
-                  <span slot="subtitle">{{ result.volumeInfo.authors[0] }}</span>
+                  <span slot="subtitle" v-if="result.volumeInfo.authors">{{ result.volumeInfo.authors[0] }}</span>
                 </q-card-title>
               </q-card-media>
               <q-card-title v-if="result.volumeInfo.imageLinks === undefined || result.volumeInfo.imageLinks.thumbnail === null">
@@ -43,17 +35,9 @@
       <div v-if="selectType === 'movie'" class="col-12">
         <div class="row gutter-sm">
           <div class="col-12">
-            <q-input v-model="movieSearch" :loading="movieResultsLoading" @keyup.enter="moviedbSearch" float-label="Search Movies" dark />
+            <q-input v-model="movieSearch" :loading="movieResultsLoading" @keyup.enter="moviedbSearch" float-label="Search Movies" dark :after="[{ icon: 'fas fa-arrow-right', handler: moviedbSearch }]" />
           </div>
           <div class="col-12">
-            <!-- <q-list separator link>
-              <q-item v-for="result in movieResults" :key="result.id" @click.native="addMovie(result)">
-                <q-item-main>
-                  <q-item-tile label>{{ result.title }}</q-item-tile>
-                  <q-item-tile sublabel><span v-for="author in result.volumeInfo.authors" :key="author">{{ author }}</span></q-item-tile>
-                </q-item-main>
-              </q-item>
-            </q-list> -->
             <q-card inline v-for="result in movieResults" :key="result.id" @click.native="add(result)" style="cursor: pointer; width: 47%; min-height: 200px; margin: 5px;">
               <q-card-media v-if="result.poster_path !== null">
                 <img :src="'https://image.tmdb.org/t/p/w500' + result.poster_path" />
