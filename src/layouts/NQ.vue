@@ -91,12 +91,12 @@
           <q-item-side icon="fas fa-sign-out-alt" />
           <q-item-main label="Log Out" />
         </q-item>
-        <span class="fixed-bottom-left">v0.1.5</span>
+        <span class="fixed-bottom-left">v0.1.6</span>
       </q-scroll-area>
     </q-layout-drawer>
 
     <q-modal ref="addModal" v-model="showAdd" content-classes="add-media-modal">
-      <q-icon name="fa-close" size="2rem" @click.native="closeAddModal" class="float-right cursor-pointer" />
+      <q-btn icon="fas fa-times" color="primary" @click.native="closeAddModal" class="float-right" />
       <add :modal-fin="closeAddModal" ref="addMedia" />
     </q-modal>
 

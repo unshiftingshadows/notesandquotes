@@ -1,6 +1,11 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.1.6 - 2018-08
+### Changed
+- updated the close icon for new media to be a button and use new icon naming scheme
+- fixed firebase deploy directory
+
 ## 0.1.5 - 2018-07-27
 ### Changed
 - filter in Topic works much better
