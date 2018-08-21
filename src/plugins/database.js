@@ -4,10 +4,12 @@ import firebase from 'firebase'
 axios.defaults.baseURL = 'https://database.unshiftingshadows.com/nq'
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
-function list (type, callback) {
+function list (type, filter, sort, callback) {
   firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
     axios.post('/list', {
       type: type,
+      filter: filter,
+      sort: sort,
       token: idToken
     })
       .then((res) => {

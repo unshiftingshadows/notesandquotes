@@ -92,6 +92,7 @@ module.exports = function (ctx) {
         'QRating',
         'QChipsInput',
         'QCheckbox',
+        'QToggle',
         'QDatetime',
         'QModal',
         'QPopover',

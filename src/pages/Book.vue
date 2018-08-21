@@ -2,7 +2,7 @@
   <q-page padding>
     <div class="row gutter-md items-center">
       <div class="gt-sm col-md-4 justify-center">
-        <img :src="book.thumbURL" width="100%" />
+        <img :src="largeImageURL" width="100%" />
       </div>
       <div class="col-xs-12 col-md-8">
         <span class="float-right" v-if="this.$selectedTopic.get()">
@@ -78,6 +78,7 @@ export default {
         rating: 0,
         status: 'new'
       },
+      largeImageURL: '',
       statusOptions: [
         {
           label: 'New',
@@ -102,6 +103,11 @@ export default {
       this.database.view('book', this.id, (resource, userData) => {
         this.book = resource
         this.userData = userData
+        if (this.book.thumbURL.startsWith('http://books.google.com/') || this.book.thumbURL.startsWith('https://books.google.com/')) {
+          this.largeImageURL = this.book.thumbURL.slice(0, this.book.thumbURL.indexOf('&zoom'))
+        } else {
+          this.largeImageURL = this.book.thumbURL
+        }
       })
     },
     updateNotes (notes) {

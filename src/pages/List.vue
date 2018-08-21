@@ -1,6 +1,9 @@
 <template>
   <q-page padding>
-    <h3>{{ type }} <q-btn v-if="type == 'topic'" size="sm" icon="fa-plus" color="primary" @click.native="openAddTopic" /></h3>
+    <q-toggle v-if="readTypes.includes(type)" v-model="showOnlyNew" label="Show New" class="float-right" />
+    <h3>{{ type }}&nbsp;
+      <q-btn v-if="type === 'topic'" size="sm" icon="fa-plus" color="primary" @click.native="openAddTopic" />
+    </h3>
     <div v-if="loading">
       <q-spinner color="primary" class="absolute-center" size="3rem" />
     </div>
@@ -47,6 +50,7 @@ export default {
     return {
       type: this.$route.params.type,
       items: [],
+      allItems: [],
       isImage: this.$route.params.type === 'image',
       showTopic: false,
       loading: false,
@@ -59,7 +63,9 @@ export default {
       imageTypes: [ 'book', 'movie', 'image', 'article' ],
       titleTypes: [ 'video', 'article' ],
       textTypes: [ 'document', 'discourse', 'composition' ],
-      listTypes: [ 'note', 'topic' ]
+      listTypes: [ 'note', 'topic' ],
+      readTypes: [ 'book', 'movie', 'article', 'video', 'discourse', 'composition' ],
+      showOnlyNew: false
     }
   },
   mounted () {
@@ -69,12 +75,19 @@ export default {
     '$route.params.type' (newType, oldType) {
       this.type = newType
       this.init(newType)
+    },
+    'showOnlyNew' (newState) {
+      this.dbCall(this.type)
     }
   },
   methods: {
     init (type) {
+      this.showOnlyNew = false
+      this.dbCall(type)
+    },
+    dbCall (type) {
       this.loading = true
-      this.database.list(type, (data) => {
+      this.database.list(type, { newOnly: this.showOnlyNew }, {}, (data) => {
         console.log('data', data, this)
         if (type === 'image') {
           data.forEach((image) => {
@@ -91,6 +104,7 @@ export default {
           })
         } else {
           this.items = data
+          this.allItems = data
         }
         this.loading = false
       })
