@@ -14,7 +14,8 @@ export default [
       { path: 'note/:id', name: 'note', component: () => import('pages/Note') },
       { path: 'document/:id', name: 'document', component: () => import('pages/Document') },
       { path: 'discourse/:id', name: 'discourse', component: () => import('pages/Discourse') },
-      { path: 'composition/:id', name: 'composition', component: () => import('pages/Composition') }
+      { path: 'composition/:id', name: 'composition', component: () => import('pages/Composition') },
+      { path: 'addarticle', name: 'addarticle', component: () => import('components/RLAddArticle') }
     ],
     meta: {
       requiresAuth: true

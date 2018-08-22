@@ -27,7 +27,7 @@
             <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
           </div>
           <div class="col-6">
-            <q-rating v-model="userData.rating" :max="5" icon="fa-star" size="1.5em" style="padding-top: 15px; padding-left: 20px" dark />
+            <q-rating v-model="userData.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
           </div>
           <div class="col-12">
             <q-chips-input v-model="userData.tags" float-label="Tags" dark />
@@ -195,9 +195,7 @@ export default {
 }
 </script>
 
-<style lang="stylus">
-
-@import '~variables'
+<style>
 
 .add-quote-modal {
   /* padding: 30px; */
@@ -212,8 +210,37 @@ export default {
   }
 }
 
+.article-content h1 {
+  font-size: 30pt;
+}
+
+.article-content h2 {
+  font-size: 24pt;
+}
+
+.article-content h3 {
+  font-size: 20pt;
+}
+
+.article-content h4 {
+  font-size: 18pt;
+}
+
+.article-content h5 {
+  font-size: 16pt;
+}
+
+.article-content h6 {
+  font-size: 14pt;
+}
+
+.article-content blockquote {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
 .article-content a {
-  color: $primary;
+  color: var(--q-color-primary) !important;
 }
 
 .article-content img {

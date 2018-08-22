@@ -1,0 +1,9 @@
+// Simple bookmarklet to save links directly from the browser
+javascript:(function(){location='https://notesandquotes.unshiftingshadows.com/addarticle?url='+window.location.href;})();
+
+// Dev bookmarklet
+javascript:(function(){location='http://localhost:3000/addarticle?url='+window.location.href;})();
+
+
+// v2.0
+javascript:(function(){const http = new XMLHttpRequest();http.open("GET", 'http://localhost:3000/addarticle?url='+window.location.href;,true);http.send();})();

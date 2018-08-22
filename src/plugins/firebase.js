@@ -10,14 +10,18 @@ const fbapp = firebase.initializeApp({
   messagingSenderId: '333897842731'
 })
 
+const firestore = firebase.firestore()
+const settings = {
+  timestampsInSnapshots: true
+}
+firestore.settings(settings)
+
 export default ({ app, router, Vue }) => {
   Vue.prototype.firebase = {
     auth: fbapp.auth(),
     db: fbapp.database(),
-    store: fbapp.firestore(),
+    store: firestore,
     searchTerms: fbapp.database().ref('searchTerms'),
-    quotes: fbapp.firestore().collection('quotes'),
-    books: fbapp.firestore().collection('books'),
     imagesRef: fbapp.storage().ref('images'),
     documentsRef: fbapp.storage().ref('documents')
   }

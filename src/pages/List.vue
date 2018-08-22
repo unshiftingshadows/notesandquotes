@@ -70,6 +70,7 @@ export default {
   },
   mounted () {
     this.init(this.$route.params.type)
+    console.log(window.location)
   },
   watch: {
     '$route.params.type' (newType, oldType) {

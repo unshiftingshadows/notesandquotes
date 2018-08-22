@@ -2,7 +2,7 @@
   <q-page padding>
     <div class="row gutter-md items-center">
       <div class="col-xs-12 justify-center">
-        document preview...
+        <pdf v-if="document.fileType === 'application/pdf' && fileURL !== ''" :src="fileURL" />
       </div>
       <div class="col-xs-12">
         <span class="float-right" v-if="this.$selectedTopic.get()">
@@ -18,7 +18,7 @@
             <q-chips-input v-model="document.author" float-label="Author" dark add-icon="fas fa-plus" />
           </div>
           <div class="col-6">
-            <q-rating v-model="userData.rating" :max="5" icon="fa-star" size="1.5em" style="padding-top: 15px; padding-left: 20px" dark />
+            <q-rating v-model="userData.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
           </div>
           <div class="col-12">
             <q-chips-input v-model="userData.tags" float-label="Tags" dark />
@@ -38,12 +38,16 @@
 
 <script>
 import { Notify } from 'quasar'
+import pdf from 'vue-pdf'
+// import pdf from 'pdfjs-dist'
 import MediaNotes from 'components/MediaNotes.vue'
 
 export default {
   components: {
+    pdf,
     MediaNotes
   },
+  name: 'Document',
   data () {
     return {
       id: this.$route.params.id,
@@ -65,7 +69,9 @@ export default {
           label: 'Viewed',
           value: 'viewed'
         }
-      ]
+      ],
+      fileURL: '',
+      pdfLoaded: pdf === {}
     }
   },
   mounted () {
@@ -76,6 +82,13 @@ export default {
       this.database.view('document', this.id, (resource, userData) => {
         this.document = resource
         this.userData = userData
+        this.firebase.documentsRef.child(this.id).getDownloadURL().then((url) => {
+          this.fileURL = url
+          // pdf.createLoadingTask(url)
+          // this.fileURL.then(pdf => {
+          //   console.log(pdf)
+          // })
+        })
       })
     },
     updateNotes (notes) {

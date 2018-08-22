@@ -43,6 +43,9 @@ module.exports = function (ctx) {
           loader: 'eslint-loader',
           exclude: /(node_modules|quasar)/
         })
+        cfg.output = {
+          globalObject: 'this'
+        }
       }
     },
     devServer: {

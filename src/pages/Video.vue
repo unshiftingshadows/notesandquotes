@@ -21,7 +21,7 @@
             <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
           </div>
           <div class="col-6">
-            <q-rating v-model="userData.rating" :max="5" icon="fa-star" size="1.5em" style="padding-top: 15px; padding-left: 20px" dark />
+            <q-rating v-model="userData.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
           </div>
           <div class="col-12">
             <q-chips-input v-model="userData.tags" float-label="Tags" dark />

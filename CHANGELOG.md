@@ -1,6 +1,21 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.1.8 - 2018-08-22
+### UPDATE TO QUASAR CLI
+- lots of changes to config files due to the update
+
+### Added
+- redirecting component to use for importing article urls from a bookmarklet
+- PDF viewer for documents
+
+### Changed
+- updated firestore options due to future update
+- webpack config output to fix vue-pdf issue - window is not defined
+
+### Fixed
+- after update, fixed all q-rating tags with proper icons and sizes
+
 ## 0.1.7 - 2018-08-21
 ### Changed
 - database list function now requires filtering and sorting objects
