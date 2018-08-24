@@ -13,7 +13,7 @@
       </div>
       <div class="col-xs-12 col-md-10">
         <div class="composition-content">
-          <p style="white-space: pre-wrap">{{ composition.text }}</p>
+          <p><span v-html="composition.text" /></p>
         </div>
       </div>
       <div class="col-xs-12 col-md-10">
@@ -228,6 +228,10 @@ export default {
 
 .ql-stroke {
   stroke: #bbb !important;
+}
+
+.composition-content p {
+  margin: 0px;
 }
 
 </style>

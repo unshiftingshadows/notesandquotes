@@ -105,7 +105,8 @@ module.exports = function (ctx) {
         'QFabAction'
       ],
       directives: [
-        'Ripple'
+        'Ripple',
+        'TouchSwipe'
       ],
       plugins: [
         'Notify'

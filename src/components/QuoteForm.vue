@@ -14,7 +14,7 @@
         <q-chips-input v-model="tags" float-label="Tags" dark />
       </div>
       <div class="col-12">
-        <q-chips-input v-model="bibleRefs" float-label="Bible Refs" dark />
+        <q-chips-input v-model="bibleRefs" float-label="Bible Refs" color="secondary" dark />
       </div>
       <div class="col-12">
         <q-input v-model="notes" type="textarea" :max-height="100" :min-rows="2" float-label="Notes" dark />
@@ -31,8 +31,8 @@
         <q-input type="number" v-model="location" v-if="locationType !== 'None'" :float-label="locationType" dark frame-color="secondary" />
       </div>
       <div class="col-12">
-        <q-btn v-if="formType === 'Add'" color="primary" @click="addQuote">Add</q-btn>
-        <q-btn v-if="formType === 'Edit'" color="primary" @click="updateQuote">Update</q-btn>
+        <q-btn v-if="formType === 'Add'" color="primary" @click="addQuote" class="on-left">Add</q-btn>
+        <q-btn v-if="formType === 'Edit'" color="primary" @click="updateQuote" class="on-left">Update</q-btn>
         <q-btn v-if="formType === 'Edit'" color="negative" @click="removeQuote">Remove</q-btn>
       </div>
     </div>

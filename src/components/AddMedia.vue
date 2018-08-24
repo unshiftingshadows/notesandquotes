@@ -122,7 +122,22 @@
               ref="document-upload"
               labelIdle="Drop documents here..."
               allowMultiple="false"
-              :acceptedFileTypes="['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/pdf', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/xml', 'text/html', 'text/csv', 'application/epub+zip', 'application/json', 'application/rtf']"
+              :acceptedFileTypes="[
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-powerpoint',
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                /**'application/xml',
+                'text/html',
+                'text/csv',
+                'application/epub+zip',
+                'application/json',
+                'application/rtf',
+                'text/plain',**/
+                'application/pdf'
+              ]"
               :files="documents"
               :server="documentServer()"
             />

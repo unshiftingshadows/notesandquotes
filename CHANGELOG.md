@@ -1,6 +1,24 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.1.9 - 2018-08-23
+### Added
+- citation field on Document page
+- .doc and .docx files are now viewable
+- .xls and .xlsx files are now viewable
+- .ppt and .pptx files are now viewable
+- tags show on most list items
+
+### Changed
+- CORS updated to include notesandquotes.unshiftingshadows.com
+- pdf documents now accessible through viewer modal
+- only office and pdf files are now uploadable with documents
+- some styling things with list cards
+- all chips inputs for Bible refs are now colored with secondary color
+
+### Fixed
+- composition texts now display properly as html rather than plain text
+
 ## 0.1.8 - 2018-08-22
 ### UPDATE TO QUASAR CLI
 - lots of changes to config files due to the update

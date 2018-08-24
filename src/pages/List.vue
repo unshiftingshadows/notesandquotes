@@ -2,21 +2,26 @@
   <q-page padding>
     <q-toggle v-if="readTypes.includes(type)" v-model="showOnlyNew" label="Show New" class="float-right" />
     <h3>{{ type }}&nbsp;
-      <q-btn v-if="type === 'topic'" size="sm" icon="fa-plus" color="primary" @click.native="openAddTopic" />
+      <q-btn v-if="type === 'topic'" size="sm" icon="fas fa-plus" color="primary" @click.native="openAddTopic" />
     </h3>
     <div v-if="loading">
-      <q-spinner color="primary" class="absolute-center" size="3rem" />
+      <q-spinner color="primary" class="absolute-center" size="3em" />
     </div>
     <div v-if="!loading">
       <div v-masonry transition-duration="0.3s" item-selector=".media-item">
-        <q-card inline v-bind:class="[type]" v-masonry-tile v-for="item in items" :key="item._id" class="media-card media-item" @click.native="openItem(item._id, item)">
-          <q-card-media v-if="imageTypes.includes(type) || titleTypes.includes(type)">
-            <img :src="item.thumbURL" class="image-card" />
-            <q-card-title slot="overlay" v-if="titleTypes.includes(type)">{{ item.title }}</q-card-title>
+        <q-card inline v-masonry-tile v-for="item in items" :key="item._id" v-bind:class="[ type, { 'image-card': imageTypes.includes(type) }]" class="media-card media-item" @click.native="openItem(item._id, item)">
+          <q-card-media v-if="imageTypes.includes(type)">
+            <img :src="item.thumbURL" />
+            <q-card-title slot="overlay">
+              <span v-if="!noTitleTypes.includes(type)">{{ item.title }}</span>
+              <span slot="subtitle" v-if="item.userData && item.userData[firebase.auth.currentUser.uid]"><q-chip v-for="tag in item.userData[firebase.auth.currentUser.uid].tags" :key="tag" color="primary" small style="margin-right: 5px; margin-bottom: 5px;">{{ tag }}</q-chip></span>
+            </q-card-title>
           </q-card-media>
+          <span v-if="type === 'composition'" class="float-right text-weight-thin" style="margin-top: 5px; margin-right: 5px;">{{ capText(item.type) }}</span>
           <q-card-title v-if="textTypes.includes(type)">{{ item.title }}</q-card-title>
           <q-card-main v-if="textTypes.includes(type)">
             <p>| <span v-for="author in item.author" :key="author">{{ author }} | </span></p>
+            <p v-if="item.userData && item.userData[firebase.auth.currentUser.uid]"><q-chip v-for="tag in item.userData[firebase.auth.currentUser.uid].tags" :key="tag" color="primary" small style="margin-right: 5px;">{{ tag }}</q-chip></p>
           </q-card-main>
         </q-card>
       </div>
@@ -24,12 +29,9 @@
         <q-item v-for="item in items" :key="item._id" link @click.native="openItem(item._id)">
           <q-item-main>
             <q-item-tile label>{{ item.title }}</q-item-tile>
-            <q-item-tile sublabel v-if="type === 'notes'">{{ item.text }}</q-item-tile>
-            <q-item-tile sublabel v-if="type === 'compositions' || type ==='discourses'"><span v-for="author in item.author" :key="author">{{ author }}</span></q-item-tile>
+            <q-item-tile sublabel v-if="type === 'note'">{{ item.text }}</q-item-tile>
+            <q-item-tile sublabel v-if="type ==='discourse'"><span v-for="author in item.author" :key="author">{{ author }}</span></q-item-tile>
           </q-item-main>
-          <q-item-side right v-if="type === 'compositions'">
-            <q-item-tile stamp>{{ item.type }}</q-item-tile>
-          </q-item-side>
         </q-item>
       </q-list>
     </div>
@@ -41,11 +43,15 @@
 
 <script>
 import AddResearch from 'components/AddResearch.vue'
+import { format } from 'quasar'
+
+const { capitalize } = format
 
 export default {
   components: {
     AddResearch
   },
+  name: 'List',
   data () {
     return {
       type: this.$route.params.type,
@@ -60,8 +66,8 @@ export default {
         { mq: '1400px', columns: 3, gutter: 20 },
         { mq: '1800px', columns: 4, gutter: 20 }
       ],
-      imageTypes: [ 'book', 'movie', 'image', 'article' ],
-      titleTypes: [ 'video', 'article' ],
+      imageTypes: [ 'book', 'movie', 'image', 'article', 'video' ],
+      noTitleTypes: [ 'book', 'movie', 'image' ],
       textTypes: [ 'document', 'discourse', 'composition' ],
       listTypes: [ 'note', 'topic' ],
       readTypes: [ 'book', 'movie', 'article', 'video', 'discourse', 'composition' ],
@@ -91,6 +97,8 @@ export default {
       this.database.list(type, { newOnly: this.showOnlyNew }, {}, (data) => {
         console.log('data', data, this)
         if (type === 'image') {
+          this.items = []
+          this.allItems = []
           data.forEach((image) => {
             if (image.source === 'upload') {
               this.firebase.imagesRef.child(image._id).getDownloadURL().then((url) => {
@@ -98,9 +106,11 @@ export default {
                 image.imageURL = url
                 image.pageURL = url
                 this.items.push(image)
+                this.allItems.push(image)
               })
             } else {
               this.items.push(image)
+              this.allItems.push(image)
             }
           })
         } else {
@@ -156,6 +166,9 @@ export default {
     },
     closeAddTopic () {
       this.showTopic = false
+    },
+    capText (text) {
+      return capitalize(text)
     }
   }
 }
@@ -164,18 +177,16 @@ export default {
 <style>
 
 .media-card {
+  background-color: var(--q-color-dark);
   margin: 10px;
   width: 95%;
   cursor: pointer;
-}
-
-.image-card {
   opacity: 0.5;
   transition: opacity .25s;
   transition-timing-function: ease-in;
 }
 
-.image-card:hover {
+.media-card:hover {
   opacity: 1;
 }
 
