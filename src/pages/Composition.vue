@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div class="row gutter-md justify-center">
+    <div class="row gutter-md justify-center" v-if="!loading">
       <div class="col-xs-12 justify-center" v-if="linkIsVideo">
         <q-video :src="embedURL" />
       </div>
@@ -31,13 +31,13 @@
             <q-input v-model="composition.url" float-label="Link" dark />
           </div>
           <div class="col-6">
-            <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
+            <q-select v-model="composition.status" float-label="Status" radio :options="statusOptions" dark />
           </div>
           <div class="col-6">
-            <q-rating v-model="userData.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
+            <q-rating v-model="composition.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
           </div>
           <div class="col-12">
-            <q-chips-input v-model="userData.tags" float-label="Tags" dark />
+            <q-chips-input v-model="composition.tags" float-label="Tags" dark />
           </div>
           <div class="col-12">
             <q-btn color="primary" @click="update">Update</q-btn>
@@ -46,11 +46,11 @@
         </div>
       </div>
       <div class="col-12">
-        <media-notes :user-notes="userData.notes" :update="updateNotes" :mediaid="id" media-type="composition"></media-notes>
+        <media-notes :user-notes="composition.notes" :update="updateNotes" :mediaid="id" media-type="composition"></media-notes>
       </div>
     </div>
     <q-modal v-model="editText" content-classes="edit-modal" @hide="update">
-      <q-icon name="fa-close" size="2rem" @click.native="editText = false" class="float-right cursor-pointer" />
+      <q-icon name="fas fa-times" size="2rem" @click.native="editText = false" class="float-right cursor-pointer" />
       <h4>Edit Text</h4>
       <vue-editor
         id="editor-composition"
@@ -73,18 +73,22 @@ export default {
     // markdownEditor
     VueEditor
   },
+  fiery: true,
   data () {
     return {
+      loading: true,
       id: this.$route.params.id,
-      composition: {
-        author: []
-      },
-      userData: {
-        tags: [],
-        notes: '',
-        rating: 0,
-        status: 'new'
-      },
+      composition: this.$fiery(this.$firebase.view('composition', this.$route.params.id), {
+        onSuccess: () => {
+          this.loading = false
+        }
+      }),
+      // userData: {
+      //   tags: [],
+      //   notes: '',
+      //   rating: 0,
+      //   status: 'new'
+      // },
       statusOptions: [
         {
           label: 'New',
@@ -112,51 +116,59 @@ export default {
     }
   },
   mounted () {
-    this.init()
+    // this.init()
   },
   methods: {
     init () {
-      this.database.view('composition', this.id, (resource, userData) => {
-        this.composition = resource
-        this.checkVideo()
-        this.userData = userData
-      })
+      // this.database.view('composition', this.id, (resource, userData) => {
+      //   this.composition = resource
+      //   this.checkVideo()
+      //   this.userData = userData
+      // })
     },
     updateNotes (notes) {
-      this.userData.notes = notes
-      this.updateUserData()
+      this.composition.notes = notes
+      this.update()
     },
-    updateUserData () {
-      var userData = {
-        notes: this.userData.notes,
-        tags: this.userData.tags,
-        rating: this.userData.rating,
-        status: this.userData.status
-      }
-      this.database.update(this.id, 'composition', userData, { updateUserData: true }, (res) => {
-        Notify.create({
-          message: 'User data updated!',
-          type: 'positive',
-          position: 'bottom-left'
-        })
-      })
-    },
+    // updateUserData () {
+    //   var userData = {
+    //     notes: this.userData.notes,
+    //     tags: this.userData.tags,
+    //     rating: this.userData.rating,
+    //     status: this.userData.status
+    //   }
+    //   this.database.update(this.id, 'composition', userData, { updateUserData: true }, (res) => {
+    //     Notify.create({
+    //       message: 'User data updated!',
+    //       type: 'positive',
+    //       position: 'bottom-left'
+    //     })
+    //   })
+    // },
     update () {
-      var resource = {
-        description: this.composition.description,
-        author: this.composition.author,
-        url: this.composition.url,
-        text: this.composition.text
-      }
-      this.database.update(this.id, 'composition', resource, { updateUserData: false }, (res) => {
-        this.checkVideo()
+      console.log('update', this.composition)
+      this.$fiery.update(this.composition).then(() => {
         Notify.create({
           message: 'Composition updated!',
           type: 'positive',
           position: 'bottom-left'
         })
       })
-      this.updateUserData()
+      // var resource = {
+      //   description: this.composition.description,
+      //   author: this.composition.author,
+      //   url: this.composition.url,
+      //   text: this.composition.text
+      // }
+      // this.database.update(this.id, 'composition', resource, { updateUserData: false }, (res) => {
+      //   this.checkVideo()
+      //   Notify.create({
+      //     message: 'Composition updated!',
+      //     type: 'positive',
+      //     position: 'bottom-left'
+      //   })
+      // })
+      // this.updateUserData()
     },
     checkVideo () {
       var {id, service} = this.$videoId(this.composition.url)

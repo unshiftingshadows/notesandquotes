@@ -10,9 +10,7 @@ module.exports = function (ctx) {
       'get-video-id',
       'masonry',
       'research',
-      'vuelidate',
-      'vuefire',
-      'vue-firestore'
+      'vuelidate'
     ],
     css: [
       'app.styl'

@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div class="row gutter-md justify-center">
+    <div class="row gutter-md justify-center" v-if="!loading">
       <div class="col-xs-12">
         <span class="float-right" v-if="this.$selectedTopic.get()">
           <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
@@ -24,13 +24,13 @@
             <q-chips-input v-model="article.author" float-label="Author" dark add-icon="fas fa-plus" />
           </div>
           <div class="col-6">
-            <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
+            <q-select v-model="article.status" float-label="Status" radio :options="statusOptions" dark />
           </div>
           <div class="col-6">
-            <q-rating v-model="userData.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
+            <q-rating v-model="article.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
           </div>
           <div class="col-12">
-            <q-chips-input v-model="userData.tags" float-label="Tags" dark />
+            <q-chips-input v-model="article.tags" float-label="Tags" dark />
           </div>
           <div class="col-12">
             <q-btn color="primary" @click="update">Update</q-btn>
@@ -42,7 +42,7 @@
         <quote-list :mediaid="id" :media="article" media-type="article" ref="snippets" />
       </div>
       <div class="col-12">
-        <media-notes :user-notes="userData.notes" :update="updateNotes" :mediaid="id" media-type="article"></media-notes>
+        <media-notes :user-notes="article.notes" :update="updateNotes" :mediaid="id" media-type="article"></media-notes>
       </div>
     </div>
     <q-btn
@@ -76,18 +76,22 @@ export default {
   // directives: {
   //   selection
   // },
+  fiery: true,
   data () {
     return {
+      loading: true,
       id: this.$route.params.id,
-      article: {
-        author: []
-      },
-      userData: {
-        tags: [],
-        notes: '',
-        rating: 0,
-        status: 'new'
-      },
+      article: this.$fiery(this.$firebase.view('article', this.$route.params.id), {
+        onSuccess: () => {
+          this.loading = false
+        }
+      }),
+      // userData: {
+      //   tags: [],
+      //   notes: '',
+      //   rating: 0,
+      //   status: 'new'
+      // },
       statusOptions: [
         {
           label: 'New',
@@ -124,43 +128,51 @@ export default {
           this.selectedText = window.getSelection().toString()
         }
       })
-      this.database.view('article', this.id, (resource, userData) => {
-        this.article = resource
-        this.userData = userData
-      })
+      // this.database.view('article', this.id, (resource, userData) => {
+      //   this.article = resource
+      //   this.userData = userData
+      // })
     },
     updateNotes (notes) {
-      this.userData.notes = notes
-      this.updateUserData()
+      this.article.notes = notes
+      this.update()
     },
-    updateUserData () {
-      var userData = {
-        notes: this.userData.notes,
-        tags: this.userData.tags,
-        rating: this.userData.rating,
-        status: this.userData.status
-      }
-      this.database.update(this.id, 'article', userData, { updateUserData: true }, (res) => {
-        Notify.create({
-          message: 'User data updated!',
-          type: 'positive',
-          position: 'bottom-left'
-        })
-      })
-    },
+    // updateUserData () {
+    //   var userData = {
+    //     notes: this.userData.notes,
+    //     tags: this.userData.tags,
+    //     rating: this.userData.rating,
+    //     status: this.userData.status
+    //   }
+    //   this.database.update(this.id, 'article', userData, { updateUserData: true }, (res) => {
+    //     Notify.create({
+    //       message: 'User data updated!',
+    //       type: 'positive',
+    //       position: 'bottom-left'
+    //     })
+    //   })
+    // },
     update () {
-      var resource = {
-        description: this.article.description,
-        author: this.article.author
-      }
-      this.database.update(this.id, 'article', resource, { updateUserData: false }, (res) => {
+      console.log('update', this.article)
+      this.$fiery.update(this.article).then(() => {
         Notify.create({
           message: 'Article updated!',
           type: 'positive',
           position: 'bottom-left'
         })
       })
-      this.updateUserData()
+      // var resource = {
+      //   description: this.article.description,
+      //   author: this.article.author
+      // }
+      // this.database.update(this.id, 'article', resource, { updateUserData: false }, (res) => {
+      //   Notify.create({
+      //     message: 'Article updated!',
+      //     type: 'positive',
+      //     position: 'bottom-left'
+      //   })
+      // })
+      // this.updateUserData()
     },
     openLink () {
       openURL(this.article.pageURL)

@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div class="row gutter-md items-center">
+    <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-xs-12 justify-center">
         <q-video :src="video.embedURL" />
       </div>
@@ -18,13 +18,13 @@
             <q-chips-input v-model="video.author" float-label="Author" dark add-icon="fas fa-plus" />
           </div>
           <div class="col-6">
-            <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
+            <q-select v-model="video.status" float-label="Status" radio :options="statusOptions" dark />
           </div>
           <div class="col-6">
-            <q-rating v-model="userData.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
+            <q-rating v-model="video.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
           </div>
           <div class="col-12">
-            <q-chips-input v-model="userData.tags" float-label="Tags" dark />
+            <q-chips-input v-model="video.tags" float-label="Tags" dark />
           </div>
           <div class="col-12">
             <q-btn color="primary" @click="update">Update</q-btn>
@@ -33,7 +33,7 @@
         </div>
       </div>
       <div class="col-12">
-        <media-notes :user-notes="userData.notes" :update="updateNotes" :mediaid="id" media-type="video"></media-notes>
+        <media-notes :user-notes="video.notes" :update="updateNotes" :mediaid="id" media-type="video"></media-notes>
       </div>
     </div>
   </q-page>
@@ -47,13 +47,20 @@ export default {
   components: {
     MediaNotes
   },
+  fiery: true,
   data () {
     return {
+      loading: true,
       id: this.$route.params.id,
-      video: {
-        embedURL: '',
-        author: []
-      },
+      video: this.$fiery(this.$firebase.view('video', this.$route.params.id), {
+        onSuccess: () => {
+          if (!this.video.tags) {
+            this.video.tags = []
+            this.update()
+          }
+          this.loading = false
+        }
+      }),
       userData: {
         tags: [],
         notes: '',
@@ -73,48 +80,56 @@ export default {
     }
   },
   mounted () {
-    console.log(this.$selectedTopic.get())
-    this.init()
+    // console.log(this.$selectedTopic.get())
+    // this.init()
   },
   methods: {
     init () {
-      this.database.view('video', this.id, (resource, userData) => {
-        this.video = resource
-        this.userData = userData
-      })
+      // this.database.view('video', this.id, (resource, userData) => {
+      //   this.video = resource
+      //   this.userData = userData
+      // })
     },
     updateNotes (notes) {
-      this.userData.notes = notes
-      this.updateUserData()
+      this.video.notes = notes
+      this.update()
     },
-    updateUserData () {
-      var userData = {
-        notes: this.userData.notes,
-        tags: this.userData.tags,
-        rating: this.userData.rating,
-        status: this.userData.status
-      }
-      this.database.update(this.id, 'video', userData, { updateUserData: true }, (res) => {
-        Notify.create({
-          message: 'User data updated!',
-          type: 'positive',
-          position: 'bottom-left'
-        })
-      })
-    },
+    // updateUserData () {
+    //   var userData = {
+    //     notes: this.userData.notes,
+    //     tags: this.userData.tags,
+    //     rating: this.userData.rating,
+    //     status: this.userData.status
+    //   }
+    //   this.database.update(this.id, 'video', userData, { updateUserData: true }, (res) => {
+    //     Notify.create({
+    //       message: 'User data updated!',
+    //       type: 'positive',
+    //       position: 'bottom-left'
+    //     })
+    //   })
+    // },
     update () {
-      var resource = {
-        description: this.video.description,
-        author: this.video.author
-      }
-      this.database.update(this.id, 'video', resource, { updateUserData: false }, (res) => {
+      console.log('update', this.video)
+      this.$fiery.update(this.video).then(() => {
         Notify.create({
           message: 'Video updated!',
           type: 'positive',
           position: 'bottom-left'
         })
       })
-      this.updateUserData()
+      // var resource = {
+      //   description: this.video.description,
+      //   author: this.video.author
+      // }
+      // this.database.update(this.id, 'video', resource, { updateUserData: false }, (res) => {
+      //   Notify.create({
+      //     message: 'Video updated!',
+      //     type: 'positive',
+      //     position: 'bottom-left'
+      //   })
+      // })
+      // this.updateUserData()
     },
     remove () {
       console.log('remove not implemented...')

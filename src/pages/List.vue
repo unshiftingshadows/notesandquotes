@@ -52,14 +52,41 @@ export default {
     AddResearch
   },
   name: 'List',
+  fiery: true,
   data () {
     return {
       type: this.$route.params.type,
-      items: [],
-      allItems: [],
+      // items: [],
+      allItems: this.$fiery(this.$firebase.list(this.$route.params.type), {
+        query: (list) => list.where('users', 'array-contains', this.$firebase.auth.currentUser.uid),
+        key: '_id',
+        exclude: ['_id'],
+        onSuccess: () => {
+          // if (this.type === 'image') {
+          //   // this.items = []
+          //   // this.allItems = []
+          //   this.allItems.forEach((image, index) => {
+          //     if (image.source === 'upload') {
+          //       this.$firebase.imagesRef.child(image._id).getDownloadURL().then((url) => {
+          //         this.allItems[index].thumbURL = url
+          //         // image.imageURL = url
+          //         // image.pageURL = url
+          //       })
+          //     } else {
+          //       // this.items.push(image)
+          //       // this.allItems.push(image)
+          //     }
+          //   })
+          // } else {
+          //   // this.items = data
+          //   // this.allItems = data
+          // }
+          this.loading = false
+        }
+      }),
       isImage: this.$route.params.type === 'image',
       showTopic: false,
-      loading: false,
+      loading: true,
       sizes: [
         { columns: 1, gutter: 10 },
         { mq: '800px', columns: 2, gutter: 20 },
@@ -75,89 +102,110 @@ export default {
     }
   },
   mounted () {
-    this.init(this.$route.params.type)
-    console.log(window.location)
+    // this.init(this.$route.params.type)
+    // console.log(window.location)
   },
   watch: {
     '$route.params.type' (newType, oldType) {
       this.type = newType
-      this.init(newType)
+      this.loading = true
+      // this.init(newType)
+      console.log(newType)
+      this.$fiery.free(this.allItems)
+      this.allItems = this.$fiery(this.$firebase.list(newType), {
+        query: (list) => list.where('users', 'array-contains', this.$firebase.auth.currentUser.uid),
+        key: '_id',
+        exclude: ['_id'],
+        onSuccess: () => {
+          this.loading = false
+        }
+      })
     },
     'showOnlyNew' (newState) {
-      this.dbCall(this.type)
+      // this.dbCall(this.type)
+    }
+  },
+  computed: {
+    items: function () {
+      return this.allItems.filter((val) => { return this.showOnlyNew ? val.status === 'new' : true })
     }
   },
   methods: {
     init (type) {
-      this.showOnlyNew = false
-      this.dbCall(type)
+      // this.showOnlyNew = false
+      // this.dbCall(type)
     },
-    dbCall (type) {
-      this.loading = true
-      this.database.list(type, { newOnly: this.showOnlyNew }, {}, (data) => {
-        console.log('data', data, this)
-        if (type === 'image') {
-          this.items = []
-          this.allItems = []
-          data.forEach((image) => {
-            if (image.source === 'upload') {
-              this.firebase.imagesRef.child(image._id).getDownloadURL().then((url) => {
-                image.thumbURL = url
-                image.imageURL = url
-                image.pageURL = url
-                this.items.push(image)
-                this.allItems.push(image)
-              })
-            } else {
-              this.items.push(image)
-              this.allItems.push(image)
-            }
-          })
-        } else {
-          this.items = data
-          this.allItems = data
-        }
-        this.loading = false
-      })
-    },
+    // dbCall (type) {
+    //   this.loading = true
+    //   this.database.list(type, { newOnly: this.showOnlyNew }, {}, (data) => {
+    //     console.log('data', data, this)
+    //     if (type === 'image') {
+    //       this.items = []
+    //       this.allItems = []
+    //       data.forEach((image) => {
+    //         if (image.source === 'upload') {
+    //           this.firebase.imagesRef.child(image._id).getDownloadURL().then((url) => {
+    //             image.thumbURL = url
+    //             image.imageURL = url
+    //             image.pageURL = url
+    //             this.items.push(image)
+    //             this.allItems.push(image)
+    //           })
+    //         } else {
+    //           this.items.push(image)
+    //           this.allItems.push(image)
+    //         }
+    //       })
+    //     } else {
+    //       this.items = data
+    //       this.allItems = data
+    //     }
+    //     this.loading = false
+    //   })
+    // },
     openItem (id) {
       console.log(id)
       console.log(this.type)
-      switch (this.type) {
-        case 'book':
-          this.$router.push({ name: 'book', params: { id: id } })
-          break
-        case 'movie':
-          this.$router.push({ name: 'movie', params: { id: id } })
-          break
-        case 'article':
-          this.$router.push({ name: 'article', params: { id: id } })
-          break
-        case 'video':
-          this.$router.push({ name: 'video', params: { id: id } })
-          break
-        case 'image':
-          this.$router.push({ name: 'image', params: { id: id } })
-          break
-        case 'note':
-          this.$router.push({ name: 'note', params: { id: id } })
-          break
-        case 'document':
-          this.$router.push({ name: 'document', params: { id: id } })
-          break
-        case 'discourse':
-          this.$router.push({ name: 'discourse', params: { id: id } })
-          break
-        case 'composition':
-          this.$router.push({ name: 'composition', params: { id: id } })
-          break
-        case 'topic':
-          this.$router.push({ name: 'topic', params: { id: id } })
-          break
-        default:
-          console.error('Incorrect item type for routing')
-          break
+      if (id === undefined) {
+        console.log('undefined...')
+        return
       }
+      this.$router.push({ name: this.type, params: { id: id } })
+      // switch (this.type) {
+      //   case 'book':
+      //     this.$router.push({ name: 'book', params: { id: id } })
+      //     break
+      //   case 'movie':
+      //     this.$router.push({ name: 'movie', params: { id: id } })
+      //     break
+      //   case 'article':
+      //     this.$router.push({ name: 'article', params: { id: id } })
+      //     break
+      //   case 'video':
+      //     this.$router.push({ name: 'video', params: { id: id } })
+      //     break
+      //   case 'image':
+      //     this.$router.push({ name: 'image', params: { id: id } })
+      //     break
+      //   case 'note':
+      //     this.$router.push({ name: 'note', params: { id: id } })
+      //     break
+      //   case 'document':
+      //     this.$router.push({ name: 'document', params: { id: id } })
+      //     break
+      //   case 'discourse':
+      //     this.$router.push({ name: 'discourse', params: { id: id } })
+      //     break
+      //   case 'composition':
+      //     this.$router.push({ name: 'composition', params: { id: id } })
+      //     break
+      //   case 'topic':
+      //     this.$router.push({ name: 'topic', params: { id: id } })
+      //     break
+      //   default:
+      //     console.error('Incorrect item type for routing')
+      //     break
+      // }
     },
     openAddTopic () {
       console.log(this.$refs)

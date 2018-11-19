@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div class="row gutter-md items-center">
+    <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-xs-12 justify-center">
         <img :src="image.imageURL" class="responsive" />
         <q-btn icon="fas fa-link" color="primary" class="float-right" @click.native="openLink">&nbsp;&nbsp;Original Image</q-btn>
@@ -21,13 +21,13 @@
             <q-chips-input v-model="image.author" float-label="Author" dark add-icon="fas fa-plus" />
           </div>
           <div class="col-6">
-            <q-rating v-model="userData.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
+            <q-rating v-model="image.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
           </div>
           <div class="col-6">
-            <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
+            <q-select v-model="image.status" float-label="Status" radio :options="statusOptions" dark />
           </div>
           <div class="col-12">
-            <q-chips-input v-model="userData.tags" float-label="Tags" dark />
+            <q-chips-input v-model="image.tags" float-label="Tags" dark />
           </div>
           <div class="col-12" v-if="image.attributionRequired">
             <h5>Attribution Required</h5>
@@ -40,7 +40,7 @@
         </div>
       </div>
       <div class="col-12">
-        <media-notes :user-notes="userData.notes" :update="updateNotes" :mediaid="id" media-type="image"></media-notes>
+        <media-notes :user-notes="image.notes" :update="updateNotes" :mediaid="id" media-type="image"></media-notes>
       </div>
     </div>
   </q-page>
@@ -54,12 +54,27 @@ export default {
   components: {
     MediaNotes
   },
+  fiery: true,
   data () {
     return {
+      loading: true,
       id: this.$route.params.id,
-      image: {
-        author: []
-      },
+      image: this.$fiery(this.$firebase.view('image', this.$route.params.id), {
+        onSuccess: () => {
+          // if (this.image.source === 'upload') {
+          //   this.$firebase.imagesRef.child(this.id).getDownloadURL().then((url) => {
+          //     this.image.thumbURL = url
+          //     this.image.imageURL = url
+          //     this.image.pageURL = url
+          //   })
+          // }
+          if (!this.image.tags) {
+            this.image.tags = []
+            this.update()
+          }
+          this.loading = false
+        }
+      }),
       userData: {
         tags: [],
         notes: '',
@@ -79,58 +94,66 @@ export default {
     }
   },
   mounted () {
-    this.init()
+    // this.init()
   },
   methods: {
     init () {
-      this.database.view('image', this.id, (resource, userData) => {
-        console.log(resource, userData)
-        if (resource.source === 'upload') {
-          this.firebase.imagesRef.child(this.id).getDownloadURL().then((url) => {
-            console.log('this', this)
-            resource.thumbURL = url
-            resource.imageURL = url
-            resource.pageURL = url
-            this.image = resource
-          })
-        } else {
-          this.image = resource
-        }
-        this.userData = userData
-      })
+      // this.database.view('image', this.id, (resource, userData) => {
+      //   console.log(resource, userData)
+      //   if (resource.source === 'upload') {
+      //     this.firebase.imagesRef.child(this.id).getDownloadURL().then((url) => {
+      //       console.log('this', this)
+      //       resource.thumbURL = url
+      //       resource.imageURL = url
+      //       resource.pageURL = url
+      //       this.image = resource
+      //     })
+      //   } else {
+      //     this.image = resource
+      //   }
+      //   this.userData = userData
+      // })
     },
     updateNotes (notes) {
-      this.userData.notes = notes
-      this.updateUserData()
+      this.image.notes = notes
+      this.update()
     },
-    updateUserData () {
-      var userData = {
-        notes: this.userData.notes,
-        tags: this.userData.tags,
-        rating: this.userData.rating,
-        status: this.userData.status
-      }
-      this.database.update(this.id, 'image', userData, { updateUserData: true }, (res) => {
-        Notify.create({
-          message: 'User data updated!',
-          type: 'positive',
-          position: 'bottom-left'
-        })
-      })
-    },
+    // updateUserData () {
+    //   var userData = {
+    //     notes: this.userData.notes,
+    //     tags: this.userData.tags,
+    //     rating: this.userData.rating,
+    //     status: this.userData.status
+    //   }
+    //   this.database.update(this.id, 'image', userData, { updateUserData: true }, (res) => {
+    //     Notify.create({
+    //       message: 'User data updated!',
+    //       type: 'positive',
+    //       position: 'bottom-left'
+    //     })
+    //   })
+    // },
     update () {
-      var resource = {
-        description: this.image.description,
-        author: this.image.author
-      }
-      this.database.update(this.id, 'image', resource, { updateUserData: false }, (res) => {
+      console.log('update', this.image)
+      this.$fiery.update(this.image).then(() => {
         Notify.create({
           message: 'Image updated!',
           type: 'positive',
           position: 'bottom-left'
         })
       })
-      this.updateUserData()
+      // var resource = {
+      //   description: this.image.description,
+      //   author: this.image.author
+      // }
+      // this.database.update(this.id, 'image', resource, { updateUserData: false }, (res) => {
+      //   Notify.create({
+      //     message: 'Image updated!',
+      //     type: 'positive',
+      //     position: 'bottom-left'
+      //   })
+      // })
+      // this.updateUserData()
     },
     openLink () {
       openURL(this.image.pageURL)

@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div class="row gutter-md items-center">
+    <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-xs-12 col-md-4 justify-center">
         <img :src="movie.thumbURL" width="100%" />
       </div>
@@ -15,13 +15,13 @@
             <q-chips-input v-model="movie.author" float-label="Author" dark add-icon="fas fa-plus" />
           </div>
           <div class="col-6">
-            <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
+            <q-select v-model="movie.status" float-label="Status" radio :options="statusOptions" dark />
           </div>
           <div class="col-6">
-            <q-rating v-model="userData.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
+            <q-rating v-model="movie.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
           </div>
           <div class="col-12">
-            <q-chips-input v-model="userData.tags" float-label="Tags" dark @blur="updateUserData" />
+            <q-chips-input v-model="movie.tags" float-label="Tags" dark @blur="update" />
           </div>
           <div class="col-6">
             <q-input v-model="movie.releaseYear" float-label="Release Year" dark />
@@ -39,7 +39,7 @@
         <quote-list :mediaid="id" :media="movie" media-type="movie"></quote-list>
       </div>
       <div class="col-12">
-        <media-notes :user-notes.sync="userData.notes" :update="updateNotes" :mediaid="id" media-type="movie"></media-notes>
+        <media-notes :user-notes.sync="movie.notes" :update="updateNotes" :mediaid="id" media-type="movie"></media-notes>
       </div>
     </div>
   </q-page>
@@ -55,16 +55,22 @@ export default {
     QuoteList,
     MediaNotes
   },
+  fiery: true,
   data () {
     return {
+      loading: true,
       id: this.$route.params.id,
-      movie: {},
-      userData: {
-        tags: [],
-        notes: '',
-        rating: 0,
-        status: 'new'
-      },
+      movie: this.$fiery(this.$firebase.view('movie', this.$route.params.id), {
+        onSuccess: () => {
+          this.loading = false
+        }
+      }),
+      // userData: {
+      //   tags: [],
+      //   notes: '',
+      //   rating: 0,
+      //   status: 'new'
+      // },
       statusOptions: [
         {
           label: 'New',
@@ -82,50 +88,57 @@ export default {
     }
   },
   mounted () {
-    this.init()
+    // this.init()
   },
   methods: {
     init () {
-      this.database.view('movie', this.id, (resource, userData) => {
-        this.movie = resource
-        this.userData = userData
-      })
+      // this.database.view('movie', this.id, (resource, userData) => {
+      //   this.movie = resource
+      //   this.userData = userData
+      // })
     },
     updateNotes (notes) {
-      this.userData.notes = notes
-      this.updateUserData()
+      this.movie.notes = notes
+      this.update()
     },
-    updateUserData () {
-      var userData = {
-        notes: this.userData.notes,
-        tags: this.userData.tags,
-        rating: this.userData.rating,
-        status: this.userData.status
-      }
-      this.database.update(this.id, 'movie', userData, { updateUserData: true }, (res) => {
-        Notify.create({
-          message: 'User data updated!',
-          type: 'positive',
-          position: 'bottom-left'
-        })
-      })
-    },
+    // updateUserData () {
+    //   var userData = {
+    //     notes: this.userData.notes,
+    //     tags: this.userData.tags,
+    //     rating: this.userData.rating,
+    //     status: this.userData.status
+    //   }
+    //   this.database.update(this.id, 'movie', userData, { updateUserData: true }, (res) => {
+    //     Notify.create({
+    //       message: 'User data updated!',
+    //       type: 'positive',
+    //       position: 'bottom-left'
+    //     })
+    //   })
+    // },
     update () {
       console.log('update', this.movie)
-      var resource = {
-        isbn: this.movie.isbn,
-        publisher: this.movie.publisher,
-        pubYear: this.movie.pubYear,
-        citation: this.movie.citation
-      }
-      this.database.update(this.id, 'movie', resource, { updateUserData: false }, (res) => {
+      this.$fiery.update(this.movie).then(() => {
         Notify.create({
           message: 'Movie updated!',
           type: 'positive',
           position: 'bottom-left'
         })
       })
-      this.updateUserData()
+      // var resource = {
+      //   isbn: this.movie.isbn,
+      //   publisher: this.movie.publisher,
+      //   pubYear: this.movie.pubYear,
+      //   citation: this.movie.citation
+      // }
+      // this.database.update(this.id, 'movie', resource, { updateUserData: false }, (res) => {
+      //   Notify.create({
+      //     message: 'Movie updated!',
+      //     type: 'positive',
+      //     position: 'bottom-left'
+      //   })
+      // })
+      // this.updateUserData()
     },
     remove () {
       console.log('Remove not implemented...')

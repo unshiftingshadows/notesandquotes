@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div class="row gutter-md items-center">
+    <div class="row gutter-md items-center" v-if="!loading">
       <div class="gt-sm col-md-4 justify-center">
         <img :src="largeImageURL" width="100%" />
       </div>
@@ -23,13 +23,13 @@
             <q-input v-model="book.isbn" float-label="ISBN" dark />
           </div>
           <div class="col-6">
-            <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
+            <q-select v-model="book.status" float-label="Status" radio :options="statusOptions" dark />
           </div>
           <div class="col-6">
-            <q-rating v-model="userData.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
+            <q-rating v-model="book.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
           </div>
           <div class="col-12">
-            <q-chips-input v-model="userData.tags" float-label="Tags" dark @blur="updateUserData" />
+            <q-chips-input v-model="book.tags" float-label="Tags" dark @blur="update" />
           </div>
           <div class="col-6">
             <q-input v-model="book.publisher" float-label="Publisher" dark />
@@ -50,7 +50,7 @@
         <quote-list :mediaid="id" :media="book" media-type="book" />
       </div>
       <div class="col-12">
-        <media-notes :user-notes.sync="userData.notes" :update="updateNotes" :mediaid="id" media-type="book"></media-notes>
+        <media-notes :user-notes.sync="book.notes" :update="updateNotes" :mediaid="id" media-type="book"></media-notes>
       </div>
     </div>
   </q-page>
@@ -66,18 +66,27 @@ export default {
     QuoteList,
     MediaNotes
   },
+  fiery: true,
   data () {
     return {
+      loading: true,
       id: this.$route.params.id,
-      book: {
-        author: []
-      },
-      userData: {
-        tags: [],
-        notes: '',
-        rating: 0,
-        status: 'new'
-      },
+      book: this.$fiery(this.$firebase.view('book', this.$route.params.id), {
+        onSuccess: () => {
+          if (this.book.thumbURL.startsWith('http://books.google.com/') || this.book.thumbURL.startsWith('https://books.google.com/')) {
+            this.largeImageURL = this.book.thumbURL.slice(0, this.book.thumbURL.indexOf('&zoom'))
+          } else {
+            this.largeImageURL = this.book.thumbURL
+          }
+          this.loading = false
+        }
+      }),
+      // userData: {
+      //   tags: [],
+      //   notes: '',
+      //   rating: 0,
+      //   status: 'new'
+      // },
       largeImageURL: '',
       statusOptions: [
         {
@@ -96,55 +105,62 @@ export default {
     }
   },
   mounted () {
-    this.init()
+    // this.init()
   },
   methods: {
     init () {
-      this.database.view('book', this.id, (resource, userData) => {
-        this.book = resource
-        this.userData = userData
-        if (this.book.thumbURL.startsWith('http://books.google.com/') || this.book.thumbURL.startsWith('https://books.google.com/')) {
-          this.largeImageURL = this.book.thumbURL.slice(0, this.book.thumbURL.indexOf('&zoom'))
-        } else {
-          this.largeImageURL = this.book.thumbURL
-        }
-      })
+      // this.database.view('book', this.id, (resource, userData) => {
+      //   this.book = resource
+      //   this.userData = userData
+      //   if (this.book.thumbURL.startsWith('http://books.google.com/') || this.book.thumbURL.startsWith('https://books.google.com/')) {
+      //     this.largeImageURL = this.book.thumbURL.slice(0, this.book.thumbURL.indexOf('&zoom'))
+      //   } else {
+      //     this.largeImageURL = this.book.thumbURL
+      //   }
+      // })
     },
     updateNotes (notes) {
-      this.userData.notes = notes
-      this.updateUserData()
+      this.book.notes = notes
+      this.update()
     },
-    updateUserData () {
-      var userData = {
-        notes: this.userData.notes,
-        tags: this.userData.tags,
-        rating: this.userData.rating,
-        status: this.userData.status
-      }
-      this.database.update(this.id, 'book', userData, { updateUserData: true }, (res) => {
-        Notify.create({
-          message: 'User data updated!',
-          type: 'positive',
-          position: 'bottom-left'
-        })
-      })
-    },
+    // updateUserData () {
+    //   var userData = {
+    //     notes: this.userData.notes,
+    //     tags: this.userData.tags,
+    //     rating: this.userData.rating,
+    //     status: this.userData.status
+    //   }
+    //   // this.database.update(this.id, 'book', userData, { updateUserData: true }, (res) => {
+    //   //   Notify.create({
+    //   //     message: 'User data updated!',
+    //   //     type: 'positive',
+    //   //     position: 'bottom-left'
+    //   //   })
+    //   // })
+    // },
     update () {
       console.log('update', this.book)
-      var resource = {
-        isbn: this.book.isbn,
-        publisher: this.book.publisher,
-        pubYear: this.book.pubYear,
-        citation: this.book.citation
-      }
-      this.database.update(this.id, 'book', resource, { updateUserData: false }, (res) => {
+      this.$fiery.update(this.book).then(() => {
         Notify.create({
           message: 'Book updated!',
           type: 'positive',
           position: 'bottom-left'
         })
       })
-      this.updateUserData()
+      // var resource = {
+      //   isbn: this.book.isbn,
+      //   publisher: this.book.publisher,
+      //   pubYear: this.book.pubYear,
+      //   citation: this.book.citation
+      // }
+      // this.database.update(this.id, 'book', resource, { updateUserData: false }, (res) => {
+      //   Notify.create({
+      //     message: 'Book updated!',
+      //     type: 'positive',
+      //     position: 'bottom-left'
+      //   })
+      // })
+      // this.updateUserData()
     },
     remove () {
       console.log('Remove not implemented...')

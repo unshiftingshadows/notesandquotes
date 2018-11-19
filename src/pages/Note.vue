@@ -1,21 +1,21 @@
 <template>
   <q-page padding>
-    <div class="row gutter-md items-center">
+    <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-12">
         <span class="float-right" v-if="this.$selectedTopic.get()">
           <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
           <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
         </span>
-        <h3>{{ title }}</h3>
+        <h3>{{ note.title }}</h3>
       </div>
       <div class="col-12">
-        <markdown-editor v-model="text" :configs="editorConfigs" />
+        <markdown-editor v-model="note.text" :configs="editorConfigs" />
       </div>
       <div class="col-12">
-        <q-chips-input v-model="tags" float-label="Tags" dark />
+        <q-chips-input v-model="note.tags" float-label="Tags" dark />
       </div>
       <div class="col-12">
-        <q-chips-input v-model="bibleRefs" float-label="Bible Refs" @blur="$v.bibleRefs.$touch" :error="$v.bibleRefs.$error" dark />
+        <q-chips-input v-model="note.bibleRefs" float-label="Bible Refs" @blur="$v.bibleRefs.$touch" :error="$v.bibleRefs.$error" dark />
       </div>
       <div class="col-12">
         <q-btn color="primary" @click="update">Update</q-btn>
@@ -30,35 +30,42 @@ import { Notify, Dialog } from 'quasar'
 import * as Bible from '../statics/bible.js'
 import markdownEditor from 'vue-simplemde/src/markdown-editor'
 
-var refVal = Bible.refValidate
+// var refVal = Bible.refValidate
 
 export default {
   components: {
     markdownEditor
   },
+  fiery: true,
   data () {
     return {
+      loading: true,
       id: this.$route.params.id,
-      title: '',
-      tags: [],
-      text: '',
+      note: this.$fiery(this.$firebase.view('note', this.$route.params.id), {
+        onSuccess: () => {
+          this.loading = false
+        }
+      }),
+      // title: '',
+      // tags: [],
+      // text: '',
       bibleRefParse: [],
-      bibleRefs: [],
+      // bibleRefs: [],
       editorConfigs: {
         toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image']
       }
     }
   },
-  validations: {
-    bibleRefs: {
-      $each: {
-        refVal
-      }
-    }
-  },
+  // validations: {
+  //   bibleRefs: {
+  //     $each: {
+  //       refVal
+  //     }
+  //   }
+  // },
   watch: {
-    bibleRefs: function (userRefList) {
-      this.bibleRefObj = []
+    'note.bibleRefs': function (userRefList) {
+      // this.bibleRefObj = []
       userRefList.forEach((ref) => {
         var refObj = Bible.parseBibleRef(ref)
         this.bibleRefParse.push(refObj)
@@ -84,18 +91,26 @@ export default {
       })
     },
     update () {
-      var obj = {
-        text: this.text,
-        tags: this.tags,
-        bibleRefs: this.bibleRefParse
-      }
-      this.database.update(this.id, 'note', obj, { updateUserData: false }, (res) => {
+      console.log('update', this.note)
+      this.$fiery.update(this.note).then(() => {
         Notify.create({
           message: 'Note updated!',
           type: 'positive',
           position: 'bottom-left'
         })
       })
+      // var obj = {
+      //   text: this.text,
+      //   tags: this.tags,
+      //   bibleRefs: this.bibleRefParse
+      // }
+      // this.database.update(this.id, 'note', obj, { updateUserData: false }, (res) => {
+      //   Notify.create({
+      //     message: 'Note updated!',
+      //     type: 'positive',
+      //     position: 'bottom-left'
+      //   })
+      // })
     },
     remove () {
       Dialog.create({

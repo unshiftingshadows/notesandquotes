@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div class="row gutter-md items-center">
+    <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-xs-12 justify-center">
         <q-btn v-if="fileTypes.includes(document.fileType) && fileURL !== ''" @click.native="wordRead = true">read</q-btn>
         <q-btn v-if="document.fileType === 'application/pdf' && fileURL !== ''" @click.native="pdfRead = true">read</q-btn>
@@ -22,10 +22,10 @@
             <q-chips-input v-model="document.author" float-label="Author" dark add-icon="fas fa-plus" />
           </div>
           <div class="col-6">
-            <q-rating v-model="userData.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
+            <q-rating v-model="document.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
           </div>
           <div class="col-12">
-            <q-chips-input v-model="userData.tags" float-label="Tags" dark />
+            <q-chips-input v-model="document.tags" float-label="Tags" dark />
           </div>
           <div class="col-12">
             <q-input v-model="document.citation" type="textarea" :max-height="100" :min-rows="2" float-label="Citation" dark />
@@ -37,7 +37,7 @@
         </div>
       </div>
       <div class="col-12">
-        <media-notes :user-notes="userData.notes" :update="updateNotes" :mediaid="id" media-type="document"></media-notes>
+        <media-notes :user-notes="document.notes" :update="updateNotes" :mediaid="id" media-type="document"></media-notes>
       </div>
     </div>
     <q-modal v-if="document.fileType === 'application/pdf' && fileURL !== ''" v-model="pdfRead" maximized>
@@ -85,18 +85,25 @@ export default {
     MediaNotes
   },
   name: 'Document',
+  fiery: true,
   data () {
     return {
+      loading: true,
       id: this.$route.params.id,
-      document: {
-        author: []
-      },
-      userData: {
-        tags: [],
-        notes: '',
-        rating: 0,
-        status: 'new'
-      },
+      document: this.$fiery(this.$firebase.view('document', this.$route.params.id), {
+        onSuccess: () => {
+          this.$firebase.documentsRef.child(this.id).getDownloadURL().then((url) => {
+            this.fileURL = url
+            this.loading = false
+          })
+        }
+      }),
+      // userData: {
+      //   tags: [],
+      //   notes: '',
+      //   rating: 0,
+      //   status: 'new'
+      // },
       statusOptions: [
         {
           label: 'New',
@@ -125,21 +132,21 @@ export default {
     }
   },
   mounted () {
-    this.init()
+    // this.init()
   },
   methods: {
     init () {
-      this.database.view('document', this.id, (resource, userData) => {
-        this.document = resource
-        this.userData = userData
-        this.firebase.documentsRef.child(this.id).getDownloadURL().then((url) => {
-          this.fileURL = url
-          // pdf.createLoadingTask(url)
-          // this.fileURL.then(pdf => {
-          //   console.log(pdf)
-          // })
-        })
-      })
+      // this.database.view('document', this.id, (resource, userData) => {
+      //   this.document = resource
+      //   this.userData = userData
+      //   this.firebase.documentsRef.child(this.id).getDownloadURL().then((url) => {
+      //     this.fileURL = url
+      //     // pdf.createLoadingTask(url)
+      //     // this.fileURL.then(pdf => {
+      //     //   console.log(pdf)
+      //     // })
+      //   })
+      // })
     },
     nextPage () {
       if (this.currentPage !== this.pageCount) {
@@ -161,37 +168,45 @@ export default {
       }
     },
     updateNotes (notes) {
-      this.userData.notes = notes
-      this.updateUserData()
+      this.document.notes = notes
+      this.update()
     },
-    updateUserData () {
-      var userData = {
-        notes: this.userData.notes,
-        tags: this.userData.tags,
-        rating: this.userData.rating,
-        status: this.userData.status
-      }
-      this.database.update(this.id, 'document', userData, { updateUserData: true }, (res) => {
-        Notify.create({
-          message: 'User data updated!',
-          type: 'positive',
-          position: 'bottom-left'
-        })
-      })
-    },
+    // updateUserData () {
+    //   var userData = {
+    //     notes: this.userData.notes,
+    //     tags: this.userData.tags,
+    //     rating: this.userData.rating,
+    //     status: this.userData.status
+    //   }
+    //   this.database.update(this.id, 'document', userData, { updateUserData: true }, (res) => {
+    //     Notify.create({
+    //       message: 'User data updated!',
+    //       type: 'positive',
+    //       position: 'bottom-left'
+    //     })
+    //   })
+    // },
     update () {
-      var resource = {
-        description: this.document.description,
-        author: this.document.author
-      }
-      this.database.update(this.id, 'document', resource, { updateUserData: false }, (res) => {
+      console.log('update', this.document)
+      this.$fiery.update(this.document).then(() => {
         Notify.create({
           message: 'Document updated!',
           type: 'positive',
           position: 'bottom-left'
         })
       })
-      this.updateUserData()
+      // var resource = {
+      //   description: this.document.description,
+      //   author: this.document.author
+      // }
+      // this.database.update(this.id, 'document', resource, { updateUserData: false }, (res) => {
+      //   Notify.create({
+      //     message: 'Document updated!',
+      //     type: 'positive',
+      //     position: 'bottom-left'
+      //   })
+      // })
+      // this.updateUserData()
     },
     remove () {
       console.log('remove not implemented...')

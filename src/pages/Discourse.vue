@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div class="row gutter-md items-center">
+    <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-xs-12 justify-center" v-if="linkIsVideo">
         <q-video :src="embedURL" />
       </div>
@@ -15,7 +15,7 @@
             <q-input v-model="discourse.eventName" float-label="Event Name" dark />
           </div>
           <div class="col-6">
-            <q-datetime v-model="discourse.dateOccurred" type="date" float-label="Event Date" dark />
+            <q-datetime v-model="dateOccurred" type="date" float-label="Event Date" dark />
           </div>
           <div class="col-6">
             <q-chips-input v-model="discourse.author" float-label="Author" dark add-icon="fas fa-plus" />
@@ -24,13 +24,13 @@
             <q-input v-model="discourse.url" float-label="Link" dark />
           </div>
           <div class="col-6">
-            <q-select v-model="userData.status" float-label="Status" radio :options="statusOptions" dark />
+            <q-select v-model="discourse.status" float-label="Status" radio :options="statusOptions" dark />
           </div>
           <div class="col-6">
-            <q-rating v-model="userData.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
+            <q-rating v-model="discourse.rating" :max="5" icon="fas fa-star" size="2em" style="padding-top: 15px; padding-left: 20px" dark />
           </div>
           <div class="col-12">
-            <q-chips-input v-model="userData.tags" float-label="Tags" dark @blur="updateUserData" />
+            <q-chips-input v-model="discourse.tags" float-label="Tags" dark @blur="update" />
           </div>
           <div class="col-12">
             <q-input v-model="discourse.citation" float-label="Citation" type="textarea" :max-height="100" :min-rows="2" dark />
@@ -45,7 +45,7 @@
         <quote-list :mediaid="id" :media="discourse" media-type="discourse"></quote-list>
       </div>
       <div class="col-12">
-        <media-notes :user-notes.sync="userData.notes" :update="updateNotes" :mediaid="id" media-type="discourse"></media-notes>
+        <media-notes :user-notes.sync="discourse.notes" :update="updateNotes" :mediaid="id" media-type="discourse"></media-notes>
       </div>
     </div>
   </q-page>
@@ -61,18 +61,18 @@ export default {
     QuoteList,
     MediaNotes
   },
+  fiery: true,
   data () {
     return {
+      loading: true,
       id: this.$route.params.id,
-      discourse: {
-        author: []
-      },
-      userData: {
-        tags: [],
-        notes: '',
-        rating: 0,
-        status: 'new'
-      },
+      discourse: this.$fiery(this.$firebase.view('discourse', this.$route.params.id), {
+        onSuccess: () => {
+          this.dateOccurred = this.discourse.dateOccurred.toDate()
+          this.loading = false
+        }
+      }),
+      dateOccurred: new Date(),
       statusOptions: [
         {
           label: 'New',
@@ -88,53 +88,60 @@ export default {
     }
   },
   mounted () {
-    this.init()
+    // this.init()
   },
   methods: {
     init () {
-      this.database.view('discourse', this.id, (resource, userData) => {
-        this.discourse = resource
-        this.checkVideo()
-        this.userData = userData
-      })
+      // this.database.view('discourse', this.id, (resource, userData) => {
+      //   this.discourse = resource
+      //   this.checkVideo()
+      //   this.userData = userData
+      // })
     },
     updateNotes (notes) {
-      this.userData.notes = notes
-      this.updateUserData()
+      this.discourse.notes = notes
+      this.update()
     },
-    updateUserData () {
-      var userData = {
-        notes: this.userData.notes,
-        tags: this.userData.tags,
-        rating: this.userData.rating,
-        status: this.userData.status
-      }
-      this.database.update(this.id, 'discourse', userData, { updateUserData: true }, (res) => {
-        Notify.create({
-          message: 'User data updated!',
-          type: 'positive',
-          position: 'bottom-left'
-        })
-      })
-    },
+    // updateUserData () {
+    //   var userData = {
+    //     notes: this.userData.notes,
+    //     tags: this.userData.tags,
+    //     rating: this.userData.rating,
+    //     status: this.userData.status
+    //   }
+    //   this.database.update(this.id, 'discourse', userData, { updateUserData: true }, (res) => {
+    //     Notify.create({
+    //       message: 'User data updated!',
+    //       type: 'positive',
+    //       position: 'bottom-left'
+    //     })
+    //   })
+    // },
     update () {
       console.log('update', this.discourse)
-      var resource = {
-        author: this.discourse.author,
-        dateOccurred: this.discourse.dateOccurred,
-        eventName: this.discourse.eventName,
-        citation: this.discourse.citation,
-        url: this.discourse.url
-      }
-      this.database.update(this.id, 'discourse', resource, { updateUserData: false }, (res) => {
-        this.checkVideo()
+      this.$fiery.update(this.discourse).then(() => {
         Notify.create({
           message: 'Discourse updated!',
           type: 'positive',
           position: 'bottom-left'
         })
       })
-      this.updateUserData()
+      // var resource = {
+      //   author: this.discourse.author,
+      //   dateOccurred: this.discourse.dateOccurred,
+      //   eventName: this.discourse.eventName,
+      //   citation: this.discourse.citation,
+      //   url: this.discourse.url
+      // }
+      // this.database.update(this.id, 'discourse', resource, { updateUserData: false }, (res) => {
+      //   this.checkVideo()
+      //   Notify.create({
+      //     message: 'Discourse updated!',
+      //     type: 'positive',
+      //     position: 'bottom-left'
+      //   })
+      // })
+      // this.updateUserData()
     },
     checkVideo () {
       var {id, service} = this.$videoId(this.discourse.url)
