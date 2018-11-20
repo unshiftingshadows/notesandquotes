@@ -4,7 +4,8 @@ module.exports = function (ctx) {
   return {
     plugins: [
       // 'axios',
-      'database',
+      // 'database',
+      'bible',
       'firebase',
       'fuse',
       'get-video-id',

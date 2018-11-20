@@ -185,9 +185,13 @@ export default {
       if (this.type === 'movie') {
         outlineObj.character = this.character
       }
-      this.database.add('outline', outlineObj, (res) => {
-        console.log(res)
-        this.modalFin(res, 'outline')
+      // this.database.add('outline', outlineObj, (res) => {
+      //   console.log(res)
+      //   this.modalFin(res, 'outline')
+      // })
+      this.$firebase.list('outline').add(outlineObj).then((res) => {
+        outlineObj._id = res.id
+        this.modalFin(outlineObj, 'outline')
       })
     },
     updateOutline () {

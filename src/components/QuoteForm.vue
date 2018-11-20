@@ -151,10 +151,14 @@ export default {
       if (this.type === 'movie') {
         quoteObj.character = this.character
       }
-      this.database.add('quote', quoteObj, (res) => {
-        console.log(res)
-        this.modalFin(res, 'quote')
+      this.$firebase.list('quote').add(quoteObj).then((res) => {
+        quoteObj._id = res.id
+        this.modalFin(quoteObj, 'quote')
       })
+      // this.database.add('quote', quoteObj, (res) => {
+      //   console.log(res)
+      //   this.modalFin(res, 'quote')
+      // })
     },
     updateQuote () {
       console.log('update quote')

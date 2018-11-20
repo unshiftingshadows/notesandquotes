@@ -149,9 +149,13 @@ export default {
       if (this.type === 'movie') {
         ideaObj.character = this.character
       }
-      this.database.add('idea', ideaObj, (res) => {
-        console.log(res)
-        this.modalFin(res, 'idea')
+      // this.database.add('idea', ideaObj, (res) => {
+      //   console.log(res)
+      //   this.modalFin(res, 'idea')
+      // })
+      this.$firebase.list('idea').add(ideaObj).then((res) => {
+        ideaObj._id = res.id
+        this.modalFin(ideaObj, 'idea')
       })
     },
     updateIdea () {

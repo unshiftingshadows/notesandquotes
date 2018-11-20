@@ -25,7 +25,7 @@
          |
       </span>
       <span v-if="showBible">
-        <q-chip v-for="bibleRef in idea.bibleRefs" small color="secondary" :key="bibleRef._id">{{ refString(bibleRef) }}</q-chip>
+        <q-chip v-for="bibleRef in idea.bibleRefs" small color="secondary" :key="bibleRef._id">{{ $bible.readable(bibleRef) }}</q-chip>
       </span>
     </q-item-main>
     <q-item-side right v-if="showCover" style="margin: 20px">
@@ -35,7 +35,7 @@
       <q-item-tile sublabel lines="1" v-if="showAuthor">{{ idea.author }}</q-item-tile>
     </q-item-side>
     <q-modal v-model="editOpen" content-classes="edit-idea-modal">
-      <q-icon name="fa-close" size="2rem" @click.native="editOpen=false" class="float-right cursor-pointer" />
+      <q-icon name="fas fa-times" size="2rem" @click.native="editOpen=false" class="float-right cursor-pointer" />
       <idea-form ref="ideaForm" :idea="idea" :modal-fin="closeEdit" form-type="Edit" />
     </q-modal>
   </q-item>

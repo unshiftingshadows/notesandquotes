@@ -17,7 +17,7 @@
           <idea-list-item
             v-for="idea in ideas"
             v-bind:ideaObj="idea"
-            v-bind:key="idea.id"
+            v-bind:key="idea._id"
             location
             tags
             bible
@@ -35,7 +35,7 @@
           <template slot-scope="scope">
             <outline-list-item
               v-bind:outlineObj="scope.item"
-              v-bind:key="scope.item.id"
+              v-bind:key="scope.item._id"
               location
               tags
               bible
@@ -50,7 +50,7 @@
           <quote-list-item
             v-for="quote in quotes"
             v-bind:quoteObj="quote"
-            v-bind:key="quote.id"
+            v-bind:key="quote._id"
             location
             tags
             bible
@@ -64,7 +64,7 @@
           <illustration-list-item
             v-for="illustration in illustrations"
             v-bind:illustrationObj="illustration"
-            v-bind:key="illustration.id"
+            v-bind:key="illustration._id"
             location
             tags
             bible
@@ -76,11 +76,11 @@
     <q-modal v-model="addOpen" content-classes="add-quote-modal">
       <!-- <q-icon name="fa-close" size="2rem" @click.native="closeAdd" class="float-right cursor-pointer" /> -->
       <q-tabs v-model="tabSelection" position="top" align="center" no-pane-border>
-        <q-tab default v-if="mediaType !=='article'" slot="title" label="Quote" name="quote-tab" icon="fa-quote-right" />
-        <q-tab :default="mediaType === 'article'" slot="title" label="Outline" name="outline-tab" icon="fa-list-ul" />
-        <q-tab slot="title" label="Idea" name="idea-tab" icon="fa-lightbulb" />
-        <q-tab slot="title" label="Illustration" name="illustration-tab" icon="fa-info" />
-        <q-tab slot="title" name="close" icon="fa-close" :hidden="!isMobile" disable @click.native="closeAdd" />
+        <q-tab default v-if="mediaType !=='article'" slot="title" label="Quote" name="quote-tab" icon="fas fa-quote-right" />
+        <q-tab :default="mediaType === 'article'" slot="title" label="Outline" name="outline-tab" icon="fas fa-list-ul" />
+        <q-tab slot="title" label="Idea" name="idea-tab" icon="fas fa-lightbulb" />
+        <q-tab slot="title" label="Illustration" name="illustration-tab" icon="fas fa-info" />
+        <q-tab slot="title" name="close" icon="fas fa-times" :hidden="!isMobile" disable @click.native="closeAdd" />
         <q-tab-pane name="quote-tab" v-if="mediaType !=='article'">
           <quote-form ref="quoteForm" :mediaid="id" :media="mediaObj" :media-type="type" form-type="Add" :modal-fin="closeAdd" />
         </q-tab-pane>
@@ -122,6 +122,7 @@ export default {
     IllustrationForm
   },
   props: ['mediaid', 'media', 'mediaType', 'modal'],
+  fiery: true,
   data () {
     return {
       id: this.mediaid,
@@ -166,17 +167,58 @@ export default {
   // },
   methods: {
     init () {
+      console.log('init')
       this.showQuotes = false
-      this.loading = true
-      this.database.snippets('all', this.id, (data) => {
-        console.log(data)
-        this.quotes = data[0]
-        this.outlines = data[1]
-        this.ideas = data[2]
-        this.illustrations = data[3]
-        this.showQuotes = true
-        this.loading = false
-        // if (callback) callback()
+      // this.loading = true
+      // this.database.snippets('all', this.id, (data) => {
+      //   console.log(data)
+      //   this.quotes = data[0]
+      //   this.outlines = data[1]
+      //   this.ideas = data[2]
+      //   this.illustrations = data[3]
+      //   this.showQuotes = true
+      //   this.loading = false
+      //   // if (callback) callback()
+      // })
+      this.quotes = this.$fiery(this.$firebase.list('quote'), {
+        query: (list) => list.where('mediaid', '==', this.mediaid),
+        key: '_id',
+        exclude: ['_id'],
+        onSuccess: (list) => {
+          this.quotes.sort((a, b) => { return a.location - b.location })
+          this.showQuotes = true
+          this.loading = false
+        }
+      })
+      this.ideas = this.$fiery(this.$firebase.list('idea'), {
+        query: (list) => list.where('mediaid', '==', this.mediaid),
+        key: '_id',
+        exclude: ['_id'],
+        onSuccess: (list) => {
+          this.ideas.sort((a, b) => { return a.location - b.location })
+          this.showQuotes = true
+          this.loading = false
+        }
+      })
+      this.illustrations = this.$fiery(this.$firebase.list('illustration'), {
+        query: (list) => list.where('mediaid', '==', this.mediaid),
+        key: '_id',
+        exclude: ['_id'],
+        onSuccess: (list) => {
+          this.illustrations.sort((a, b) => { return a.location - b.location })
+          this.showQuotes = true
+          this.loading = false
+        }
+      })
+      this.outlines = this.$fiery(this.$firebase.list('outline'), {
+        query: (list) => list.where('mediaid', '==', this.mediaid),
+        key: '_id',
+        exclude: ['_id'],
+        onSuccess: (list) => {
+          this.outlines.sort((a, b) => { return a.location - b.location })
+          this.showQuotes = true
+          this.loading = false
+        }
       })
     },
     openAdd () {
@@ -200,22 +242,28 @@ export default {
     },
     closeAdd (newItem, type) {
       this.addOpen = false
-      switch (type) {
-        case 'quote':
-          this.quotes.push(newItem)
-          break
-        case 'outline':
-          this.outlines.push(newItem)
-          break
-        case 'idea':
-          this.ideas.push(newItem)
-          break
-        case 'illustration':
-          this.illustrations.push(newItem)
-          break
-        default:
-          console.log('wrong new add...')
-      }
+      // console.log('new ' + type, newItem)
+      // switch (type) {
+      //   case 'quote':
+      //     // this.quotes.push(newItem)
+      //     // this.quotes.sort((a, b) => { return a.location - b.location })
+      //     // this.$refs.quoteList.$forceUpdate()
+      //     break
+      //   case 'outline':
+      //     this.outlines.push(newItem)
+      //     this.outlines.sort((a, b) => { return a.location - b.location })
+      //     break
+      //   case 'idea':
+      //     this.ideas.push(newItem)
+      //     this.ideas.sort((a, b) => { return a.location - b.location })
+      //     break
+      //   case 'illustration':
+      //     this.illustrations.push(newItem)
+      //     this.illustrations.sort((a, b) => { return a.location - b.location })
+      //     break
+      //   default:
+      //     console.log('wrong new add...')
+      // }
     },
     toggleQuotes () {
       if (this.showQuotes) {

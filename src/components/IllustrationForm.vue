@@ -155,9 +155,13 @@ export default {
       if (this.type === 'movie') {
         illustrationObj.character = this.character
       }
-      this.database.add('illustration', illustrationObj, (res) => {
-        console.log(res)
-        this.modalFin(res, 'illustration')
+      // this.database.add('illustration', illustrationObj, (res) => {
+      //   console.log(res)
+      //   this.modalFin(res, 'illustration')
+      // })
+      this.$firebase.list('illustration').add(illustrationObj).then((res) => {
+        illustrationObj._id = res.id
+        this.modalFin(illustrationObj, 'illustration')
       })
     },
     updateIllustration () {

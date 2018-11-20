@@ -35,11 +35,11 @@
          |
       </span>
       <span v-if="showBible">
-        <q-chip v-for="bibleRef in outline.bibleRefs" small color="secondary" :key="bibleRef._id">{{ refString(bibleRef) }}</q-chip>
+        <q-chip v-for="bibleRef in outline.bibleRefs" small color="secondary" :key="bibleRef._id">{{ $bible.readable(bibleRef) }}</q-chip>
       </span>
     </q-card-main>
     <q-modal v-model="editOpen" content-classes="edit-outline-modal">
-      <q-icon name="fa-close" size="2rem" @click.native="editOpen=false" class="float-right cursor-pointer" />
+      <q-icon name="fas fa-times" size="2rem" @click.native="editOpen=false" class="float-right cursor-pointer" />
       <outline-form ref="outlineForm" :outline.sync="outline" :modal-fin="closeEdit" form-type="Edit" />
     </q-modal>
   </q-card>
