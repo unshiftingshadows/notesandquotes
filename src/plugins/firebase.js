@@ -38,6 +38,14 @@ function snippets (type, id) {
   }
 }
 
+async function lookup (term, type) {
+  console.log('lookup called')
+  var lookupFunction = firebase.functions().httpsCallable('lookup-' + type)
+  const result = await lookupFunction({ searchTerm: term })
+  console.log('lookup result', result)
+  return result.data
+}
+
 export default ({ app, router, Vue }) => {
   Vue.use(VueFiery)
   Vue.prototype.$firebase = {
@@ -49,6 +57,7 @@ export default ({ app, router, Vue }) => {
     documentsRef: fbapp.storage().ref('documents'),
     list: list,
     view: view,
-    snippets: snippets
+    snippets: snippets,
+    lookup: lookup
   }
 }

@@ -52,17 +52,27 @@ export default {
     addTopic () {
       console.log('add topic')
       var topicObj = {
-        title: this.topicTitle
+        title: this.topicTitle,
+        users: [ this.$firebase.auth.currentUser.uid ]
       }
       console.log(topicObj)
-      this.database.add('topic', topicObj, (res) => {
+      // this.database.add('topic', topicObj, (res) => {
+      //   this.modalFin()
+      //   Notify.create({
+      //     message: 'Topic created!',
+      //     type: 'positive',
+      //     position: 'bottom-left'
+      //   })
+      //   this.$router.push({ name: 'topic', params: { id: res._id } })
+      // })
+      this.$firebase.list('topic').add(topicObj).then((res) => {
         this.modalFin()
         Notify.create({
           message: 'Topic created!',
           type: 'positive',
           position: 'bottom-left'
         })
-        this.$router.push({ name: 'topic', params: { id: res._id } })
+        this.$router.push({ name: 'topic', params: { id: res.id } })
       })
     }
   }

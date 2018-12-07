@@ -1,34 +1,36 @@
 <template>
   <q-page padding>
-    <div class="row gutter-md items-center">
+    <q-spinner color="primary" class="absolute-center" size="3rem" v-if="loading && !topic.errMessage" />
+    <h3 v-if="topic.errMessage">Sorry...but there was an error...</h3>
+    <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-12">
         <span class="float-right">
           <q-btn-group>
-            <q-btn label="Add" icon="fa-plus" color="primary" @click.native="openAdd" />
-            <q-btn label="Select" icon="fa-plus" color="primary" @click.native="setTopic" />
+            <q-btn label="Add" icon="fas fa-plus" color="primary" @click.native="openAdd" />
+            <q-btn label="Select" icon="fas fa-plus" color="primary" @click.native="setTopic" />
           </q-btn-group>
         </span>
-        <h3>{{ title }}</h3>
+        <h3>{{ topic.title }}</h3>
       </div>
       <div class="col-12-sm col-6">
-        <q-input v-model="premise" type="textarea" :max-height="100" :min-rows="2" float-label="Premise" dark />
+        <q-input v-model="topic.premise" type="textarea" :max-height="100" :min-rows="2" float-label="Premise" dark />
       </div>
       <div class="col-12-sm col-6">
-        <q-input v-model="conclusion" type="textarea" :max-height="100" :min-rows="2" float-label="Conclusion" dark />
+        <q-input v-model="topic.conclusion" type="textarea" :max-height="100" :min-rows="2" float-label="Conclusion" dark />
       </div>
       <div class="col-12">
         <!-- <markdown-editor v-model="notes" :configs="editorConfigs" @input="handleInput" ref="markdown" /> -->
         <vue-editor
           ref="editor"
           :editorToolbar="toolbarContent"
-          v-model="notes"
+          v-model="topic.notes"
         />
       </div>
       <div class="col-12">
-        <q-chips-input v-model="tags" float-label="Tags" dark />
+        <q-chips-input v-model="topic.tags" float-label="Tags" dark />
       </div>
       <div class="col-12">
-        <q-chips-input v-model="bibleRefs" float-label="Bible Refs" @blur="$v.bibleRefs.$touch" :error="$v.bibleRefs.$error" dark />
+        <q-chips-input v-model="topic.bibleRefs" float-label="Bible Refs" dark />
       </div>
       <div class="col-12">
         <q-btn color="primary" @click="update">Update</q-btn>
@@ -51,7 +53,7 @@ import { VueEditor } from 'vue2-editor'
 import Add from 'components/AddMedia.vue'
 // import CodeMirror from 'codemirror'
 
-var refVal = Bible.refValidate
+// var refVal = Bible.refValidate
 
 export default {
   components: {
@@ -59,17 +61,27 @@ export default {
     // markdownEditor
     VueEditor
   },
+  fiery: true,
   data () {
     return {
+      loading: true,
       id: this.$route.params.id,
-      title: '',
-      tags: [],
-      notes: '',
-      premise: '',
-      conclusion: '',
+      topic: this.$fiery(this.$firebase.view('topic', this.$route.params.id), {
+        onSuccess: () => {
+          if (this.topic.premise || this.topic.premise === '') {
+            console.log('premise loaded')
+            this.loading = false
+          } else {
+            this.loading = true
+          }
+        }
+      }),
       bibleRefParse: [],
-      bibleRefs: [],
-      resources: [],
+      resources: this.$fiery(this.$firebase.view('topic', this.$route.params.id).collection('resources'), {
+        onSuccess: () => {
+          console.log('resources loaded')
+        }
+      }),
       toolbarContent: [
         [{ 'header': [] }],
         ['bold', 'italic', 'underline', 'strike'],
@@ -83,20 +95,20 @@ export default {
       showAdd: false
     }
   },
-  validations: {
-    bibleRefs: {
-      $each: {
-        refVal
-      }
-    }
-  },
+  // validations: {
+  //   bibleRefs: {
+  //     $each: {
+  //       refVal
+  //     }
+  //   }
+  // },
   // computed: {
   //   simplemde () {
   //     return this.$refs.markdown.simplemde
   //   }
   // },
   watch: {
-    bibleRefs: function (userRefList) {
+    'topic.bibleRefs': function (userRefList) {
       this.bibleRefParse = []
       userRefList.forEach((ref) => {
         var refObj = Bible.parseBibleRef(ref)
@@ -107,7 +119,7 @@ export default {
     }
   },
   mounted () {
-    this.init()
+    // this.init()
   },
   methods: {
     init () {
@@ -155,23 +167,23 @@ export default {
       // and quickly
       //
       // Same needs to be considered when implementing in the Builder
-      this.database.view('topic', this.id, (resource, userData) => {
-        this.title = resource.title
-        this.notes = resource.notes
-        this.premise = resource.premise
-        this.conclusion = resource.conclusion
-        this.tags = resource.tags
-        resource.bibleRefs.forEach((ref) => {
-          if (ref !== {}) {
-            this.bibleRefs.push(Bible.stringBibleRef(ref))
-          }
-        })
-        resource.resources.forEach((res) => {
-          if (res !== {}) {
-            this.resources.push(res.media)
-          }
-        })
-      })
+      // this.database.view('topic', this.id, (resource, userData) => {
+      //   this.title = resource.title
+      //   this.notes = resource.notes
+      //   this.premise = resource.premise
+      //   this.conclusion = resource.conclusion
+      //   this.tags = resource.tags
+      //   resource.bibleRefs.forEach((ref) => {
+      //     if (ref !== {}) {
+      //       this.bibleRefs.push(Bible.stringBibleRef(ref))
+      //     }
+      //   })
+      //   resource.resources.forEach((res) => {
+      //     if (res !== {}) {
+      //       this.resources.push(res.media)
+      //     }
+      //   })
+      // })
     },
     update () {
       var obj = {

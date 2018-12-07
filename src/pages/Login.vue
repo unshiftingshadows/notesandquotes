@@ -68,7 +68,7 @@ export default {
         Notify.create('Please review fields again.')
         return
       }
-      this.firebase.auth.signInWithEmailAndPassword(this.form.email, this.form.pswd)
+      this.$firebase.auth.signInWithEmailAndPassword(this.form.email, this.form.pswd)
         .then((user) => {
           this.$router.replace('/')
         })

@@ -1,5 +1,7 @@
 <template>
   <q-page padding>
+    <q-spinner color="primary" class="absolute-center" size="3rem" v-if="loading && !document.errMessage" />
+    <h3 v-if="document.errMessage">Sorry...but there was an error...</h3>
     <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-xs-12 justify-center">
         <q-btn v-if="fileTypes.includes(document.fileType) && fileURL !== ''" @click.native="wordRead = true">read</q-btn>
@@ -92,10 +94,14 @@ export default {
       id: this.$route.params.id,
       document: this.$fiery(this.$firebase.view('document', this.$route.params.id), {
         onSuccess: () => {
-          this.$firebase.documentsRef.child(this.id).getDownloadURL().then((url) => {
-            this.fileURL = url
-            this.loading = false
-          })
+          if (this.document.status) {
+            this.$firebase.documentsRef.child(this.id).getDownloadURL().then((url) => {
+              this.fileURL = url
+              this.loading = false
+            })
+          } else {
+            this.loading = true
+          }
         }
       }),
       // userData: {

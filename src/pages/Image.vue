@@ -1,5 +1,7 @@
 <template>
   <q-page padding>
+    <q-spinner color="primary" class="absolute-center" size="3rem" v-if="loading && !image.errMessage" />
+    <h3 v-if="image.errMessage">Sorry...but there was an error...</h3>
     <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-xs-12 justify-center">
         <img :src="image.imageURL" class="responsive" />
@@ -68,11 +70,15 @@ export default {
           //     this.image.pageURL = url
           //   })
           // }
-          if (!this.image.tags) {
-            this.image.tags = []
-            this.update()
+          if (this.image.status) {
+            if (!this.image.tags) {
+              this.image.tags = []
+              this.update()
+            }
+            this.loading = false
+          } else {
+            this.loading = true
           }
-          this.loading = false
         }
       }),
       userData: {

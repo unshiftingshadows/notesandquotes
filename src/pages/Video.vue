@@ -1,5 +1,7 @@
 <template>
   <q-page padding>
+    <q-spinner color="primary" class="absolute-center" size="3rem" v-if="loading && !video.errMessage" />
+    <h3 v-if="video.errMessage">Sorry...but there was an error...</h3>
     <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-xs-12 justify-center">
         <q-video :src="video.embedURL" />
@@ -54,11 +56,15 @@ export default {
       id: this.$route.params.id,
       video: this.$fiery(this.$firebase.view('video', this.$route.params.id), {
         onSuccess: () => {
-          if (!this.video.tags) {
-            this.video.tags = []
-            this.update()
+          if (this.video.status) {
+            if (!this.video.tags) {
+              this.video.tags = []
+              this.update()
+            }
+            this.loading = false
+          } else {
+            this.loading = true
           }
-          this.loading = false
         }
       }),
       userData: {

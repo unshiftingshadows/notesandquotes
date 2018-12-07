@@ -12,7 +12,7 @@
         <q-card inline v-masonry-tile v-for="item in items" :key="item._id" v-bind:class="[ type, { 'image-card': imageTypes.includes(type) }]" class="media-card media-item" @click.native="openItem(item._id, item)">
           <q-card-media v-if="imageTypes.includes(type)">
             <img :src="item.thumbURL" />
-            <q-card-title slot="overlay">
+            <q-card-title slot="overlay" v-if="type !== 'book' && type !== 'movie' && type !== 'image'">
               <span v-if="!noTitleTypes.includes(type)">{{ item.title }}</span>
               <span slot="subtitle" v-if="item.userData && item.userData[firebase.auth.currentUser.uid]"><q-chip v-for="tag in item.userData[firebase.auth.currentUser.uid].tags" :key="tag" color="primary" small style="margin-right: 5px; margin-bottom: 5px;">{{ tag }}</q-chip></span>
             </q-card-title>

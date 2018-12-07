@@ -1,5 +1,7 @@
 <template>
   <q-page padding>
+    <q-spinner color="primary" class="absolute-center" size="3rem" v-if="loading && !movie.errMessage" />
+    <h3 v-if="movie.errMessage">Sorry...but there was an error...</h3>
     <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-xs-12 col-md-4 justify-center">
         <img :src="movie.thumbURL" width="100%" />
@@ -62,7 +64,11 @@ export default {
       id: this.$route.params.id,
       movie: this.$fiery(this.$firebase.view('movie', this.$route.params.id), {
         onSuccess: () => {
-          this.loading = false
+          if (this.movie.status) {
+            this.loading = false
+          } else {
+            this.loading = true
+          }
         }
       }),
       // userData: {

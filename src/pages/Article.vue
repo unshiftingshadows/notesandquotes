@@ -1,5 +1,7 @@
 <template>
   <q-page padding>
+    <q-spinner color="primary" class="absolute-center" size="3rem" v-if="loading && !article.errMessage" />
+    <h3 v-if="article.errMessage">Sorry...but there was an error...</h3>
     <div class="row gutter-md justify-center" v-if="!loading">
       <div class="col-xs-12">
         <span class="float-right" v-if="this.$selectedTopic.get()">
@@ -83,7 +85,11 @@ export default {
       id: this.$route.params.id,
       article: this.$fiery(this.$firebase.view('article', this.$route.params.id), {
         onSuccess: () => {
-          this.loading = false
+          if (this.article.status) {
+            this.loading = false
+          } else {
+            this.loading = true
+          }
         }
       }),
       // userData: {

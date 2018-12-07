@@ -1,5 +1,7 @@
 <template>
   <q-page padding>
+    <q-spinner color="primary" class="absolute-center" size="3rem" v-if="loading && !discourse.errMessage" />
+    <h3 v-if="discourse.errMessage">Sorry...but there was an error...</h3>
     <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-xs-12 justify-center" v-if="linkIsVideo">
         <q-video :src="embedURL" />
@@ -68,8 +70,12 @@ export default {
       id: this.$route.params.id,
       discourse: this.$fiery(this.$firebase.view('discourse', this.$route.params.id), {
         onSuccess: () => {
-          this.dateOccurred = this.discourse.dateOccurred.toDate()
-          this.loading = false
+          if (this.discourse.status) {
+            this.dateOccurred = this.discourse.dateOccurred.toDate()
+            this.loading = false
+          } else {
+            this.loading = true
+          }
         }
       }),
       dateOccurred: new Date(),

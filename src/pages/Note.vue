@@ -1,5 +1,7 @@
 <template>
   <q-page padding>
+    <q-spinner color="primary" class="absolute-center" size="3rem" v-if="loading && !note.errMessage" />
+    <h3 v-if="note.errMessage">Sorry...but there was an error...</h3>
     <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-12">
         <span class="float-right" v-if="this.$selectedTopic.get()">
@@ -15,7 +17,7 @@
         <q-chips-input v-model="note.tags" float-label="Tags" dark />
       </div>
       <div class="col-12">
-        <q-chips-input v-model="note.bibleRefs" float-label="Bible Refs" @blur="$v.bibleRefs.$touch" :error="$v.bibleRefs.$error" dark />
+        <q-chips-input v-model="note.bibleRefs" float-label="Bible Refs" dark />
       </div>
       <div class="col-12">
         <q-btn color="primary" @click="update">Update</q-btn>
@@ -43,7 +45,11 @@ export default {
       id: this.$route.params.id,
       note: this.$fiery(this.$firebase.view('note', this.$route.params.id), {
         onSuccess: () => {
-          this.loading = false
+          if (this.note.status) {
+            this.loading = false
+          } else {
+            this.loading = true
+          }
         }
       }),
       // title: '',
@@ -75,20 +81,20 @@ export default {
     }
   },
   mounted () {
-    this.init()
+    // this.init()
   },
   methods: {
     init () {
-      this.database.view('note', this.id, (resource, userData) => {
-        this.title = resource.title
-        this.text = resource.text
-        this.tags = resource.tags
-        resource.bibleRefs.forEach((ref) => {
-          if (ref !== {}) {
-            this.bibleRefs.push(Bible.stringBibleRef(ref))
-          }
-        })
-      })
+      // this.database.view('note', this.id, (resource, userData) => {
+      //   this.title = resource.title
+      //   this.text = resource.text
+      //   this.tags = resource.tags
+      //   resource.bibleRefs.forEach((ref) => {
+      //     if (ref !== {}) {
+      //       this.bibleRefs.push(Bible.stringBibleRef(ref))
+      //     }
+      //   })
+      // })
     },
     update () {
       console.log('update', this.note)

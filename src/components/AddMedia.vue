@@ -15,7 +15,7 @@
           <div class="col-12">
             <q-input v-model="bookSearch" :loading="bookResultsLoading" @keyup.enter="googleBookSearch" float-label="Search Books" dark :after="[{ icon: 'fas fa-arrow-right', handler: googleBookSearch }]" />
           </div>
-          <div class="col-12">
+          <div class="col-12" v-if="!bookResultsLoading">
             <q-card inline v-for="result in bookResults" :key="result.id" @click.native="add(result)" style="cursor: pointer; width: 47%; min-height: 200px; margin: 5px;">
               <q-card-media v-if="result.volumeInfo.imageLinks !== undefined && result.volumeInfo.imageLinks.thumbnail !== null">
                 <img :src="result.volumeInfo.imageLinks.thumbnail" />
@@ -26,7 +26,7 @@
               </q-card-media>
               <q-card-title v-if="result.volumeInfo.imageLinks === undefined || result.volumeInfo.imageLinks.thumbnail === null">
                 {{ result.volumeInfo.title }}
-                <span slot="subtitle">{{ result.volumeInfo.authors[0] }}</span>
+                <span slot="subtitle" v-if="result.volumeInfo.authors">{{ result.volumeInfo.authors[0] }}</span>
               </q-card-title>
             </q-card>
           </div>
@@ -289,16 +289,26 @@ export default {
       console.log('reset')
       Object.assign(this.$data, initialState())
     },
-    googleBookSearch () {
-      this.database.lookup(this.bookSearch, 'book', (res) => {
-        this.bookResults = res.items
-      })
+    async googleBookSearch () {
+      this.bookResultsLoading = true
+      // this.database.lookup(this.bookSearch, 'book', (res) => {
+      //   this.bookResults = res.items
+      // })
+      const res = await this.$firebase.lookup(this.bookSearch, 'book')
+      console.log(res)
+      this.bookResults = res.items
+      this.bookResultsLoading = false
     },
-    moviedbSearch () {
-      this.database.lookup(this.movieSearch, 'movie', (res) => {
-        console.log(res)
-        this.movieResults = res.results
-      })
+    async moviedbSearch () {
+      this.movieResultsLoading = true
+      // this.database.lookup(this.movieSearch, 'movie', (res) => {
+      //   console.log(res)
+      //   this.movieResults = res.results
+      // })
+      const res = await this.$firebase.lookup(this.movieSearch, 'movie')
+      console.log(res)
+      this.movieResults = res.results
+      this.movieResultsLoading = false
     },
     imageServer () {
       return {
@@ -306,9 +316,9 @@ export default {
           console.log('process started', this)
           // Should do custom file upload or local storing here
           // this.loading = true
-          this.database.add('image', { title: file.name, type: 'upload' }, (res) => {
+          this.$firebase.list('image').add({ title: file.name, type: 'upload', users: [ this.$firebase.auth.currentUser.uid ] }).then((res) => {
             console.log('database image added')
-            var uploadProcess = this.firebase.imagesRef.child(res._id).put(file)
+            var uploadProcess = this.$firebase.imagesRef.child(res.id).put(file)
             uploadProcess.on('state_changed', (snapshot) => {
               progress(true, snapshot.bytesTransferred, snapshot.totalBytes)
             }, (err) => {
@@ -321,7 +331,7 @@ export default {
               //   res.pageURL = url
               // this.loading = false
               this.modalFin()
-              this.$router.push({ name: this.selectType, params: { id: res._id } })
+              this.$router.push({ name: this.selectType, params: { id: res.id } })
               // })
             })
           })
@@ -356,12 +366,12 @@ export default {
     documentServer () {
       return {
         process: (fieldName, file, metadata, load, error, progress, abort) => {
-          console.log('file started', file)
+          console.log('process started', this)
           // Should do custom file upload or local storing here
           // this.loading = true
-          this.database.add('document', { title: file.name, fileType: file.type }, (res) => {
+          this.$firebase.list('document').add({ title: file.name, fileType: file.type, users: [ this.$firebase.auth.currentUser.uid ] }).then((res) => {
             console.log('database document added')
-            var uploadProcess = this.firebase.documentsRef.child(res._id).put(file)
+            var uploadProcess = this.$firebase.documentsRef.child(res.id).put(file)
             uploadProcess.on('state_changed', (snapshot) => {
               progress(true, snapshot.bytesTransferred, snapshot.totalBytes)
             }, (err) => {
@@ -374,7 +384,7 @@ export default {
               //   res.pageURL = url
               // this.loading = false
               this.modalFin()
-              this.$router.push({ name: this.selectType, params: { id: res._id } })
+              this.$router.push({ name: this.selectType, params: { id: res.id } })
               // })
             })
           })
@@ -408,59 +418,75 @@ export default {
     },
     add (item) {
       this.addDisabled = true
-      var obj = {}
+      var obj = {
+        users: [ this.$firebase.auth.currentUser.uid ]
+      }
       switch (this.selectType) {
         case 'book':
-          obj = {
-            googleid: item.id
-          }
+          obj.googleid = item.id
           break
         case 'movie':
-          obj = {
-            moviedbid: item.id
-          }
+          obj.moviedbid = item.id
           break
         case 'image':
-          obj = {
-            title: this.imageWikiTitle,
-            type: this.imageType,
-            url: this.imageURL
-          }
+          obj.title = this.imageWikiTitle
+          obj.type = this.imageType
+          obj.url = this.imageURL
           break
         case 'video':
-          obj = {
-            url: this.videoURL
-          }
+          obj.url = this.videoURL
           break
         case 'article':
-          obj = {
-            url: this.articleURL
-          }
+          obj.url = this.articleURL
           break
         case 'note':
-          obj = {
-            title: this.noteTitle
-          }
+          obj.title = this.noteTitle
           break
         case 'document':
-          obj = {}
           break
         case 'discourse':
-          obj = {
-            title: this.discourseTitle
-          }
+          obj.title = this.discourseTitle
           break
         case 'composition':
-          obj = {
-            title: this.compositionTitle,
-            type: this.compositionType
-          }
+          obj.title = this.compositionTitle
+          obj.type = this.compositionType
           break
         default:
           console.error('incorrect add type')
       }
       if (obj !== {}) {
-        this.database.add(this.selectType, obj, (res) => {
+        // this.database.add(this.selectType, obj, (res) => {
+        //   this.modalFin()
+        //   Notify.create({
+        //     message: this.selectType + ' created!',
+        //     type: 'positive',
+        //     position: 'bottom-left'
+        //   })
+        //   if (this.$route.name === 'topic') {
+        //     console.log('topic page')
+        //     var obj = {
+        //       topic: this.$route.params.id,
+        //       media: res._id,
+        //       type: this.selectType
+        //     }
+        //     console.log(obj)
+        //     this.database.add('resource', obj, (resource) => {
+        //       Notify.create({
+        //         message: 'Added as resource to topic!',
+        //         type: 'positive',
+        //         position: 'bottom-left'
+        //       })
+        //       this.$currentTopic.emit('new-resource', {
+        //         media: res,
+        //         type: this.selectType
+        //       })
+        //     })
+        //   } else {
+        //     this.$router.push({ name: this.selectType, params: { id: res._id } })
+        //   }
+        // })
+        console.log('new obj', obj)
+        this.$firebase.list(this.selectType).add(obj).then((res) => {
           this.modalFin()
           Notify.create({
             message: this.selectType + ' created!',
@@ -471,11 +497,11 @@ export default {
             console.log('topic page')
             var obj = {
               topic: this.$route.params.id,
-              media: res._id,
+              media: res.id,
               type: this.selectType
             }
             console.log(obj)
-            this.database.add('resource', obj, (resource) => {
+            this.$firebase.topic(this.$route.params.id).add(obj).then((resource) => {
               Notify.create({
                 message: 'Added as resource to topic!',
                 type: 'positive',
@@ -487,7 +513,7 @@ export default {
               })
             })
           } else {
-            this.$router.push({ name: this.selectType, params: { id: res._id } })
+            this.$router.push({ name: this.selectType, params: { id: res.id } })
           }
         })
       }

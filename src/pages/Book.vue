@@ -1,5 +1,7 @@
 <template>
   <q-page padding>
+    <q-spinner color="primary" class="absolute-center" size="3rem" v-if="loading && !book.errMessage" />
+    <h3 v-if="book.errMessage">Sorry...but there was an error...</h3>
     <div class="row gutter-md items-center" v-if="!loading">
       <div class="gt-sm col-md-4 justify-center">
         <img :src="largeImageURL" width="100%" />
@@ -73,12 +75,16 @@ export default {
       id: this.$route.params.id,
       book: this.$fiery(this.$firebase.view('book', this.$route.params.id), {
         onSuccess: () => {
-          if (this.book.thumbURL.startsWith('http://books.google.com/') || this.book.thumbURL.startsWith('https://books.google.com/')) {
-            this.largeImageURL = this.book.thumbURL.slice(0, this.book.thumbURL.indexOf('&zoom'))
+          if (this.book.status) {
+            if (this.book.thumbURL.startsWith('http://books.google.com/') || this.book.thumbURL.startsWith('https://books.google.com/')) {
+              this.largeImageURL = this.book.thumbURL.slice(0, this.book.thumbURL.indexOf('&zoom'))
+            } else {
+              this.largeImageURL = this.book.thumbURL
+            }
+            this.loading = false
           } else {
-            this.largeImageURL = this.book.thumbURL
+            this.loading = true
           }
-          this.loading = false
         }
       }),
       // userData: {
