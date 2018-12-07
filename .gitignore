@@ -8,7 +8,7 @@
 .postcssrc.js
 .stylintrc
 .gitignore
-/.firebase/*
+.firebase
 node_modules
 /dist
 /src-cordova/platforms
