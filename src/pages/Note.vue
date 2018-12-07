@@ -5,8 +5,9 @@
     <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-12">
         <span class="float-right" v-if="this.$selectedTopic.get()">
-          <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
-          <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
+          <q-btn label="Added!" icon="fas fa-check" disable color="positive" v-if="addState === 'y'" />
+          <q-btn label="Add" icon="fas fa-plus" disable v-if="addState === 'd'" />
+          <q-btn label="Add" icon="fas fa-plus" @click.native="topicAdd" v-if="addState === 'n'" />
         </span>
         <h3>{{ note.title }}</h3>
       </div>
@@ -38,6 +39,7 @@ export default {
   components: {
     markdownEditor
   },
+  name: 'Note',
   fiery: true,
   data () {
     return {
@@ -59,7 +61,8 @@ export default {
       // bibleRefs: [],
       editorConfigs: {
         toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'image']
-      }
+      },
+      addState: this.$selectedTopic.get() && !this.$selectedTopic.find(this.$route.params.id) ? 'n' : 'y'
     }
   },
   // validations: {
@@ -136,17 +139,13 @@ export default {
         ]
       })
     },
-    showTopicAdd () {
-      return this.$selectedTopic.get() && !this.$selectedTopic.find(this.id)
-    },
     topicAdd () {
       var obj = {
-        topic: this.$selectedTopic.get().id,
-        media: this.id,
+        id: this.id,
         type: 'note'
       }
-      this.database.add('resource', obj, (res) => {
-        this.$selectedTopic.add(this.id)
+      this.$selectedTopic.add(obj).then((ans) => {
+        this.addState = ans ? 'y' : 'n'
       })
     }
   }

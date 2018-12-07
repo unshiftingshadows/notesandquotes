@@ -74,7 +74,7 @@
       </div>
     </div>
     <q-modal v-model="addOpen" content-classes="add-quote-modal">
-      <!-- <q-icon name="fa-close" size="2rem" @click.native="closeAdd" class="float-right cursor-pointer" /> -->
+      <!-- <q-icon name="fas fa-close" size="2rem" @click.native="closeAdd" class="float-right cursor-pointer" /> -->
       <q-tabs v-model="tabSelection" position="top" align="center" no-pane-border>
         <q-tab default v-if="mediaType !=='article'" slot="title" label="Quote" name="quote-tab" icon="fas fa-quote-right" />
         <q-tab :default="mediaType === 'article'" slot="title" label="Outline" name="outline-tab" icon="fas fa-list-ul" />

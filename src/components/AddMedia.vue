@@ -496,25 +496,27 @@ export default {
           if (this.$route.name === 'topic') {
             console.log('topic page')
             var obj = {
-              topic: this.$route.params.id,
-              media: res.id,
-              type: this.selectType
+              id: res.id,
+              type: this.selectType,
+              dateAdded: new Date(),
+              addedBy: this.$firebase.auth.currentUser.uid
             }
             console.log(obj)
-            this.$firebase.topic(this.$route.params.id).add(obj).then((resource) => {
+            this.$firebase.view('topic', this.$route.params.id).collection('resources').add(obj).then((resource) => {
               Notify.create({
                 message: 'Added as resource to topic!',
                 type: 'positive',
                 position: 'bottom-left'
               })
-              this.$currentTopic.emit('new-resource', {
-                media: res,
-                type: this.selectType
-              })
+              // this.$currentTopic.emit('new-resource', {
+              //   media: res,
+              //   type: this.selectType
+              // })
             })
           } else {
             this.$router.push({ name: this.selectType, params: { id: res.id } })
           }
+          this.reset()
         })
       }
     }

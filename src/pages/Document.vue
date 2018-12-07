@@ -4,6 +4,11 @@
     <h3 v-if="document.errMessage">Sorry...but there was an error...</h3>
     <div class="row gutter-md items-center" v-if="!loading">
       <div class="col-xs-12 justify-center">
+        <span class="float-right" v-if="this.$selectedTopic.get()">
+          <q-btn label="Added!" icon="fas fa-check" disable color="positive" v-if="addState === 'y'" />
+          <q-btn label="Add" icon="fas fa-plus" disable v-if="addState === 'd'" />
+          <q-btn label="Add" icon="fas fa-plus" @click.native="topicAdd" v-if="addState === 'n'" />
+        </span>
         <q-btn v-if="fileTypes.includes(document.fileType) && fileURL !== ''" @click.native="wordRead = true">read</q-btn>
         <q-btn v-if="document.fileType === 'application/pdf' && fileURL !== ''" @click.native="pdfRead = true">read</q-btn>
         <q-btn v-if="document.fileType === 'application/pdf' && fileURL !== ''" @click.native="$refs.pdf.print()">print</q-btn>
@@ -11,10 +16,6 @@
         <q-btn v-if="document.fileType === 'text/csv' && fileURL !== ''" @click.native="textRead = true">read</q-btn> -->
       </div>
       <div class="col-xs-12">
-        <span class="float-right" v-if="this.$selectedTopic.get()">
-          <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
-          <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
-        </span>
         <h3>{{ document.title }}</h3>
         <div class="row gutter-sm">
           <div class="col-12">
@@ -134,7 +135,8 @@ export default {
       textRead: false,
       fileURL: '',
       currentPage: 1,
-      pageCount: 0
+      pageCount: 0,
+      addState: this.$selectedTopic.get() && !this.$selectedTopic.find(this.$route.params.id) ? 'n' : 'y'
     }
   },
   mounted () {
@@ -217,17 +219,13 @@ export default {
     remove () {
       console.log('remove not implemented...')
     },
-    showTopicAdd () {
-      return this.$selectedTopic.get() && !this.$selectedTopic.find(this.document._id)
-    },
     topicAdd () {
       var obj = {
-        topic: this.$selectedTopic.get().id,
-        media: this.document._id,
+        id: this.id,
         type: 'document'
       }
-      this.database.add('resource', obj, (res) => {
-        this.$selectedTopic.add(this.document._id)
+      this.$selectedTopic.add(obj).then((ans) => {
+        this.addState = ans ? 'y' : 'n'
       })
     }
   }

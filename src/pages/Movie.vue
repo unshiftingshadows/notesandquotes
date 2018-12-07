@@ -8,8 +8,9 @@
       </div>
       <div class="col-xs-12 col-md-8">
         <span class="float-right" v-if="this.$selectedTopic.get()">
-          <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
-          <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
+          <q-btn label="Added!" icon="fas fa-check" disable color="positive" v-if="addState === 'y'" />
+          <q-btn label="Add" icon="fas fa-plus" disable v-if="addState === 'd'" />
+          <q-btn label="Add" icon="fas fa-plus" @click.native="topicAdd" v-if="addState === 'n'" />
         </span>
         <h3>{{ movie.title }}</h3>
         <div class="row gutter-sm">
@@ -57,6 +58,7 @@ export default {
     QuoteList,
     MediaNotes
   },
+  name: 'Movie',
   fiery: true,
   data () {
     return {
@@ -90,7 +92,8 @@ export default {
           label: 'Read',
           value: 'read'
         }
-      ]
+      ],
+      addState: this.$selectedTopic.get() && !this.$selectedTopic.find(this.$route.params.id) ? 'n' : 'y'
     }
   },
   mounted () {
@@ -149,17 +152,13 @@ export default {
     remove () {
       console.log('Remove not implemented...')
     },
-    showTopicAdd () {
-      return this.$selectedTopic.get() && !this.$selectedTopic.find(this.movie._id)
-    },
     topicAdd () {
       var obj = {
-        topic: this.$selectedTopic.get().id,
-        media: this.movie._id,
+        id: this.id,
         type: 'movie'
       }
-      this.database.add('resource', obj, (res) => {
-        this.$selectedTopic.add(this.movie._id)
+      this.$selectedTopic.add(obj).then((ans) => {
+        this.addState = ans ? 'y' : 'n'
       })
     }
   }

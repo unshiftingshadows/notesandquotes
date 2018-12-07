@@ -1,5 +1,11 @@
 // import something here
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/firestore'
+
 var state = false
+var resources = []
+var listener
 
 function getState () {
   return state
@@ -7,17 +13,24 @@ function getState () {
 
 function setState (newState) {
   state = newState
+  listener = firebase.firestore().collection('topics').doc(newState.id).collection('resources').onSnapshot((querySnap) => {
+    querySnap.forEach((doc) => {
+      resources.push(doc.data().id)
+    })
+  })
   return true
 }
 
 function cancelState () {
   state = false
+  resources = []
+  listener()
   return true
 }
 
 function findResource (res) {
   try {
-    return state.resources.includes(res)
+    return resources.includes(res)
   } catch (err) {
     return false
   }
@@ -25,10 +38,18 @@ function findResource (res) {
 
 function addResource (res) {
   try {
-    state.resources.push(res)
-    return true
+    console.log('add resource', res)
+    // state.resources.push(res)
+    return firebase.firestore().collection('topics').doc(state.id).collection('resources').add({
+      type: res.type,
+      id: res.id,
+      dateAdded: new Date(),
+      addedBy: firebase.auth().currentUser.uid
+    }).then(() => {
+      return true
+    })
   } catch (err) {
-    return false
+    return Promise.resolve(false)
   }
 }
 

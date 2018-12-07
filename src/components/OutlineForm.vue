@@ -17,7 +17,7 @@
         </div>
         <q-list no-border dense>
           <q-item v-for="(item, index) in points" :key="index">
-            <q-item-side v-if="!numbered" icon="fa-chevron-right" />
+            <q-item-side v-if="!numbered" icon="fas fa-chevron-right" />
             <q-item-side v-if="numbered">{{ (index+1).toString() }}</q-item-side>
             <q-item-main>
               <q-input placeholder="Some title..." ref="outlinepointtitle" v-model="points[index].title" dark /><br/>
@@ -25,7 +25,7 @@
             </q-item-main>
           </q-item>
           <q-item>
-            <q-item-side v-if="!numbered" icon="fa-chevron-right" />
+            <q-item-side v-if="!numbered" icon="fas fa-chevron-right" />
             <q-item-side v-if="numbered">{{ (points.length+1).toString() }}</q-item-side>
             <q-item-main>
               <q-input placeholder="Some title..." ref="newpoint" v-model="newPoint" dark @keyup.enter="addPoint" :after="[{ icon: 'fa-plus', handler () {addPoint()} }]" />

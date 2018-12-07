@@ -5,8 +5,9 @@
     <div class="row gutter-md justify-center" v-if="!loading">
       <div class="col-xs-12">
         <span class="float-right" v-if="this.$selectedTopic.get()">
-          <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
-          <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
+          <q-btn label="Added!" icon="fas fa-check" disable color="positive" v-if="addState === 'y'" />
+          <q-btn label="Add" icon="fas fa-plus" disable v-if="addState === 'd'" />
+          <q-btn label="Add" icon="fas fa-plus" @click.native="topicAdd" v-if="addState === 'n'" />
         </span>
         <h3>{{ article.title }}</h3>
       </div>
@@ -75,9 +76,7 @@ export default {
     QuoteForm,
     QuoteList
   },
-  // directives: {
-  //   selection
-  // },
+  name: 'Article',
   fiery: true,
   data () {
     return {
@@ -110,7 +109,8 @@ export default {
       ],
       selectedText: '',
       showAddQuote: false,
-      addQuoteOpen: false
+      addQuoteOpen: false,
+      addState: this.$selectedTopic.get() && !this.$selectedTopic.find(this.$route.params.id) ? 'n' : 'y'
     }
   },
   watch: {
@@ -186,17 +186,14 @@ export default {
     remove () {
       console.log('remove not implemented...')
     },
-    showTopicAdd () {
-      return this.$selectedTopic.get() && !this.$selectedTopic.find(this.article._id)
-    },
     topicAdd () {
+      this.addState = 'd'
       var obj = {
-        topic: this.$selectedTopic.get().id,
-        media: this.article._id,
+        id: this.id,
         type: 'article'
       }
-      this.database.add('resource', obj, (res) => {
-        this.$selectedTopic.add(this.article._id)
+      this.$selectedTopic.add(obj).then((ans) => {
+        this.addState = ans ? 'y' : 'n'
       })
     },
     openAddQuote () {

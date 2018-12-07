@@ -8,12 +8,13 @@
         <q-btn icon="fas fa-link" color="primary" class="float-right" @click.native="openLink">&nbsp;&nbsp;Original Image</q-btn>
       </div>
       <div class="col-xs-12">
-        <span class="float-right" v-if="this.$selectedTopic.get()">
-          <q-btn label="Added!" icon="fa-check" disable color="positive" v-if="!showTopicAdd()" />
-          <q-btn label="Add" icon="fa-plus" @click.native="topicAdd" v-if="showTopicAdd()" />
-        </span>
         <div class="row gutter-sm">
           <div class="col-12">
+            <span class="float-right" v-if="this.$selectedTopic.get()">
+              <q-btn label="Added!" icon="fas fa-check" disable color="positive" v-if="addState === 'y'" />
+              <q-btn label="Add" icon="fas fa-plus" disable v-if="addState === 'd'" />
+              <q-btn label="Add" icon="fas fa-plus" @click.native="topicAdd" v-if="addState === 'n'" />
+            </span>
             <h3>{{ image.title }}</h3>
           </div>
           <div class="col-12">
@@ -56,6 +57,7 @@ export default {
   components: {
     MediaNotes
   },
+  name: 'Image',
   fiery: true,
   data () {
     return {
@@ -96,7 +98,8 @@ export default {
           label: 'Viewed',
           value: 'viewed'
         }
-      ]
+      ],
+      addState: this.$selectedTopic.get() && !this.$selectedTopic.find(this.$route.params.id) ? 'n' : 'y'
     }
   },
   mounted () {
@@ -167,17 +170,13 @@ export default {
     remove () {
       console.log('remove not implemented...')
     },
-    showTopicAdd () {
-      return this.$selectedTopic.get() && !this.$selectedTopic.find(this.image._id)
-    },
     topicAdd () {
       var obj = {
-        topic: this.$selectedTopic.get().id,
-        media: this.image._id,
+        id: this.id,
         type: 'image'
       }
-      this.database.add('resource', obj, (res) => {
-        this.$selectedTopic.add(this.image._id)
+      this.$selectedTopic.add(obj).then((ans) => {
+        this.addState = ans ? 'y' : 'n'
       })
     }
   }

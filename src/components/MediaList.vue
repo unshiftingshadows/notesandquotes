@@ -11,7 +11,7 @@
       </div>
       <div class="col-12">
         <div v-masonry transition-duration="0.3s" item-selector=".media-iteml">
-          <q-card inline v-bind:class="[item.type] + 'l'" v-masonry-tile v-for="item in showItems" :key="item._id" class="media-cardl media-iteml">
+          <q-card inline v-bind:class="[item.type] + 'l'" v-masonry-tile v-for="item in showItems" :key="item._id" class="media-cardl media-iteml" v-if="loaded(item)" @click.native="openItem(item.media, item.type)">
             <q-card-media v-if="imageTypes.includes(item.type) || titleTypes.includes(item.type)">
               <img :src="item.media.thumbURL" class="image-cardl" />
               <q-card-title slot="overlay" v-if="titleTypes.includes(item.type)">{{ item.media.title }}</q-card-title>
@@ -21,7 +21,9 @@
               <p>| <span v-for="author in item.media.author" :key="author">{{ author }} | </span></p>
             </q-card-main>
             <q-card-main v-if="listTypes.includes(item.type)">
-              <p>{{ item.media.text }}</p>
+              <p v-if="item.type !== 'outline'">{{ item.media.text }}</p>
+              <p v-if="item.type === 'outline'"><span v-for="point in item.media.points" :key="point">{{ point }}</span></p>
+              <p class="q-caption text-weight-thin">{{ item.media.media.title }} | {{ item.media.media.author.join(', ') }}</p>
             </q-card-main>
           </q-card>
         </div>
@@ -54,8 +56,8 @@ export default {
       },
       imageTypes: [ 'book', 'movie', 'image', 'article' ],
       titleTypes: [ 'video', 'article' ],
-      textTypes: [ 'document', 'discourse', 'composition' ],
-      listTypes: [ 'note', 'quote', 'idea', 'illustration' ],
+      textTypes: [ 'document', 'discourse', 'composition', 'note' ],
+      listTypes: [ 'quote', 'idea', 'illustration', 'outline' ],
       selectedTypes: [ 'all' ],
       types: [
         {
@@ -134,9 +136,9 @@ export default {
       this.showItems = value.filter(this.checkType)
     }
   },
-  // mounted () {
-  //   this.showItems = this.items.filter(this.checkType)
-  // },
+  mounted () {
+    this.showItems = this.items.filter(this.checkType)
+  },
   updated () {
     console.log('updated')
   },
@@ -144,34 +146,34 @@ export default {
     openItem (item, type) {
       console.log(item)
       console.log(type)
-      switch (type) {
-        case 'book':
-          this.resource = item
-          this.resourceType = type
-          this.resourceOpen = true
-          break
-        case 'movie':
-          // this.$router.push({ name: 'movie', params: { id: id } })
-          break
-        case 'article':
-          // this.$router.push({ name: 'article', params: { id: id } })
-          break
-        case 'video':
-          // this.$router.push({ name: 'video', params: { id: id } })
-          break
-        case 'image':
-          // this.$router.push({ name: 'image', params: { id: id } })
-          break
-        case 'note':
-          // this.$router.push({ name: 'note', params: { id: id } })
-          break
-        case 'quote':
-          // this.$router.push({ name: 'note', params: { id: id } })
-          break
-        default:
-          console.error('Incorrect item type for routing')
-          break
-      }
+      this.resource = item
+      this.resourceType = type
+      this.resourceOpen = true
+      // switch (type) {
+      //   case 'book':
+      //     break
+      //   case 'movie':
+      //     // this.$router.push({ name: 'movie', params: { id: id } })
+      //     break
+      //   case 'article':
+      //     // this.$router.push({ name: 'article', params: { id: id } })
+      //     break
+      //   case 'video':
+      //     // this.$router.push({ name: 'video', params: { id: id } })
+      //     break
+      //   case 'image':
+      //     // this.$router.push({ name: 'image', params: { id: id } })
+      //     break
+      //   case 'note':
+      //     // this.$router.push({ name: 'note', params: { id: id } })
+      //     break
+      //   case 'quote':
+      //     // this.$router.push({ name: 'note', params: { id: id } })
+      //     break
+      //   default:
+      //     console.error('Incorrect item type for routing')
+      //     break
+      // }
     },
     // pack () {
     //   this.$refs.bricks.pack()
@@ -182,6 +184,13 @@ export default {
       } else {
         return this.selectedTypes.includes(item.type)
       }
+    },
+    loaded (item) {
+      if (this.listTypes.includes(item.type)) {
+        return item.media && item.media.media && item.media.media.status
+      } else {
+        return item.media && item.media.status
+      }
     }
   }
 }
@@ -190,19 +199,23 @@ export default {
 <style>
 
 .media-cardl {
+  background-color: var(--q-color-dark);
   margin: 5px;
   width: 95%;
   cursor: pointer;
-}
-
-.image-cardl {
   opacity: 0.5;
   transition: opacity .25s;
   transition-timing-function: ease-in;
 }
 
-.image-cardl:hover {
+.media-cardl:hover {
   opacity: 1;
+}
+
+.resource-modal {
+  /* padding: 30px; */
+  width: 100%;
+  height: 100%;
 }
 
 @media screen and (min-width: 800px) {
@@ -213,18 +226,12 @@ export default {
 
 @media screen and (min-width: 1200px) {
   .media-cardl {
-    width: 47% !important;
+    width: 95% !important;
   }
   .resource-modal {
     min-width: 650px;
     width: 650px;
   }
-}
-
-.resource-modal {
-  /* padding: 30px; */
-  width: 100%;
-  height: 100%;
 }
 
 </style>

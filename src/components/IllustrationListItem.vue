@@ -6,11 +6,14 @@
       <q-item-tile sublabel lines="3" v-if="illustration.notes !== '' && showNotes">{{ illustration.notes }}</q-item-tile>
       <br/>
       <span v-if="this.$selectedTopic.get()">
-        <span v-if="showTopicAdd()">
+        <span v-if="addState === 'n'">
           <q-chip icon="fas fa-plus" @click.native="topicAdd" class="cursor-pointer" color="primary" small>Add</q-chip>&nbsp;
         </span>
-        <span v-if="!showTopicAdd()">
-          <q-chip icon="fas fa-check" @click.native="topicAdd" color="positive" small>Added!</q-chip>&nbsp;
+        <span v-if="addState === 'd'">
+          <q-chip icon="fas fa-plus" color="dark" small>Add</q-chip>&nbsp;
+        </span>
+        <span v-if="addState === 'y'">
+          <q-chip icon="fas fa-check" color="positive" small>Added!</q-chip>&nbsp;
         </span>
       </span>
       <span>
@@ -59,7 +62,8 @@ export default {
       showBible: (this.bible === ''),
       showNotes: (this.notes === ''),
       editOpen: false,
-      illustration: this.illustrationObj
+      illustration: this.illustrationObj,
+      addState: this.$selectedTopic.get() && !this.$selectedTopic.find(this.illustrationObj._id) ? 'n' : 'y'
     }
   },
   watch: {
@@ -87,17 +91,13 @@ export default {
       this.illustration = value
       this.editOpen = false
     },
-    showTopicAdd () {
-      return this.$selectedTopic.get() && !this.$selectedTopic.find(this.illustration._id)
-    },
     topicAdd () {
       var obj = {
-        topic: this.$selectedTopic.get().id,
-        media: this.illustration._id,
+        id: this.illustration._id,
         type: 'illustration'
       }
-      this.database.add('resource', obj, (res) => {
-        this.$selectedTopic.add(this.illustration._id)
+      this.$selectedTopic.add(obj).then((ans) => {
+        this.addState = ans ? 'y' : 'n'
       })
     }
   }

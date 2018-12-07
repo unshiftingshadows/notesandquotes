@@ -39,7 +39,7 @@
     </div>
 
     <q-modal ref="addModal" v-model="showAdd" content-classes="add-media-modal">
-      <q-icon name="fa-close" size="2rem" @click.native="closeAdd" class="float-right cursor-pointer" />
+      <q-icon name="fas fa-times" size="2rem" @click.native="closeAdd" class="float-right cursor-pointer" />
       <add :modal-fin="closeAdd" ref="addMedia" />
     </q-modal>
   </q-page>
@@ -186,20 +186,28 @@ export default {
       // })
     },
     update () {
-      var obj = {
-        notes: this.notes,
-        premise: this.premise,
-        conclusion: this.conclusion,
-        tags: this.tags,
-        bibleRefs: this.bibleRefParse
-      }
-      this.database.update(this.id, 'topic', obj, { updateUserData: false }, (res) => {
+      console.log('update', this.topic)
+      this.$fiery.update(this.topic).then(() => {
         Notify.create({
           message: 'Topic updated!',
           type: 'positive',
           position: 'bottom-left'
         })
       })
+      // var obj = {
+      //   notes: this.notes,
+      //   premise: this.premise,
+      //   conclusion: this.conclusion,
+      //   tags: this.tags,
+      //   bibleRefs: this.bibleRefParse
+      // }
+      // this.database.update(this.id, 'topic', obj, { updateUserData: false }, (res) => {
+      //   Notify.create({
+      //     message: 'Topic updated!',
+      //     type: 'positive',
+      //     position: 'bottom-left'
+      //   })
+      // })
     },
     remove () {
       Dialog.create({
@@ -221,9 +229,8 @@ export default {
     },
     setTopic () {
       this.$selectedTopic.set({
-        title: this.title,
-        id: this.id,
-        resources: this.resources
+        title: this.topic.title,
+        id: this.id
       })
       this.$router.push({ name: 'dashboard' })
     },
@@ -263,6 +270,18 @@ export default {
 
 .ql-stroke {
   stroke: #bbb !important;
+}
+
+.add-media-modal {
+  padding: 30px;
+  width: 100%;
+}
+
+@media screen and (min-width: 1200px) {
+  .add-media-modal {
+    min-width: 500px;
+    width: 500px;
+  }
 }
 
 /*@import '~simplemde/dist/simplemde.min.css'*/
