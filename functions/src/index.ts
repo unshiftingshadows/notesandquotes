@@ -9,3 +9,5 @@
 
 exports.add = require('./lib/add')
 exports.lookup = require('./lib/lookup')
+exports.search = require('./lib/search')
+exports.index = require('./lib/indexing')

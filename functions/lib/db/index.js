@@ -7,4 +7,5 @@ exports.firestore = defaultApp.firestore();
 const settings = { timestampsInSnapshots: true };
 exports.firestore.settings(settings);
 exports.auth = defaultApp.auth();
+exports.db = defaultApp.database();
 //# sourceMappingURL=index.js.map

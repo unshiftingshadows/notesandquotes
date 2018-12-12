@@ -11,6 +11,7 @@
 .firebase
 node_modules
 /dist
+/initSearchIndex
 /src-cordova/platforms
 /src-cordova/plugins
 /src-cordova/www

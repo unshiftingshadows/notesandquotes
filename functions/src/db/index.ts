@@ -8,3 +8,5 @@ const settings = { timestampsInSnapshots: true }
 firestore.settings(settings)
 
 export const auth = defaultApp.auth()
+
+export const db = defaultApp.database()

@@ -90,6 +90,8 @@ module.exports = function (ctx) {
         'QCardMedia',
         'QCardActions',
         'QInput',
+        'QSearch',
+        'QAutocomplete',
         'QSelect',
         'QRating',
         'QChipsInput',

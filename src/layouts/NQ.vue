@@ -12,6 +12,13 @@
         <q-toolbar-title>
           <img src="statics/logo.png" style="max-height: 50px" />
         </q-toolbar-title>
+        <q-search v-model="searchTerms" placeholder="Search..." class="on-left gt-sm" color="dark" inverted icon="fas fa-search">
+          <q-autocomplete
+            @search="search"
+            @selected="selected"
+            ref="searchModal"
+          />
+        </q-search>
         <q-btn v-if="selectedTopic" :label="'Current Topic: ' + selectedTopic.title" style="margin-right: 15px" @click.native="returnTopic()" />
         <q-btn-dropdown label="Notes and Quotes">
           <q-list link>
@@ -39,6 +46,13 @@
       <!-- QScrollArea is optional -->
       <q-scroll-area class="fit q-pa-sm">
         <!-- Content here -->
+        <q-search v-model="searchTerms" placeholder="Search..." class="on-left lt-sm" color="dark" inverted icon="fas fa-search">
+          <q-autocomplete
+            @search="search"
+            @selected="selected"
+            ref="searchModal"
+          />
+        </q-search>
         <q-item to="/dashboard">
           <q-item-side icon="fas fa-home" />
           <q-item-main label="Dashboard" />
@@ -115,12 +129,16 @@ export default {
   components: {
     Add
   },
+  name: 'NQ',
+  fiery: true,
   data () {
     return {
       leftDrawer: true,
       searchInput: '',
       showAdd: false,
-      selectedTopic: this.$selectedTopic.get()
+      selectedTopic: this.$selectedTopic.get(),
+      searchTerms: '',
+      index: []
     }
   },
   // firebase: function () {
@@ -128,7 +146,18 @@ export default {
   //     terms: this.firebase.searchTerms
   //   }
   // },
+  mounted () {
+    this.init()
+  },
   methods: {
+    init () {
+      this.$firebase.db.ref('searchIndex').once('value').then((snapshot) => {
+        const data = snapshot.val()
+        this.index = [].concat.apply([], Object.keys(data).map(type => {
+          return Object.keys(data[type]).map(e => { return { ...data[type][e], type: type, '.key': e } })
+        }))
+      })
+    },
     logout () {
       console.log('signing out')
       this.firebase.auth.signOut().then(() => {
@@ -147,9 +176,19 @@ export default {
         ])
       } else {
         var options = {
-          keys: ['title']
+          threshold: 0.2,
+          keys: [{
+            name: 'title',
+            weight: 0.3
+          }, {
+            name: 'author',
+            weight: 0.2
+          }, {
+            name: 'tags',
+            weight: 0.5
+          }]
         }
-        var fuse = this.$fuse(this.terms, options)
+        var fuse = new this.$fuse(this.index, options)
         var results = fuse.search(searchInput)
         results.forEach(function (result) {
           result.label = result.title
@@ -168,13 +207,14 @@ export default {
       } else {
         id = item['.key']
       }
-      if (this.$refs.searchModal.active) {
-        this.$refs.searchModal.close(() => {
-          this.$router.push({ name: item.type, params: { id: id } })
-        })
-      } else {
-        this.$router.push({ name: item.type, params: { id: id } })
-      }
+      this.$router.push({ name: item.type, params: { id: id } })
+      // if (this.$refs.searchModal.active) {
+      //   this.$refs.searchModal.hide(() => {
+      //     this.$router.push({ name: item.type, params: { id: id } })
+      //   })
+      // } else {
+      //   this.$router.push({ name: item.type, params: { id: id } })
+      // }
     },
     openAddModal () {
       this.showAdd = true
