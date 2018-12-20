@@ -174,7 +174,7 @@ function articleExtractor(articleURL) {
             author: data.author === null ? [] : [data.author],
             postDate: data.date_published === null ? new Date() : new Date(data.date_published),
             domain: data.domain || articleURL,
-            description: data.excerpt || '',
+            description: data.excerpt.replace('&hellip;', '...') || '',
             thumbURL: data.lead_image_url || '',
             pageURL: data.url || articleURL,
             wordCount: data.word_count || 0,
