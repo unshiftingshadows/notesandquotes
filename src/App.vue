@@ -16,4 +16,9 @@ export default {
 </script>
 
 <style>
+
+.q-input-chips {
+  margin-top: 0px !important;
+}
+
 </style>
