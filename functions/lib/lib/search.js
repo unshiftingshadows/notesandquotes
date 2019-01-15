@@ -14,37 +14,43 @@ const Fuse = require('fuse.js');
 // const mediaTypes = [ 'book', 'movie', 'image', 'video', 'article', 'note', 'document', 'discourse', 'composition' ]
 // const snippetTypes = [ 'quote', 'idea', 'illustration', 'outline' ]
 exports.all = functions.https.onCall((data, context) => __awaiter(this, void 0, void 0, function* () {
-    const searchTerms = data.searchTerms;
-    const searchTypes = data.searchTypes;
-    console.log('searchTerms', searchTerms);
-    console.log('searchTypes', searchTypes);
-    const searchOptions = {
-        shouldSort: true,
-        findAllMatches: true,
-        keys: [{
-                name: 'tags',
-                weight: 0.3
-            }, {
-                name: 'text',
-                weight: 0.4
-            }, {
-                name: 'title',
-                weight: 0.2
-            }, {
-                name: 'author',
-                weight: 0.1
-            }]
-    };
-    // Pull all firestore collections
-    const allMedia = yield Promise.all(searchTypes.map(e => { return _1.firestore.collection(e + 's').get(); }));
-    // Search through returned arrays
-    const fuse = new Fuse(allMedia.map((e, index) => {
-        e.docs.map((doc) => {
-            return Object.assign({}, doc.data(), { id: doc.id, type: searchTypes[index] });
-        });
-    }), searchOptions);
-    // Return summed array
-    return { searchTerms, searchTypes, results: fuse.search(searchTerms) };
+    if (context.auth) {
+        const searchTerms = data.searchTerms;
+        const searchTypes = data.searchTypes;
+        console.log('searchTerms', searchTerms);
+        console.log('searchTypes', searchTypes);
+        const searchOptions = {
+            shouldSort: true,
+            findAllMatches: true,
+            keys: [{
+                    name: 'tags',
+                    weight: 0.3
+                }, {
+                    name: 'text',
+                    weight: 0.4
+                }, {
+                    name: 'title',
+                    weight: 0.2
+                }, {
+                    name: 'author',
+                    weight: 0.1
+                }]
+        };
+        // Pull all firestore collections
+        const allMedia = [].concat.apply([], (yield Promise.all(searchTypes.map(e => { return _1.firestore.collection(e + 's').get(); }))).map((e, index) => {
+            e.docs.map((doc) => {
+                return Object.assign({}, doc.data(), { id: doc.id, type: searchTypes[index] });
+            });
+        }));
+        console.log('totalitems', allMedia.length);
+        // Search through returned arrays
+        const fuse = new Fuse(allMedia, searchOptions);
+        // Return summed array
+        return { searchTerms, searchTypes, results: fuse.search(searchTerms) };
+    }
+    else {
+        return { error: 'User not authorized' };
+    }
 }));
 // exports.tags = functions.https.onCall(async (data, context) => {
 //   const searchTags = data.searchTags

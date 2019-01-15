@@ -67,5 +67,5 @@ mediaTypes.forEach(e => {
 })
 
 snippetTypes.forEach(e => {
-  exports[e] = functions.firestore.document(`${e}s/{${e}id}`).onWrite((change, context) => { return updateIndex (e, context.params[`${e}id`], change.after.exists ? change.after.data() : null) })
+  exports[e] = functions.firestore.document(`${e}s/{${e}id}`).onWrite((change, context) => { return updateIndexSnippet (e, context.params[`${e}id`], change.after.exists ? change.after.data() : null) })
 })

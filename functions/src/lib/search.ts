@@ -6,46 +6,52 @@ const Fuse = require('fuse.js')
 // const snippetTypes = [ 'quote', 'idea', 'illustration', 'outline' ]
 
 exports.all = functions.https.onCall(async (data, context) => {
-  const searchTerms: string = data.searchTerms
-  const searchTypes: [string] = data.searchTypes
+  if (context.auth) {
+    const searchTerms: string = data.searchTerms
+    const searchTypes: [string] = data.searchTypes
 
-  console.log('searchTerms', searchTerms)
-  console.log('searchTypes', searchTypes)
+    console.log('searchTerms', searchTerms)
+    console.log('searchTypes', searchTypes)
 
-  const searchOptions = {
-    shouldSort: true,
-    findAllMatches: true,
-    keys: [{
-      name: 'tags',
-      weight: 0.3
-    }, {
-      name: 'text',
-      weight: 0.4
-    }, {
-      name: 'title',
-      weight: 0.2
-    }, {
-      name: 'author',
-      weight: 0.1
-    }]
+    const searchOptions = {
+      shouldSort: true,
+      findAllMatches: true,
+      keys: [{
+        name: 'tags',
+        weight: 0.3
+      }, {
+        name: 'text',
+        weight: 0.4
+      }, {
+        name: 'title',
+        weight: 0.2
+      }, {
+        name: 'author',
+        weight: 0.1
+      }]
+    }
+
+    // Pull all firestore collections
+    const allMedia = [].concat.apply([], (await Promise.all(searchTypes.map(e => { return firestore.collection(e + 's').get() }))).map((e, index) => {
+      e.docs.map((doc) => {
+        return {
+          ...doc.data(),
+          id: doc.id,
+          type: searchTypes[index]
+        }
+      })
+    }))
+
+    console.log('totalitems', allMedia.length)
+
+    // Search through returned arrays
+    const fuse = new Fuse(allMedia, searchOptions)
+
+    // Return summed array
+    return { searchTerms, searchTypes, results: fuse.search(searchTerms) }
+  } else {
+    return { error: 'User not authorized' }
   }
-
-  // Pull all firestore collections
-  const allMedia = await Promise.all(searchTypes.map(e => { return firestore.collection(e + 's').get() }))
-
-  // Search through returned arrays
-  const fuse = new Fuse(allMedia.map((e, index) => {
-    e.docs.map((doc) => {
-      return {
-        ...doc.data(),
-        id: doc.id,
-        type: searchTypes[index]
-      }
-    })
-  }), searchOptions)
-
-  // Return summed array
-  return { searchTerms, searchTypes, results: fuse.search(searchTerms) }
 })
 
 // exports.tags = functions.https.onCall(async (data, context) => {
