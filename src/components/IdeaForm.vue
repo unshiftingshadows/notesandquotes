@@ -43,8 +43,6 @@
 </template>
 
 <script>
-import * as Bible from '../statics/bible.js'
-
 export default {
   props: ['mediaid', 'media', 'mediaType', 'idea', 'modalFin', 'formType'],
   data () {
@@ -100,13 +98,7 @@ export default {
       this.tags = value
     },
     bibleRefs (value) {
-      this.bibleRefsParse = []
-      value.forEach((ref) => {
-        var refObj = Bible.parseBibleRef(ref)
-        this.bibleRefsParse.push(refObj)
-        // var bibleTag = refObj.book + refObj.chapter
-        // this.bibleTags[bibleTag] = true
-      })
+      this.bibleRefsParse = value.map(e => { return this.$bible.readable(e) })
     }
   },
   methods: {
@@ -123,12 +115,7 @@ export default {
       } else {
         this.text = this.idea.text
         this.tags = this.idea.tags
-        this.bibleRefs = []
-        this.idea.bibleRefs.forEach((ref) => {
-          if (ref !== {}) {
-            this.bibleRefs.push(Bible.stringBibleRef(ref))
-          }
-        })
+        this.bibleRefs = this.idea.bibleRefs.map(e => { return this.$bible.osis(e) })
         this.notes = this.idea.notes
         this.locationType = this.idea.locationType
         this.location = this.idea.location
@@ -172,8 +159,11 @@ export default {
         ideaObj.author = this.character
       }
       console.log(this.idea)
-      this.database.update(this.idea._id, 'idea', ideaObj, { updateUserData: false }, (res) => {
-        console.log(res)
+      // this.database.update(this.idea._id, 'idea', ideaObj, { updateUserData: false }, (res) => {
+      //   console.log(res)
+      //   this.modalFin(res)
+      // })
+      this.$firebase.list('idea').doc(this.idea._id).update(ideaObj).then((res) => {
         this.modalFin(res)
       })
     },

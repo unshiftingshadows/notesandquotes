@@ -66,8 +66,6 @@
 </template>
 
 <script>
-import * as Bible from '../statics/bible.js'
-
 export default {
   props: ['mediaid', 'media', 'mediaType', 'outline', 'modalFin', 'formType'],
   data () {
@@ -125,13 +123,7 @@ export default {
       this.tags = value
     },
     bibleRefs (value) {
-      this.bibleRefsParse = []
-      value.forEach((ref) => {
-        var refObj = Bible.parseBibleRef(ref)
-        this.bibleRefsParse.push(refObj)
-        // var bibleTag = refObj.book + refObj.chapter
-        // this.bibleTags[bibleTag] = true
-      })
+      this.bibleRefsParse = value.map(e => { return this.$bible.readable(e) })
     }
   },
   methods: {
@@ -155,12 +147,7 @@ export default {
         this.title = this.outline.title
         this.points = this.outline.points.map(e => { return { title: e.split('%%')[0], text: e.split('%%')[1] || '' } })
         this.tags = this.outline.tags
-        this.bibleRefs = []
-        this.outline.bibleRefs.forEach((ref) => {
-          if (ref !== {}) {
-            this.bibleRefs.push(Bible.stringBibleRef(ref))
-          }
-        })
+        this.bibleRefs = this.outline.bibleRefs.map(e => { return this.$bible.osis(e) })
         this.notes = this.outline.notes
         this.locationType = this.outline.locationType
         this.location = this.outline.location
@@ -210,8 +197,11 @@ export default {
         outlineObj.author = this.character
       }
       console.log(this.outline)
-      this.database.update(this.outline._id, 'outline', outlineObj, { updateUserData: false }, (res) => {
-        console.log(res)
+      // this.database.update(this.outline._id, 'outline', outlineObj, { updateUserData: false }, (res) => {
+      //   console.log(res)
+      //   this.modalFin(res)
+      // })
+      this.$firebase.list('outline').doc(this.outline._id).update(outlineObj).then((res) => {
         this.modalFin(res)
       })
     },

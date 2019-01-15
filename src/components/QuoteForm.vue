@@ -40,8 +40,6 @@
 </template>
 
 <script>
-import * as Bible from '../statics/bible.js'
-
 export default {
   props: ['mediaid', 'media', 'mediaType', 'quote', 'modalFin', 'formType'],
   data () {
@@ -80,7 +78,6 @@ export default {
       type: this.mediaType,
       quoteObj: this.quote,
       bibleRefsParse: []
-      // bibleTags: {}
     }
   },
   watch: {
@@ -97,13 +94,7 @@ export default {
       this.tags = value
     },
     bibleRefs (value) {
-      this.bibleRefsParse = []
-      value.forEach((ref) => {
-        var refObj = Bible.parseBibleRef(ref)
-        this.bibleRefsParse.push(refObj)
-        // var bibleTag = refObj.book + refObj.chapter
-        // this.bibleTags[bibleTag] = true
-      })
+      this.bibleRefsParse = value.map(e => { return this.$bible.osis(e) })
     }
   },
   methods: {
@@ -125,12 +116,7 @@ export default {
       } else {
         this.text = this.quote.text
         this.tags = this.quote.tags
-        this.bibleRefs = []
-        this.quote.bibleRefs.forEach((ref) => {
-          if (ref !== {}) {
-            this.bibleRefs.push(Bible.stringBibleRef(ref))
-          }
-        })
+        this.bibleRefs = this.quote.bibleRefs.map(e => { return this.$bible.osis(e) })
         this.notes = this.quote.notes
         this.locationType = this.quote.locationType
         this.location = this.quote.location
@@ -145,7 +131,7 @@ export default {
         mediaid: this.id,
         text: this.text,
         tags: this.tags,
-        bibleRefs: this.bibleRefsParse,
+        bibleRefs: this.bibleRefs,
         notes: this.notes
       }
       if (this.type === 'movie') {
@@ -155,10 +141,6 @@ export default {
         quoteObj._id = res.id
         this.modalFin(quoteObj, 'quote')
       })
-      // this.database.add('quote', quoteObj, (res) => {
-      //   console.log(res)
-      //   this.modalFin(res, 'quote')
-      // })
     },
     updateQuote () {
       console.log('update quote')
@@ -167,15 +149,18 @@ export default {
         locationType: this.locationType,
         text: this.text,
         tags: this.tags,
-        bibleRefs: this.bibleRefsParse,
+        bibleRefs: this.bibleRefs,
         notes: this.notes
       }
       if (this.type === 'movie') {
         quoteObj.author = this.character
       }
       console.log(this.quote)
-      this.database.update(this.quote._id, 'quote', quoteObj, { updateUserData: false }, (res) => {
-        console.log(res)
+      // this.database.update(this.quote._id, 'quote', quoteObj, { updateUserData: false }, (res) => {
+      //   console.log(res)
+      //   this.modalFin(res)
+      // })
+      this.$firebase.list('quote').doc(this.quote._id).update(quoteObj).then((res) => {
         this.modalFin(res)
       })
     },

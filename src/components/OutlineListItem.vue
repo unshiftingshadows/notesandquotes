@@ -92,7 +92,7 @@ export default {
     },
     closeEdit (value) {
       console.log('fin', value)
-      this.outline = value
+      // this.outline = value
       this.editOpen = false
     },
     topicAdd () {

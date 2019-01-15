@@ -46,8 +46,6 @@
 </template>
 
 <script>
-import * as Bible from '../statics/bible.js'
-
 export default {
   props: ['mediaid', 'media', 'mediaType', 'illustration', 'modalFin', 'formType'],
   data () {
@@ -89,7 +87,6 @@ export default {
       type: this.mediaType,
       illustrationObj: this.illustration,
       bibleRefsParse: []
-      // bibleTags: {},
     }
   },
   watch: {
@@ -103,13 +100,7 @@ export default {
       this.tags = value
     },
     bibleRefs (value) {
-      this.bibleRefsParse = []
-      value.forEach((ref) => {
-        var refObj = Bible.parseBibleRef(ref)
-        this.bibleRefsParse.push(refObj)
-        // var bibleTag = refObj.book + refObj.chapter
-        // this.bibleTags[bibleTag] = true
-      })
+      this.bibleRefsParse = value.map(e => { return this.$bible.readable(e) })
     }
   },
   methods: {
@@ -128,12 +119,7 @@ export default {
         this.text = this.illustration.text
         this.title = this.illustration.title
         this.tags = this.illustration.tags
-        this.bibleRefs = []
-        this.illustration.bibleRefs.forEach((ref) => {
-          if (ref !== {}) {
-            this.bibleRefs.push(Bible.stringBibleRef(ref))
-          }
-        })
+        this.bibleRefs = this.illustration.bibleRefs.map(e => { return this.$bible.osis(e) })
         this.notes = this.illustration.notes
         this.locationType = this.illustration.locationType
         this.location = this.illustration.location
@@ -179,8 +165,11 @@ export default {
         illustrationObj.author = this.character
       }
       console.log(this.illustration)
-      this.database.update(this.illustration._id, 'illustration', illustrationObj, { updateUserData: false }, (res) => {
-        console.log(res)
+      // this.database.update(this.illustration._id, 'illustration', illustrationObj, { updateUserData: false }, (res) => {
+      //   console.log(res)
+      //   this.modalFin(res)
+      // })
+      this.$firebase.list('illustration').doc(this.illustration._id).update(illustrationObj).then((res) => {
         this.modalFin(res)
       })
     },

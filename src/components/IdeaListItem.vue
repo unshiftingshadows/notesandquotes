@@ -66,7 +66,7 @@ export default {
     }
   },
   watch: {
-    idea (value) {
+    ideaObj (value) {
       this.idea = value
     }
   },
@@ -87,7 +87,7 @@ export default {
       this.$refs.ideaForm.init(false)
     },
     closeEdit (value) {
-      this.idea = value
+      // this.idea = value
       this.editOpen = false
     },
     topicAdd () {

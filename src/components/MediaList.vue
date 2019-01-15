@@ -11,7 +11,7 @@
       </div>
       <div class="col-12">
         <div v-masonry transition-duration="0.3s" item-selector=".media-iteml">
-          <q-card inline v-bind:class="[item.type] + 'l'" v-masonry-tile v-for="item in showItems" :key="item._id" class="media-cardl media-iteml" v-if="loaded(item)" @click.native="openItem(item.media, item.type)">
+          <q-card inline v-bind:class="[item.type] + 'l'" v-masonry-tile v-for="item in showItems" :key="item._id" class="media-cardl media-iteml" @click.native="openItem(item.media, item.type)">
             <q-card-media v-if="imageTypes.includes(item.type) || titleTypes.includes(item.type)">
               <img :src="item.media.thumbURL" class="image-cardl" />
               <q-card-title slot="overlay" v-if="titleTypes.includes(item.type)">{{ item.media.title }}</q-card-title>

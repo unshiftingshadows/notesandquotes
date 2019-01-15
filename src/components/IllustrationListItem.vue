@@ -67,7 +67,7 @@ export default {
     }
   },
   watch: {
-    illustration (value) {
+    illustrationObj (value) {
       this.illustration = value
     }
   },
@@ -88,7 +88,7 @@ export default {
       this.$refs.illustrationForm.init(false)
     },
     closeEdit (value) {
-      this.illustration = value
+      // this.illustration = value
       this.editOpen = false
     },
     topicAdd () {

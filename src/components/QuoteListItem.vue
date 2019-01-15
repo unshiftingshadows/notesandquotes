@@ -66,7 +66,7 @@ export default {
     }
   },
   watch: {
-    quote (value) {
+    quoteObj (value) {
       this.quote = value
     }
   },
@@ -87,7 +87,7 @@ export default {
       this.$refs.quoteForm.init(false)
     },
     closeEdit (value) {
-      this.quote = value
+      // this.quote = value
       this.editOpen = false
     },
     topicAdd () {
