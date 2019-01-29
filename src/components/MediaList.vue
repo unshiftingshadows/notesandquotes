@@ -11,8 +11,17 @@
       </div>
       <div class="col-12">
         <div v-masonry transition-duration="0.3s" item-selector=".media-iteml">
-          <q-card inline v-bind:class="[item.type] + 'l'" v-masonry-tile v-for="item in showItems" :key="item._id" class="media-cardl media-iteml" @click.native="openItem(item.media, item.type)">
-            <q-card-media v-if="imageTypes.includes(item.type) || titleTypes.includes(item.type)">
+          <!-- <draggable :list="showItems" @change="onMediaDrag" ref="mediaDrag" :options="{ swapThreshold: 0.5, dragClass: 'media-ghost', handle: '.media-drag-handle', group: { name: 'media', pull: 'clone' }, disabled: $q.platform.is.mobile }"> -->
+          <q-card inline v-bind:class="[item.type] + 'l'" v-masonry-tile v-for="item in showItems" :key="item.id" class="media-cardl media-iteml" @click.native="openItem(item.media, item.type, $event)">
+            <!-- Drag Handle -->
+            <!-- <div class="round-borders bg-primary media-drag-handle" v-if="!$q.platform.is.mobile || $q.platform.is.ipad">
+              <q-icon name="fas fa-arrows-alt" size="1rem" />
+            </div> -->
+            <!-- Add button -->
+            <div class="bg-primary add-handle" v-if="!$q.platform.is.mobile || $q.platform.is.ipad">
+              <q-icon name="fas fa-plus" size="1rem" @click.native="addMedia(item.id)" />
+            </div>
+            <q-card-media v-if="imageTypes.includes(item.type) || titleTypes.includes(item.type)" style="border-radius: 3px;">
               <img :src="item.media.thumbURL" class="image-cardl" />
               <q-card-title slot="overlay" v-if="titleTypes.includes(item.type)">{{ item.media.title }}</q-card-title>
             </q-card-media>
@@ -26,6 +35,7 @@
               <p class="q-caption text-weight-thin">{{ item.media.media.title }} | {{ item.media.media.author.join(', ') }}</p>
             </q-card-main>
           </q-card>
+          <!-- </draggable> -->
         </div>
       </div>
     </div>
@@ -36,10 +46,12 @@
 </template>
 
 <script>
+import Draggable from 'vuedraggable'
 import ResourcePreview from 'components/ResourcePreview.vue'
 
 export default {
   components: {
+    Draggable,
     ResourcePreview
   },
   // name: 'ComponentName',
@@ -143,41 +155,18 @@ export default {
     console.log('updated')
   },
   methods: {
-    openItem (item, type) {
-      console.log(item)
-      console.log(type)
-      this.resource = item
-      this.resourceType = type
-      this.resourceOpen = true
-      // switch (type) {
-      //   case 'book':
-      //     break
-      //   case 'movie':
-      //     // this.$router.push({ name: 'movie', params: { id: id } })
-      //     break
-      //   case 'article':
-      //     // this.$router.push({ name: 'article', params: { id: id } })
-      //     break
-      //   case 'video':
-      //     // this.$router.push({ name: 'video', params: { id: id } })
-      //     break
-      //   case 'image':
-      //     // this.$router.push({ name: 'image', params: { id: id } })
-      //     break
-      //   case 'note':
-      //     // this.$router.push({ name: 'note', params: { id: id } })
-      //     break
-      //   case 'quote':
-      //     // this.$router.push({ name: 'note', params: { id: id } })
-      //     break
-      //   default:
-      //     console.error('Incorrect item type for routing')
-      //     break
-      // }
+    openItem (item, type, e) {
+      if (e.srcElement.nodeName !== 'I' && e.srcElement.nodeName !== 'BUTTON') {
+        console.log(item)
+        console.log(type)
+        this.resource = item
+        this.resourceType = type
+        this.resourceOpen = true
+      }
     },
-    // pack () {
-    //   this.$refs.bricks.pack()
-    // },
+    addMedia (id) {
+      this.$root.$emit('add-topic-media', id)
+    },
     checkType (item) {
       if (this.selectedTypes.includes('all')) {
         return true
@@ -191,6 +180,9 @@ export default {
       } else {
         return item.media && item.media.status
       }
+    },
+    onMediaDrag (val, id) {
+      console.log('some media dragged', val)
     }
   }
 }
@@ -200,6 +192,7 @@ export default {
 
 .media-cardl {
   background-color: var(--q-color-dark);
+  border-radius: 3px !important;
   margin: 5px;
   width: 95%;
   cursor: pointer;
@@ -232,6 +225,51 @@ export default {
     min-width: 650px;
     width: 650px;
   }
+}
+
+.media-drag-handle {
+  position: absolute;
+  height: 60px;
+  left: 0px;
+  top: 0px;
+  padding-top: 20px;
+  padding-left: 4px;
+  padding-right: 4px;
+  opacity: 0.5;
+  z-index: 1000;
+  cursor: move;
+}
+
+.media-drag-handle:hover {
+  opacity: .7;
+}
+
+.add-handle {
+  position: absolute;
+  height: 30px;
+  width: 30px;
+  padding-top: 5px;
+  padding-left: 8px;
+  padding-right: 8px;
+  opacity: 0.7;
+  right: -5px;
+  top: -5px;
+  border-radius: 50px !important;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.add-handle:hover {
+  opacity: .9;
+}
+
+.media-ghost {
+  width: 20px;
+  height: 20px;
+}
+
+.media-ghost .media-cardl {
+  display: none;
 }
 
 </style>

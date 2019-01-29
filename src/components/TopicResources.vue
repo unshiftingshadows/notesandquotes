@@ -10,7 +10,7 @@
 <script>
 import MediaList from 'components/MediaList.vue'
 
-const snippetTypes = ['quote', 'idea', 'illustration', 'outline']
+// const snippetTypes = ['quote', 'idea', 'illustration', 'outline']
 
 export default {
   components: {
@@ -22,37 +22,38 @@ export default {
     return {
       loading: true,
       id: this.$route.params.id,
-      resources: this.$fiery(this.$firebase.view('topic', this.$route.params.id).collection('resources'), {
-        onSuccess: (res) => {
-          var resProms = []
-          res.forEach((resource) => {
-            resProms.push(this.$firebase.view(resource.type, resource.id).get())
-          })
-          Promise.all(resProms).then((docs) => {
-            var snipProms = []
-            res.forEach((resource, index) => {
-              resource.media = docs[index].data()
-              if (snippetTypes.includes(resource.type)) {
-                snipProms.push({
-                  prom: this.$firebase.view(resource.media.mediaType, resource.media.mediaid).get(),
-                  index: index
-                })
-              }
-            })
-            if (snipProms.length > 0) {
-              Promise.all(snipProms.map(e => { return e.prom })).then((snips) => {
-                snips.forEach((snipMedia, index) => {
-                  res[snipProms[index].index].media.media = snipMedia.data()
-                })
-                this.loading = false
-              })
-            } else {
-              this.loading = false
-            }
-          })
-          console.log('resources loaded')
-        }
-      }),
+      // resources: this.$fiery(this.$firebase.view('topic', this.$route.params.id).collection('resources'), {
+      //   onSuccess: (res) => {
+      //     var resProms = []
+      //     res.forEach((resource) => {
+      //       resProms.push(this.$firebase.view(resource.type, resource.id).get())
+      //     })
+      //     Promise.all(resProms).then((docs) => {
+      //       var snipProms = []
+      //       res.forEach((resource, index) => {
+      //         resource.media = docs[index].data()
+      //         if (snippetTypes.includes(resource.type)) {
+      //           snipProms.push({
+      //             prom: this.$firebase.view(resource.media.mediaType, resource.media.mediaid).get(),
+      //             index: index
+      //           })
+      //         }
+      //       })
+      //       if (snipProms.length > 0) {
+      //         Promise.all(snipProms.map(e => { return e.prom })).then((snips) => {
+      //           snips.forEach((snipMedia, index) => {
+      //             res[snipProms[index].index].media.media = snipMedia.data()
+      //           })
+      //           this.loading = false
+      //         })
+      //       } else {
+      //         this.loading = false
+      //       }
+      //     })
+      //     console.log('resources loaded')
+      //   }
+      // }),
+      resources: [],
       size: {
         width: 0,
         height: 0
@@ -63,13 +64,9 @@ export default {
     this.init()
   },
   methods: {
-    init () {
-      // this.database.resources('topic', this.id, (res) => {
-      //   this.resources = res
-      // })
-      // this.$currentTopic.on('new-resource', (data) => {
-      //   this.resources.push(data)
-      // })
+    async init () {
+      this.resources = await this.$firebase.getTopicResources(this.$route.params.id)
+      this.loading = false
     },
     resType (type) {
       var items = []

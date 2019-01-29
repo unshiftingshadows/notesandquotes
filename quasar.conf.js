@@ -12,7 +12,8 @@ module.exports = function (ctx) {
       'masonry',
       'research',
       'sentry',
-      'vuelidate'
+      'vuelidate',
+      'types'
     ],
     css: [
       'app.styl'

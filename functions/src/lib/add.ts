@@ -533,6 +533,7 @@ exports.topic = functions.firestore.document('topics/{topicid}').onCreate((snap,
     dateModified: new Date(),
     notes: '',
     premise: '',
+    sectionOrder: [],
     tags: [],
     title: snap.data().title,
     users: snap.data().users
