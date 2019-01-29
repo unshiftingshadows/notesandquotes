@@ -11,6 +11,7 @@ module.exports = function (ctx) {
       'get-video-id',
       'masonry',
       'research',
+      'sentry',
       'vuelidate'
     ],
     css: [

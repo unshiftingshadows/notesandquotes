@@ -12,7 +12,8 @@ function updateIndex (type, id, data) {
       db.ref(`searchIndex/${type}/${id}`).set({
         title: data.title ? data.title : '',
         author: data.author ? data.author.join(',') : '',
-        tags: data.tags ? data.tags.join(',') : ''
+        tags: data.tags ? data.tags.join(',') : '',
+        bibleRefs: data.bibleRefs ? data.bibleRefs.join(',') : ''
       })
     ]
     if (data.tags) {
