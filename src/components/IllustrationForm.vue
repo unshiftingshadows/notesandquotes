@@ -5,22 +5,22 @@
         <h4>{{ formType }} Illustration</h4>
       </div>
       <div class="col-12">
-        <q-input v-model="title" float-label="Illustration Title" dark />
+        <q-input v-model="title" float-label="Illustration Title" dark @keydown="keydown" />
       </div>
       <div class="col-12">
-        <q-input v-model="text" type="textarea" :max-height="100" :min-rows="3" float-label="Illustration Text" autofocus ref="illustrationInput" dark />
+        <q-input v-model="text" type="textarea" :max-height="100" :min-rows="3" float-label="Illustration Text" autofocus ref="illustrationInput" dark @keydown="keydown" />
       </div>
       <div class="col-12" v-if="type === 'movie'">
-        <q-input v-model="character" float-label="Character" dark />
+        <q-input v-model="character" float-label="Character" dark @keydown="keydown" />
       </div>
       <div class="col-12">
-        <q-chips-input v-model="tags" float-label="Tags" dark />
+        <q-chips-input v-model="tags" float-label="Tags" dark @keydown="keydown" />
       </div>
       <div class="col-12">
-        <q-chips-input v-model="bibleRefs" float-label="Bible Refs" color="secondary" dark />
+        <q-chips-input v-model="bibleRefs" float-label="Bible Refs" color="secondary" dark @keydown="keydown" />
       </div>
       <div class="col-12">
-        <q-input v-model="notes" type="textarea" :max-height="100" :min-rows="2" float-label="Notes" dark />
+        <q-input v-model="notes" type="textarea" :max-height="100" :min-rows="2" float-label="Notes" dark @keydown="keydown" />
       </div>
       <div class="col-12">
         <q-select
@@ -31,13 +31,13 @@
         />
       </div>
       <div class="col-6">
-        <q-input type="number" v-model="location.start" v-if="locationType !== 'None'" :float-label="locationType + ' Start'" dark frame-color="secondary" />
+        <q-input type="number" v-model="location.start" v-if="locationType !== 'None'" :float-label="locationType + ' Start'" dark frame-color="secondary" @keydown="keydown" />
       </div>
       <div class="col-6">
-        <q-input type="number" v-model="location.end" v-if="locationType !== 'None'" :float-label="locationType + ' End'" dark frame-color="secondary" />
+        <q-input type="number" v-model="location.end" v-if="locationType !== 'None'" :float-label="locationType + ' End'" dark frame-color="secondary" @keydown="keydown" />
       </div>
       <div class="col-12">
-        <q-btn v-if="formType === 'Add'" color="primary" @click="addIllustration" class="on-left">Add</q-btn>
+        <q-btn v-if="formType === 'Add'" color="primary" @click="addIllustration(true)" class="on-left">Add</q-btn>
         <q-btn v-if="formType === 'Edit'" color="primary" @click="updateIllustration" class="on-left">Update</q-btn>
         <q-btn v-if="formType === 'Edit'" color="negative" @click="removeIllustration">Remove</q-btn>
       </div>
@@ -125,7 +125,7 @@ export default {
         this.location = this.illustration.location
       }
     },
-    addIllustration () {
+    addIllustration (close) {
       console.log('add illustration')
       var illustrationObj = {
         location: this.location,
@@ -141,13 +141,11 @@ export default {
       if (this.type === 'movie') {
         illustrationObj.character = this.character
       }
-      // this.database.add('illustration', illustrationObj, (res) => {
-      //   console.log(res)
-      //   this.modalFin(res, 'illustration')
-      // })
       this.$firebase.list('illustration').add(illustrationObj).then((res) => {
         illustrationObj._id = res.id
-        this.modalFin(illustrationObj, 'illustration')
+        if (close) {
+          this.modalFin()
+        }
       })
     },
     updateIllustration () {
@@ -165,20 +163,24 @@ export default {
         illustrationObj.author = this.character
       }
       console.log(this.illustration)
-      // this.database.update(this.illustration._id, 'illustration', illustrationObj, { updateUserData: false }, (res) => {
-      //   console.log(res)
-      //   this.modalFin(res)
-      // })
       this.$firebase.list('illustration').doc(this.illustration._id).update(illustrationObj).then((res) => {
-        this.modalFin(res)
+        this.modalFin()
       })
     },
     removeIllustration () {
       console.log('remove illustration')
-      this.database.remove(this.illustration._id, 'illustration', (res) => {
-        console.log(res)
-        this.modalFin()
+      this.$firebase.list('illustration').doc(this.illustration._id).delete().then((res) => {
+        this.modalFin(true)
       })
+    },
+    keydown (e) {
+      // console.log('pressed...', e)
+      if (e.keyCode === 13 && e.metaKey) {
+        this.addIllustration(!e.shiftKey)
+        if (e.shiftKey) {
+          this.init(true)
+        }
+      }
     }
   }
 }

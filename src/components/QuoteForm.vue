@@ -1,23 +1,23 @@
 <template>
-  <div style="padding: 30px">
+  <div style="padding: 30px" tabindex="0">
     <div class="row gutter-sm">
       <div class="col-12">
         <h4>{{ formType }} Quote</h4>
       </div>
       <div class="col-12">
-        <q-input v-model="text" type="textarea" :max-height="100" :min-rows="3" float-label="Quote Text" autofocus ref="quoteInput" dark />
+        <q-input v-model="text" type="textarea" :max-height="100" :min-rows="3" float-label="Quote Text" autofocus ref="quoteInput" dark @keydown="keydown" />
       </div>
       <div class="col-12" v-if="type === 'movie'">
-        <q-input v-model="character" float-label="Character" dark />
+        <q-input v-model="character" float-label="Character" dark @keydown="keydown" />
       </div>
       <div class="col-12">
-        <q-chips-input v-model="tags" float-label="Tags" dark />
+        <q-chips-input v-model="tags" float-label="Tags" dark @keydown="keydown" />
       </div>
       <div class="col-12">
-        <q-chips-input v-model="bibleRefs" float-label="Bible Refs" color="secondary" dark />
+        <q-chips-input v-model="bibleRefs" float-label="Bible Refs" color="secondary" dark @keydown="keydown" />
       </div>
       <div class="col-12">
-        <q-input v-model="notes" type="textarea" :max-height="100" :min-rows="2" float-label="Notes" dark />
+        <q-input v-model="notes" type="textarea" :max-height="100" :min-rows="2" float-label="Notes" dark @keydown="keydown" />
       </div>
       <div class="col-12">
         <q-select
@@ -28,10 +28,10 @@
         />
       </div>
       <div class="col-12">
-        <q-input type="number" v-model="location" v-if="locationType !== 'None'" :float-label="locationType" dark frame-color="secondary" />
+        <q-input type="number" v-model="location" v-if="locationType !== 'None'" :float-label="locationType" dark frame-color="secondary" @keydown="keydown" />
       </div>
       <div class="col-12">
-        <q-btn v-if="formType === 'Add'" color="primary" @click="addQuote" class="on-left">Add</q-btn>
+        <q-btn v-if="formType === 'Add'" color="primary" @click="addQuote(true)" class="on-left">Add</q-btn>
         <q-btn v-if="formType === 'Edit'" color="primary" @click="updateQuote" class="on-left">Update</q-btn>
         <q-btn v-if="formType === 'Edit'" color="negative" @click="removeQuote">Remove</q-btn>
       </div>
@@ -122,7 +122,7 @@ export default {
         this.location = this.quote.location
       }
     },
-    addQuote () {
+    addQuote (close) {
       console.log('add quote')
       var quoteObj = {
         location: this.location,
@@ -139,7 +139,9 @@ export default {
       }
       this.$firebase.list('quote').add(quoteObj).then((res) => {
         quoteObj._id = res.id
-        this.modalFin(quoteObj, 'quote')
+        if (close) {
+          this.modalFin()
+        }
       })
     },
     updateQuote () {
@@ -156,20 +158,24 @@ export default {
         quoteObj.author = this.character
       }
       console.log(this.quote)
-      // this.database.update(this.quote._id, 'quote', quoteObj, { updateUserData: false }, (res) => {
-      //   console.log(res)
-      //   this.modalFin(res)
-      // })
       this.$firebase.list('quote').doc(this.quote._id).update(quoteObj).then((res) => {
-        this.modalFin(res)
+        this.modalFin()
       })
     },
     removeQuote () {
       console.log('remove quote')
-      this.database.remove(this.quote._id, 'quote', (res) => {
-        console.log(res)
-        this.modalFin()
+      this.$firebase.list('quote').doc(this.quote._id).delete().then((res) => {
+        this.modalFin(true)
       })
+    },
+    keydown (e) {
+      // console.log('pressed...', e)
+      if (e.keyCode === 13 && e.metaKey) {
+        this.addQuote(!e.shiftKey)
+        if (e.shiftKey) {
+          this.init(true)
+        }
+      }
     }
   }
 }

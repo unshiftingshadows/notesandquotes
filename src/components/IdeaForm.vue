@@ -5,19 +5,19 @@
         <h4>{{ formType }} Idea</h4>
       </div>
       <div class="col-12">
-        <q-input v-model="text" type="textarea" :max-height="100" :min-rows="3" float-label="Idea Text" autofocus ref="ideaInput" dark />
+        <q-input v-model="text" type="textarea" :max-height="100" :min-rows="3" float-label="Idea Text" autofocus ref="ideaInput" dark @keydown="keydown" />
       </div>
       <div class="col-12" v-if="type === 'movie'">
-        <q-input v-model="character" float-label="Character" dark />
+        <q-input v-model="character" float-label="Character" dark @keydown="keydown" />
       </div>
       <div class="col-12">
-        <q-chips-input v-model="tags" float-label="Tags" dark />
+        <q-chips-input v-model="tags" float-label="Tags" dark @keydown="keydown" />
       </div>
       <div class="col-12">
-        <q-chips-input v-model="bibleRefs" float-label="Bible Refs" color="secondary" dark />
+        <q-chips-input v-model="bibleRefs" float-label="Bible Refs" color="secondary" dark @keydown="keydown" />
       </div>
       <div class="col-12">
-        <q-input v-model="notes" type="textarea" :max-height="100" :min-rows="2" float-label="Notes" dark />
+        <q-input v-model="notes" type="textarea" :max-height="100" :min-rows="2" float-label="Notes" dark @keydown="keydown" />
       </div>
       <div class="col-12">
         <q-select
@@ -28,13 +28,13 @@
         />
       </div>
       <div class="col-6">
-        <q-input type="number" v-model="location.start" v-if="locationType !== 'None'" :float-label="locationType + ' Start'" dark frame-color="secondary" />
+        <q-input type="number" v-model="location.start" v-if="locationType !== 'None'" :float-label="locationType + ' Start'" dark frame-color="secondary" @keydown="keydown" />
       </div>
       <div class="col-6">
-        <q-input type="number" v-model="location.end" v-if="locationType !== 'None'" :float-label="locationType + ' End'" dark frame-color="secondary" />
+        <q-input type="number" v-model="location.end" v-if="locationType !== 'None'" :float-label="locationType + ' End'" dark frame-color="secondary" @keydown="keydown" />
       </div>
       <div class="col-12">
-        <q-btn v-if="formType === 'Add'" color="primary" @click="addIdea" class="on-left">Add</q-btn>
+        <q-btn v-if="formType === 'Add'" color="primary" @click="addIdea(true)" class="on-left">Add</q-btn>
         <q-btn v-if="formType === 'Edit'" color="primary" @click="updateIdea" class="on-left">Update</q-btn>
         <q-btn v-if="formType === 'Edit'" color="negative" @click="removeIdea">Remove</q-btn>
       </div>
@@ -121,7 +121,7 @@ export default {
         this.location = this.idea.location
       }
     },
-    addIdea () {
+    addIdea (close) {
       console.log('add idea')
       var ideaObj = {
         location: this.location,
@@ -136,13 +136,11 @@ export default {
       if (this.type === 'movie') {
         ideaObj.character = this.character
       }
-      // this.database.add('idea', ideaObj, (res) => {
-      //   console.log(res)
-      //   this.modalFin(res, 'idea')
-      // })
       this.$firebase.list('idea').add(ideaObj).then((res) => {
         ideaObj._id = res.id
-        this.modalFin(ideaObj, 'idea')
+        if (close) {
+          this.modalFin()
+        }
       })
     },
     updateIdea () {
@@ -159,20 +157,24 @@ export default {
         ideaObj.author = this.character
       }
       console.log(this.idea)
-      // this.database.update(this.idea._id, 'idea', ideaObj, { updateUserData: false }, (res) => {
-      //   console.log(res)
-      //   this.modalFin(res)
-      // })
       this.$firebase.list('idea').doc(this.idea._id).update(ideaObj).then((res) => {
-        this.modalFin(res)
+        this.modalFin()
       })
     },
     removeIdea () {
       console.log('remove idea')
-      this.database.remove(this.idea._id, 'idea', (res) => {
-        console.log(res)
-        this.modalFin()
+      this.$firebase.list('idea').doc(this.idea._id).delete().then((res) => {
+        this.modalFin(true)
       })
+    },
+    keydown (e) {
+      // console.log('pressed...', e)
+      if (e.keyCode === 13 && e.metaKey) {
+        this.addIdea(!e.shiftKey)
+        if (e.shiftKey) {
+          this.init(true)
+        }
+      }
     }
   }
 }

@@ -240,7 +240,11 @@ export default {
           console.log('wrong tab...')
       }
     },
-    closeAdd (newItem, type) {
+    closeAdd (init) {
+      console.log('close', init)
+      if (init) {
+        this.init()
+      }
       this.addOpen = false
       // console.log('new ' + type, newItem)
       // switch (type) {
