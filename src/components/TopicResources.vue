@@ -67,6 +67,9 @@ export default {
     async init () {
       this.resources = await this.$firebase.getTopicResources(this.$route.params.id)
       this.loading = false
+      this.$root.$on('remove-topic-resource', async () => {
+        this.resources = await this.$firebase.getTopicResources(this.$route.params.id)
+      })
     },
     resType (type) {
       var items = []

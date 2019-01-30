@@ -5,6 +5,7 @@ import 'firebase/firestore'
 import 'firebase/storage'
 import 'firebase/functions'
 import VueFiery from 'fiery-vue'
+// import duix from 'duix'
 
 import { ALL_TYPES as types } from 'plugins/types'
 
@@ -59,7 +60,7 @@ async function getTopicResources (id) {
     topicid = id
     topicResources = new Promise((resolve, reject) => {
       firestore.collection('topics').doc(id).collection('resources').get().then((originalRes) => {
-        var res = originalRes.docs.map(e => { return { id: e.id, ...e.data() } })
+        var res = originalRes.docs.map(e => { return { key: e.id, ...e.data() } })
         console.log('resources acquired', res)
         var resProms = []
         res.forEach((resource) => {
@@ -100,6 +101,27 @@ async function getTopicResources (id) {
   }
 }
 
+async function useTopicResource (id) {
+  console.log('use resource', id, await topicResources)
+  topicResources = await topicResources
+  const index = topicResources.findIndex(e => { return e.key === id })
+  console.log('index', index)
+  topicResources[index].used = true
+  firestore.collection('topics').doc(topicid).collection('resources').doc(id).update({
+    used: true
+  })
+}
+
+async function unuseTopicResource (id) {
+  topicResources = await topicResources
+  const index = topicResources.findIndex(e => { return e.key === id })
+  console.log('index', index)
+  topicResources[index].used = false
+  firestore.collection('topics').doc(topicid).collection('resources').doc(id).update({
+    used: false
+  })
+}
+
 function resetTopicResources () {
   topicid = null
   topicResources = []
@@ -119,6 +141,8 @@ export default ({ app, router, Vue }) => {
     snippets: snippets,
     lookup: lookup,
     getTopicResources,
+    useTopicResource,
+    unuseTopicResource,
     resetTopicResources
   }
 }

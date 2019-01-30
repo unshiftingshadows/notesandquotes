@@ -2877,6 +2877,11 @@ dot-prop@^4.1.1:
   dependencies:
     is-obj "^1.0.0"
 
+duix@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/duix/-/duix-1.0.5.tgz#fd04f006e3a7942b38a5beeba99ec4083d9a9d88"
+  integrity sha512-VJ+2pE3B1rbdtjPj+016WlLsIfxj5NeRHHRgvJ7QUNmzhs8+K45WyA+H+68xcTX+YmExjKIJg2YZCldOo08JsQ==
+
 duplexer@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.1.tgz#ace6ff808c1ce66b57d1ebf97977acb02334cfc1"

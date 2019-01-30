@@ -18,9 +18,10 @@
               <q-icon name="fas fa-arrows-alt" size="1rem" />
             </div> -->
             <!-- Add button -->
-            <div class="bg-primary add-handle" v-if="!$q.platform.is.mobile || $q.platform.is.ipad">
-              <q-icon name="fas fa-plus" size="1rem" @click.native="addMedia(item.id)" />
-            </div>
+            <!-- <div class="bg-primary add-handle" v-if="!$q.platform.is.mobile || $q.platform.is.ipad" @click.native="addMedia(item.key)" v-bind:class="{ hidden: item.used }">
+              <q-icon name="fas fa-plus" size="1rem" />
+            </div> -->
+            <q-btn class="add-handle" round color="primary" v-if="!$q.platform.is.mobile || $q.platform.is.ipad" @click.native="addMedia(item.key)" v-bind:class="{ hidden: item.used }" icon="fas fa-plus" size=".8rem" />
             <q-card-media v-if="imageTypes.includes(item.type) || titleTypes.includes(item.type)" style="border-radius: 3px;">
               <img :src="item.media.thumbURL" class="image-cardl" />
               <q-card-title slot="overlay" v-if="titleTypes.includes(item.type)">{{ item.media.title }}</q-card-title>
@@ -156,7 +157,9 @@ export default {
   },
   methods: {
     openItem (item, type, e) {
-      if (e.srcElement.nodeName !== 'I' && e.srcElement.nodeName !== 'BUTTON') {
+      // console.log(e.srcElement)
+      if (e.srcElement.nodeName !== 'I' && e.srcElement.nodeName !== 'BUTTON' && !e.srcElement.classList.contains('q-btn-inner')) {
+        console.log(e)
         console.log(item)
         console.log(type)
         this.resource = item
@@ -165,6 +168,7 @@ export default {
       }
     },
     addMedia (id) {
+      console.log('add media from MediaList')
       this.$root.$emit('add-topic-media', id)
     },
     checkType (item) {
@@ -248,9 +252,9 @@ export default {
   position: absolute;
   height: 30px;
   width: 30px;
-  padding-top: 5px;
+  /* padding-top: 5px;
   padding-left: 8px;
-  padding-right: 8px;
+  padding-right: 8px; */
   opacity: 0.7;
   right: -5px;
   top: -5px;

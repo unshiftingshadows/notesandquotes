@@ -79,7 +79,7 @@ export default {
   },
   methods: {
     async init () {
-      this.resources = (await this.$firebase.getTopicResources(this.$route.params.id)).reduce((obj, item) => { obj[item.id] = item; return obj }, {})
+      this.resources = (await this.$firebase.getTopicResources(this.$route.params.id)).reduce((obj, item) => { obj[item.key] = item; return obj }, {})
       this.resourcesLoading = false
       this.$root.$on('add-topic-media', (id, sectionid) => {
         if (sectionid) {
@@ -133,6 +133,7 @@ export default {
         key: this.generateid()
       })
       this.$fiery.update(this.sections[id])
+      this.$firebase.useTopicResource(mediaid)
       this.tmpMedia = ''
     },
     async getBible (ref) {
@@ -158,6 +159,9 @@ export default {
       this.$fiery.update(this.sections[sectionid])
     },
     removeMod (sectionid, index) {
+      if (this.sections[sectionid].modules[index].type === 'media') {
+        this.$firebase.unuseTopicResource(this.sections[sectionid].modules[index].id)
+      }
       console.log('removeMod')
       this.sections[sectionid].modules.splice(index, 1)
       this.$fiery.update(this.sections[sectionid])

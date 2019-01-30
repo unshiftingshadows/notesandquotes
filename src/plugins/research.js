@@ -44,7 +44,8 @@ function addResource (res) {
       type: res.type,
       id: res.id,
       dateAdded: new Date(),
-      addedBy: firebase.auth().currentUser.uid
+      addedBy: firebase.auth().currentUser.uid,
+      used: false
     }).then(() => {
       return true
     })
