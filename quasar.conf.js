@@ -37,6 +37,7 @@ module.exports = function (ctx) {
       // analyze: true,
       // extractCSS: false,
       // useNotifier: false,
+      distDir: './dist',
       extendWebpack (cfg) {
         cfg.module.rules.push({
           enforce: 'pre',

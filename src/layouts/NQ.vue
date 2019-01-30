@@ -105,7 +105,7 @@
           <q-item-side icon="fas fa-sign-out-alt" />
           <q-item-main label="Log Out" />
         </q-item>
-        <span class="fixed-bottom-left">v0.1.10</span>
+        <span class="fixed-bottom-left">v0.1.10b?</span>
       </q-scroll-area>
     </q-layout-drawer>
 
