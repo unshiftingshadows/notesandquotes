@@ -159,7 +159,7 @@ export default {
       this.$fiery.update(this.topic)
     },
     deleteSection (id) {
-      this.topic.sectionOrder.push(id)
+      this.topic.sectionOrder.splice(this.topic.sectionOrder.indexOf(id), 1)
       this.$fiery.update(this.topic)
     },
     openAdd () {
