@@ -1,16 +1,27 @@
 <template>
   <div>
-    <q-card v-for="section in sectionData" :key="section.id" class="section-card" flat dark style="position: relative;">
-      <q-card-title v-if="!sectionsLoading">
+    <q-card v-for="(section, index) in sectionData" :key="section.id" class="section-card" flat dark style="position: relative;">
+      <q-card-title v-if="!sectionsLoading" style="background-color: var(--q-color-primary); margin: -2px; margin-bottom: 10px;">
         <div class="row gutter-md">
-          <div class="col-8">
-            <q-input v-model="section.title" placeholder="Title" dark @change="val => updateSection(section.id, 'title', val)" />
+          <div class="col-auto" style="position: relative;">
+            <q-btn icon="fas fa-chevron-up" color="primary" size="xs" :disabled="index === 0" @click.native="sectionUp(index)" />
+            <br/>
+            <q-btn icon="fas fa-chevron-down" color="primary" size="xs" style="margin-top: 12px;" :disabled="index === sectionOrder.length - 1" @click.native="sectionDown(index)" />
+          </div>
+          <div class="col">
+            <q-input v-model="section.title" placeholder="Title" dark style="font-size: 1.5rem;" @change="val => updateSection(section.id, 'title', val)" />
             <q-input v-model="section.subtitle" placeholder="Subtitle" dark style="height: 2rem; font-size: .8rem;" @change="val => updateSection(section.id, 'subtitle', val)" />
           </div>
           <div class="col-4">
-            <q-btn label="Remove" color="negative" style="padding: 2px; position: absolute; top: 5px; right: 5px;" dense outline @click.native="removeSection(section.id)" />
-            <br/>
-            <q-chips-input v-model="section.tags" placeholder="Tags" dark @change="val => updateSection(section.id, 'tags', val)" />
+            <q-btn label="Remove" color="negative" style="padding: 2px; position: absolute; top: 5px; right: 5px; z-index: 100;" dense outline>
+              <q-popover anchor="bottom right" self="top right">
+                <q-list link>
+                  <q-item v-close-overlay @click.native="removeSection(section.id)">Are you sure?</q-item>
+                </q-list>
+              </q-popover>
+            </q-btn>
+            <div style="height: 11px;" />
+            <q-chips-input v-model="section.tags" stack-label="Tags" dark @change="val => updateSection(section.id, 'tags', val)" />
           </div>
         </div>
       </q-card-title>
@@ -53,7 +64,7 @@ export default {
   },
   name: 'TopicNotes',
   fiery: true,
-  props: ['sectionOrder', 'newSection', 'deleteSection'],
+  props: ['sectionOrder', 'newSection', 'deleteSection', 'swapSection'],
   data () {
     return {
       resourcesLoading: true,
@@ -106,6 +117,20 @@ export default {
     removeSection (id) {
       this.deleteSection(id)
       this.$fiery.remove(this.sections[id])
+    },
+    sectionUp (index) {
+      if (index > 0) {
+        this.swapSection(index, index - 1)
+      } else {
+        console.error('cannot swap up from 0')
+      }
+    },
+    sectionDown (index) {
+      if (index < this.sectionOrder.length - 1) {
+        this.swapSection(index, index + 1)
+      } else {
+        console.error('cannot swap down from end')
+      }
     },
     addText (id) {
       console.log('addText')

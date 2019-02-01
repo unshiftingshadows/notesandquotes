@@ -87,6 +87,7 @@ module.exports = function (ctx) {
         'QItemMain',
         'QItemSide',
         'QItemTile',
+        'QItemSeparator',
         'QCard',
         'QCardMain',
         'QCardTitle',
@@ -110,7 +111,8 @@ module.exports = function (ctx) {
       ],
       directives: [
         'Ripple',
-        'TouchSwipe'
+        'TouchSwipe',
+        'CloseOverlay'
       ],
       plugins: [
         'Notify'

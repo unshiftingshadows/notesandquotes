@@ -74,6 +74,7 @@ export default {
         onSuccess: () => {
           if (this.discourse.status) {
             this.dateOccurred = this.discourse.dateOccurred.toDate()
+            this.checkVideo()
             this.loading = false
           } else {
             this.loading = true

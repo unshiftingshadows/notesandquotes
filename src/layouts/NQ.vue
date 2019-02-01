@@ -8,11 +8,12 @@
           dense
           icon="menu"
           @click="leftDrawer = !leftDrawer"
+          class="lt-md"
         />
         <q-toolbar-title>
-          <img src="statics/logo.png" style="max-height: 50px" />
+          <img src="statics/logo.png" style="max-height: 50px" class="gt-md" />
         </q-toolbar-title>
-        <q-search v-model="searchTerms" placeholder="Search..." class="on-left gt-sm" color="dark" inverted icon="fas fa-search">
+        <q-search v-model="searchTerms" placeholder="Search..." class="on-left" color="dark" inverted icon="fas fa-search">
           <q-autocomplete
             @search="search"
             @selected="selected"
@@ -20,14 +21,14 @@
           />
         </q-search>
         <q-btn v-if="selectedTopic" :label="'Current Topic: ' + selectedTopic.title" style="margin-right: 15px" @click.native="returnTopic()" />
-        <q-btn-dropdown label="Notes and Quotes">
+        <q-btn-dropdown label="Notes and Quotes" class="gt-md">
           <q-list link>
             <!-- <q-item>
               <q-item-main>
                 <q-item-tile label>Notes and Quotes</q-item-tile>
               </q-item-main>
             </q-item> -->
-            <q-item @click.native="switchResearch">
+            <q-item @click.native="switchResearch()">
               <q-item-main>
                 <q-item-tile label>Research</q-item-tile>
               </q-item-main>
@@ -46,13 +47,13 @@
       <!-- QScrollArea is optional -->
       <q-scroll-area class="fit q-pa-sm">
         <!-- Content here -->
-        <q-search v-model="searchTerms" placeholder="Search..." class="on-left lt-sm" color="dark" inverted icon="fas fa-search">
+        <!-- <q-search v-model="searchTerms" placeholder="Search..." class="on-left lt-sm" color="dark" inverted icon="fas fa-search">
           <q-autocomplete
             @search="search"
             @selected="selected"
             ref="searchModal"
           />
-        </q-search>
+        </q-search> -->
         <q-item to="/dashboard">
           <q-item-side icon="fas fa-home" />
           <q-item-main label="Dashboard" />
@@ -97,6 +98,12 @@
           <q-item-side icon="fas fa-music" />
           <q-item-main label="Compositions" />
         </q-item>
+        <q-item-separator class="lt-md" />
+        <q-item link @click.native="switchResearch()" class="lt-md">
+          <!-- <q-item-side icon="fas fa-home" /> -->
+          <q-item-main label="Research" />
+        </q-item>
+        <q-item-separator class="lt-md" />
         <q-item to="/settings">
           <q-item-side icon="fas fa-cog" />
           <q-item-main label="Settings" />
@@ -105,7 +112,7 @@
           <q-item-side icon="fas fa-sign-out-alt" />
           <q-item-main label="Log Out" />
         </q-item>
-        <span class="fixed-bottom-left">v0.1.10b?</span>
+        <span class="fixed-bottom-left">v0.1.11</span>
       </q-scroll-area>
     </q-layout-drawer>
 

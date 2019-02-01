@@ -5,10 +5,10 @@
         <h4>{{ formType }} Illustration</h4>
       </div>
       <div class="col-12">
-        <q-input v-model="title" float-label="Illustration Title" dark @keydown="keydown" />
+        <q-input v-model="title" float-label="Illustration Title" dark @keydown="keydown" autofocus />
       </div>
       <div class="col-12">
-        <q-input v-model="text" type="textarea" :max-height="100" :min-rows="3" float-label="Illustration Text" autofocus ref="illustrationInput" dark @keydown="keydown" />
+        <q-input v-model="text" type="textarea" :max-height="100" :min-rows="3" float-label="Illustration Text" ref="illustrationInput" dark @keydown="keydown" />
       </div>
       <div class="col-12" v-if="type === 'movie'">
         <q-input v-model="character" float-label="Character" dark @keydown="keydown" />

@@ -80,7 +80,7 @@
         <q-tab :default="mediaType === 'article'" slot="title" label="Outline" name="outline-tab" icon="fas fa-list-ul" />
         <q-tab slot="title" label="Idea" name="idea-tab" icon="fas fa-lightbulb" />
         <q-tab slot="title" label="Illustration" name="illustration-tab" icon="fas fa-info" />
-        <q-tab slot="title" name="close" icon="fas fa-times" :hidden="!isMobile" disable @click.native="closeAdd" />
+        <q-tab slot="title" name="close" icon="fas fa-times" :hidden="!isMobile" @click.native="closeAdd()" />
         <q-tab-pane name="quote-tab" v-if="mediaType !=='article'">
           <quote-form ref="quoteForm" :mediaid="id" :media="mediaObj" :media-type="type" form-type="Add" :modal-fin="closeAdd" />
         </q-tab-pane>

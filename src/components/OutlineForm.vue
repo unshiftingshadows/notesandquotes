@@ -9,7 +9,7 @@
         <!-- Would like to have potential for reordering -->
         <div class="row">
           <div class="col-9">
-            <q-input float-label="Title" v-model="title" dark @keydown="keydown" />
+            <q-input float-label="Title" v-model="title" dark @keydown="keydown" autofocus />
           </div>
           <div class="col-3">
             <q-checkbox v-model="numbered" label="Numbered?" dark @keydown="keydown" />
@@ -28,7 +28,7 @@
             <q-item-side v-if="!numbered" icon="fas fa-chevron-right" />
             <q-item-side v-if="numbered">{{ (points.length+1).toString() }}</q-item-side>
             <q-item-main>
-              <q-input placeholder="Some title..." ref="newpoint" v-model="newPoint" dark @keyup.enter="addPoint" :after="[{ icon: 'fa-plus', handler () {addPoint()} }]" @keydown="keydown" />
+              <q-input placeholder="Some title..." ref="newpoint" v-model="newPoint" dark @keyup.enter="addPoint" :after="[{ icon: 'fas fa-plus', handler () {addPoint()} }]" @keydown="keydown" />
             </q-item-main>
           </q-item>
         </q-list>

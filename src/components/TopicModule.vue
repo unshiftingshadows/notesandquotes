@@ -6,9 +6,10 @@
         <q-icon name="fas fa-grip-vertical" size="1rem" />
       </div>
       <!-- Remove button -->
-      <div class="bg-negative remove-handle">
-        <q-icon name="fas fa-times" size="1rem" @click.native="remove" />
-      </div>
+      <!-- <div class="bg-negative remove-handle" @click.native="remove()">
+        <q-icon name="fas fa-times" size="1rem" />
+      </div> -->
+      <q-btn class="remove-handle" round color="negative" @click.native="remove()" icon="fas fa-times" size=".8rem" />
     </div>
     <q-card-title v-if="data.type === 'bible'">
       {{ bibleText }}
@@ -129,9 +130,9 @@ export default {
   position: absolute;
   height: 30px;
   width: 30px;
-  padding-top: 6px;
+  /* padding-top: 6px;
   padding-left: 9px;
-  padding-right: 9px;
+  padding-right: 9px; */
   opacity: 0.7;
   right: -5px;
   top: -5px;

@@ -13,10 +13,10 @@
         <h3>{{ topic.title }}</h3>
       </div>
       <div class="col-12-sm col-6">
-        <q-input v-model="topic.premise" type="textarea" :max-height="100" :min-rows="2" float-label="Premise" @blur="update" dark />
+        <q-input v-model="topic.premise" type="textarea" :min-rows="2" float-label="Premise" @blur="update" dark />
       </div>
       <div class="col-12-sm col-6">
-        <q-input v-model="topic.conclusion" type="textarea" :max-height="100" :min-rows="2" float-label="Conclusion" @blur="update" dark />
+        <q-input v-model="topic.conclusion" type="textarea" :min-rows="2" float-label="Conclusion" @blur="update" dark />
       </div>
       <div class="col-12">
         <!-- <markdown-editor v-model="notes" :configs="editorConfigs" @input="handleInput" ref="markdown" /> -->
@@ -25,7 +25,7 @@
           :editorToolbar="toolbarContent"
           v-model="topic.notes"
         /> -->
-        <topic-notes :section-order="topic.sectionOrder" :new-section="newSection" :delete-section="deleteSection" />
+        <topic-notes :section-order="topic.sectionOrder" :new-section="newSection" :delete-section="deleteSection" :swap-section="swapSection" />
       </div>
       <!-- <div class="col-12">
         <q-chips-input v-model="topic.tags" float-label="Tags" dark />
@@ -160,6 +160,14 @@ export default {
     },
     deleteSection (id) {
       this.topic.sectionOrder.splice(this.topic.sectionOrder.indexOf(id), 1)
+      this.$fiery.update(this.topic)
+    },
+    swapSection (indexA, indexB) {
+      // console.log('swap sections', indexA, indexB, this.topic.sectionOrder)
+      var tmp = this.topic.sectionOrder[indexA]
+      this.topic.sectionOrder[indexA] = this.topic.sectionOrder[indexB]
+      this.topic.sectionOrder[indexB] = tmp
+      // console.log('swapped', this.topic.sectionOrder)
       this.$fiery.update(this.topic)
     },
     openAdd () {

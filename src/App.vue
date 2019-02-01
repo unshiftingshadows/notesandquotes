@@ -11,7 +11,10 @@ import FastClick from 'fastclick'
 FastClick.notNeeded = true
 
 export default {
-  name: 'App'
+  name: 'App',
+  mounted () {
+    console.log('app mounted!')
+  }
 }
 </script>
 
