@@ -104,16 +104,18 @@ export default {
     }
   },
   methods: {
-    init (isNew) {
+    init (isNew, saveBasics) {
       if (isNew) {
         console.log('new')
+        if (!saveBasics) {
+          this.locationType = 'None'
+          this.tags = []
+        }
         this.text = ''
         this.title = ''
         this.character = ''
-        this.tags = []
         this.bibleRefs = []
         this.notes = ''
-        this.locationType = 'None'
         this.location = 0
       } else {
         this.text = this.illustration.text
@@ -175,10 +177,10 @@ export default {
     },
     keydown (e) {
       // console.log('pressed...', e)
-      if (e.keyCode === 13 && e.metaKey) {
+      if (e.keyCode === 13 && e.metaKey && this.formType === 'Add') {
         this.addIllustration(!e.shiftKey)
         if (e.shiftKey) {
-          this.init(true)
+          this.init(true, true)
         }
       }
     }

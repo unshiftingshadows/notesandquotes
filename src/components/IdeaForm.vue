@@ -102,9 +102,13 @@ export default {
     }
   },
   methods: {
-    init (isNew) {
+    init (isNew, saveBasics) {
       if (isNew) {
         console.log('new')
+        if (!saveBasics) {
+          this.locationType = 'None'
+          this.tags = []
+        }
         this.text = ''
         this.character = ''
         this.tags = []
@@ -169,10 +173,10 @@ export default {
     },
     keydown (e) {
       // console.log('pressed...', e)
-      if (e.keyCode === 13 && e.metaKey) {
+      if (e.keyCode === 13 && e.metaKey && this.formType === 'Add') {
         this.addIdea(!e.shiftKey)
         if (e.shiftKey) {
-          this.init(true)
+          this.init(true, true)
         }
       }
     }
