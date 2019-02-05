@@ -1,6 +1,24 @@
 # Changelog
 All notable changes for this project will be documented in this file.
 
+## 0.0.11 - 2019-02-05
+### Added
+- indexing cloud functions for more efficient searching
+- Sentry to log cloud function and browser errors
+- keyboard shortcuts for faster snippet entry
+
+### Changed
+- article text is now cleaned up before saved
+- research overhauled for better interaction between media and notes
+- mobile design redone
+
+### Fixed
+- cleanup of snippet forms to use Firestore instead of database
+- discourse now shows video for video links
+
+## 0.0.10 - 2018-12-07
+### MIGRATION TO FIRESTORE
+
 ## 0.1.9 - 2018-08-23
 ### Added
 - citation field on Document page
