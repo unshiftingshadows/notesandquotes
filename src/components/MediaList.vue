@@ -34,6 +34,9 @@
               <p v-if="item.type !== 'outline'">{{ item.media.text }}</p>
               <p v-if="item.type === 'outline'"><span v-for="point in item.media.points" :key="point">{{ point }}</span></p>
               <p class="q-caption text-weight-thin">{{ item.media.media.title }} | {{ item.media.media.author.join(', ') }}</p>
+              <div v-if="item.media.notes">
+                <blockquote class="q-caption">{{ item.media.notes }}</blockquote>
+              </div>
             </q-card-main>
           </q-card>
           <!-- </draggable> -->

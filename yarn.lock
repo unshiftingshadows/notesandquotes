@@ -4975,15 +4975,7 @@ marked@^0.3.6:
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.19.tgz#5d47f709c4c9fc3c216b6d46127280f40b39d790"
   integrity sha512-ea2eGWOqNxPcXv8dyERdSr/6FmzvWwzjMxpfGB/sbMccXoct+xY+YukPD+QTUZwyvK7BZwcr4m21WBOW41pAkg==
 
-masonry-layout@4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/masonry-layout/-/masonry-layout-4.2.0.tgz#43835c6b6e0d72eff2c31a118c8000cccc4ab965"
-  integrity sha1-Q4Nca24Ncu/ywxoRjIAAzMxKuWU=
-  dependencies:
-    get-size "^2.0.2"
-    outlayer "^2.1.0"
-
-masonry-layout@^4.2.1:
+masonry-layout@^4.2.1, masonry-layout@^4.2.2:
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/masonry-layout/-/masonry-layout-4.2.2.tgz#d57b44af13e601bfcdc423f1dd8348b5524de348"
   integrity sha512-iGtAlrpHNyxaR19CvKC3npnEcAwszXoyJiI8ARV2ePi7fmYhIud25MHK8Zx4P0LCC4d3TNO9+rFa1KoK1OEOaA==
@@ -7923,13 +7915,13 @@ vue-loader@15.4.2:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
-vue-masonry@^0.11.1:
-  version "0.11.6"
-  resolved "https://registry.yarnpkg.com/vue-masonry/-/vue-masonry-0.11.6.tgz#bfc1a86a57ff2521e7a47c61dca4bef403553765"
-  integrity sha512-GIl0FkBORIpMwz25r5I2GgxZcgqopv6plODhVFjQ5qVQYcGld5vg5WwGDnTnsNh2KRcqmkUev5Q2hRWUshIiKA==
+vue-masonry@^0.11.7:
+  version "0.11.7"
+  resolved "https://registry.yarnpkg.com/vue-masonry/-/vue-masonry-0.11.7.tgz#14c41d211b348419ec0d973994ee300a63781462"
+  integrity sha512-FWnEErZCgwmRl48sZoPbgeHaD4aJHIEuolG1m4jIVr65qnnrJ+QVpyRNynvLNEhZGwtscSphPGcEsdps4ITOWA==
   dependencies:
     imagesloaded "4.1.4"
-    masonry-layout "4.2.0"
+    masonry-layout "^4.2.2"
     vue "^2.0.0"
 
 vue-pdf@^3.3.1:

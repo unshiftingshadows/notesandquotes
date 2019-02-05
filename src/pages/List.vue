@@ -8,7 +8,7 @@
       <q-spinner color="primary" class="absolute-center" size="3em" />
     </div>
     <div v-if="!loading">
-      <div v-masonry transition-duration="0.3s" item-selector=".media-item">
+      <div v-masonry :transition-duration="0" item-selector=".media-item">
         <q-card inline v-masonry-tile v-for="item in items" :key="item._id" v-bind:class="[ type, { 'image-card': imageTypes.includes(type) }]" class="media-card media-item" @click.native="openItem(item._id, item)">
           <q-card-media v-if="imageTypes.includes(type)">
             <img :src="item.thumbURL" />
@@ -34,6 +34,8 @@
           </q-item-main>
         </q-item>
       </q-list>
+      <q-btn label="Load More..." color="primary" @click.native="loadMore()" :disabled="end" />
+      <q-spinner v-if="loadingMore" color="primary" size="3rem" />
     </div>
     <q-modal ref="addModal" v-model="showTopic" content-classes="add-media-modal">
       <add-research :modal-fin="closeAddTopic" ref="addTopic" />
@@ -56,37 +58,23 @@ export default {
   data () {
     return {
       type: this.$route.params.type,
-      // items: [],
       allItems: this.$fiery(this.$firebase.list(this.$route.params.type), {
-        query: (list) => list.where('users', 'array-contains', this.$firebase.auth.currentUser.uid),
+        query: (list) => list.where('users', 'array-contains', this.$firebase.auth.currentUser.uid).orderBy('dateAdded', 'desc'),
+        stream: true,
+        streamInitial: 12,
+        streamMore: 12,
         key: '_id',
         exclude: ['_id'],
-        onSuccess: () => {
-          // if (this.type === 'image') {
-          //   // this.items = []
-          //   // this.allItems = []
-          //   this.allItems.forEach((image, index) => {
-          //     if (image.source === 'upload') {
-          //       this.$firebase.imagesRef.child(image._id).getDownloadURL().then((url) => {
-          //         this.allItems[index].thumbURL = url
-          //         // image.imageURL = url
-          //         // image.pageURL = url
-          //       })
-          //     } else {
-          //       // this.items.push(image)
-          //       // this.allItems.push(image)
-          //     }
-          //   })
-          // } else {
-          //   // this.items = data
-          //   // this.allItems = data
-          // }
+        onSuccess: (list) => {
+          console.log('done loading', list.length)
           this.loading = false
         }
       }),
       isImage: this.$route.params.type === 'image',
       showTopic: false,
       loading: true,
+      loadingMore: false,
+      end: false,
       sizes: [
         { columns: 1, gutter: 10 },
         { mq: '800px', columns: 2, gutter: 20 },
@@ -98,7 +86,8 @@ export default {
       textTypes: [ 'document', 'discourse', 'composition' ],
       listTypes: [ 'note', 'topic' ],
       readTypes: [ 'book', 'movie', 'article', 'video', 'discourse', 'composition' ],
-      showOnlyNew: false
+      showOnlyNew: false,
+      limit: 10
     }
   },
   mounted () {
@@ -112,57 +101,57 @@ export default {
       // this.init(newType)
       console.log(newType)
       this.$fiery.free(this.allItems)
-      this.allItems = this.$fiery(this.$firebase.list(newType), {
-        query: (list) => list.where('users', 'array-contains', this.$firebase.auth.currentUser.uid),
+      this.allItems = this.$fiery(this.$firebase.list(this.$route.params.type), {
+        query: (list) => list.where('users', 'array-contains', this.$firebase.auth.currentUser.uid).orderBy('dateAdded', 'desc'),
+        stream: true,
+        streamInitial: 12,
+        streamMore: 12,
         key: '_id',
         exclude: ['_id'],
-        onSuccess: () => {
+        onSuccess: (list) => {
+          console.log('done loading', list.length)
           this.loading = false
         }
       })
-    },
-    'showOnlyNew' (newState) {
-      // this.dbCall(this.type)
     }
+    // 'showOnlyNew' (newState) {
+    //   // this.dbCall(this.type)
+    // }
   },
   computed: {
+    // itemsOptions: function () {
+    //   const { limit } = this
+    //   var initQuery = items => items.where('users', 'array-contains', this.$firebase.auth.currentUser.uid).orderBy('dateAdded').limit(limit)
+    //   if (this.showOnlyNew) {
+    //     initQuery = initQuery.where('status', '==', 'new')
+    //   }
+    //   return {
+    //     query: initQuery,
+    //     queryReverse: items => items.where('users', 'array-contains', this.$firebase.auth.currentUser.uid).orderBy('dateAdded', 'desc').limit(limit),
+    //     key: '_id',
+    //     exclude: ['_id'],
+    //     onSuccess: () => {
+    //       console.log('redraw?')
+    //       this.$redrawVueMasonry()
+    //       this.$forceUpdate()
+    //     }
+    //   }
+    // },
+    // items: function () {
+    //   return this.$fiery(this.$firebase.list(this.$route.params.type), this.itemsOptions, 'allItems')
+    // },
     items: function () {
       return this.allItems.filter((val) => { return this.showOnlyNew ? val.status === 'new' : true })
     }
+    // itemsPager: function () {
+    //   return this.$fiery.pager(this.items)
+    // }
   },
   methods: {
     init (type) {
       // this.showOnlyNew = false
       // this.dbCall(type)
     },
-    // dbCall (type) {
-    //   this.loading = true
-    //   this.database.list(type, { newOnly: this.showOnlyNew }, {}, (data) => {
-    //     console.log('data', data, this)
-    //     if (type === 'image') {
-    //       this.items = []
-    //       this.allItems = []
-    //       data.forEach((image) => {
-    //         if (image.source === 'upload') {
-    //           this.firebase.imagesRef.child(image._id).getDownloadURL().then((url) => {
-    //             image.thumbURL = url
-    //             image.imageURL = url
-    //             image.pageURL = url
-    //             this.items.push(image)
-    //             this.allItems.push(image)
-    //           })
-    //         } else {
-    //           this.items.push(image)
-    //           this.allItems.push(image)
-    //         }
-    //       })
-    //     } else {
-    //       this.items = data
-    //       this.allItems = data
-    //     }
-    //     this.loading = false
-    //   })
-    // },
     openItem (id) {
       console.log(id)
       console.log(this.type)
@@ -171,41 +160,6 @@ export default {
         return
       }
       this.$router.push({ name: this.type, params: { id: id } })
-      // switch (this.type) {
-      //   case 'book':
-      //     this.$router.push({ name: 'book', params: { id: id } })
-      //     break
-      //   case 'movie':
-      //     this.$router.push({ name: 'movie', params: { id: id } })
-      //     break
-      //   case 'article':
-      //     this.$router.push({ name: 'article', params: { id: id } })
-      //     break
-      //   case 'video':
-      //     this.$router.push({ name: 'video', params: { id: id } })
-      //     break
-      //   case 'image':
-      //     this.$router.push({ name: 'image', params: { id: id } })
-      //     break
-      //   case 'note':
-      //     this.$router.push({ name: 'note', params: { id: id } })
-      //     break
-      //   case 'document':
-      //     this.$router.push({ name: 'document', params: { id: id } })
-      //     break
-      //   case 'discourse':
-      //     this.$router.push({ name: 'discourse', params: { id: id } })
-      //     break
-      //   case 'composition':
-      //     this.$router.push({ name: 'composition', params: { id: id } })
-      //     break
-      //   case 'topic':
-      //     this.$router.push({ name: 'topic', params: { id: id } })
-      //     break
-      //   default:
-      //     console.error('Incorrect item type for routing')
-      //     break
-      // }
     },
     openAddTopic () {
       console.log(this.$refs)
@@ -217,6 +171,17 @@ export default {
     },
     capText (text) {
       return capitalize(text)
+    },
+    async loadMore (index, done) {
+      if (this.end) return
+      this.loadingMore = true
+      try {
+        await this.$fiery.more(this.allItems)
+        this.loadingMore = false
+      } catch (err) {
+        this.end = true
+        this.loadingMore = false
+      }
     }
   }
 }

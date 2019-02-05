@@ -1,9 +1,9 @@
 <template>
   <div>
-    <!-- <q-btn color="primary" label="Refresh" @click.native="init" /> -->
     <q-resize-observable @resize="onResize" />
     <q-spinner color="primary" class="absolute-center" size="3rem" v-if="loading" />
     <media-list :items="resources" :width="size.width/2" v-if="!loading" />
+    <q-btn style="bottom: 20px; right: 20px; position: fixed;" color="primary" icon="fas fa-sync-alt" @click.native="init()" />
   </div>
 </template>
 

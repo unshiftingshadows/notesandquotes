@@ -70,6 +70,7 @@ module.exports = function (ctx) {
         'QTabPane',
         'QRouteTab',
         'QScrollArea',
+        'QInfiniteScroll',
         'QPageContainer',
         'QPage',
         'QToolbar',

@@ -36,6 +36,9 @@
       <div class="q-body-2" style="text-align: right;" v-if="$types.TEXT.includes(mod.type) || mod.type === 'outline'">{{ mod.media.media.title }} | {{ mod.media.media.author.join(', ') }}</div>
       <q-video v-if="mod.type === 'video'" :src="mod.media.embedURL" />
       <img v-if="mod.type === 'image'" :src="mod.media.imageURL" style="width: 100%;" />
+      <div v-if="mod.media.notes">
+        <blockquote class="q-caption">{{ mod.media.notes }}</blockquote>
+      </div>
     </q-card-main>
   </q-card>
 </template>

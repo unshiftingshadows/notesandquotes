@@ -26,7 +26,7 @@
     "pdfjs-dist": "^2.0.943",
     "vue-bricks": "^1.0.7",
     "vue-filepond": "^4.0.0",
-    "vue-masonry": "^0.11.1",
+    "vue-masonry": "^0.11.7",
     "vue-pdf": "^3.3.1",
     "vue-simplemde": "^0.4.6",
     "vue-waterfall": "^1.0.6",
