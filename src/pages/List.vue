@@ -20,7 +20,7 @@
           <span v-if="type === 'composition'" class="float-right text-weight-thin" style="margin-top: 5px; margin-right: 5px;">{{ capText(item.type) }}</span>
           <q-card-title v-if="textTypes.includes(type)">{{ item.title }}</q-card-title>
           <q-card-main v-if="textTypes.includes(type)">
-            <p>| <span v-for="author in item.author" :key="author">{{ author }} | </span></p>
+            <p v-if="item.author.length > 0">{{ item.author.join(', ') }}</p>
             <p v-if="item.userData && item.userData[firebase.auth.currentUser.uid]"><q-chip v-for="tag in item.userData[firebase.auth.currentUser.uid].tags" :key="tag" color="primary" small style="margin-right: 5px;">{{ tag }}</q-chip></p>
           </q-card-main>
         </q-card>

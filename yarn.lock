@@ -3465,10 +3465,10 @@ filepond-plugin-image-preview@^1.0.9:
   resolved "https://registry.yarnpkg.com/filepond-plugin-image-preview/-/filepond-plugin-image-preview-1.2.0.tgz#8ad62f5416daa90535e947adda7b61f7c32fe1cd"
   integrity sha512-q0POj+WBcBqU5jbrPYDMCmZFCfYMtMTEiixevpQM96zoWNFQ5n8vlEUBtu8X6IO/Go7BQZbqhyLNxpEfepv3Fg==
 
-filepond@^3.0.2, filepond@^3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/filepond/-/filepond-3.3.0.tgz#bf689138d9e6ea997c3ad0183361e8e981621a2c"
-  integrity sha512-Fh2L9bHa7/xvvJGvrKJC7g86PvN3F0UbLQKDzls8a4fs5C+GK7YQDVKxFJV9+TfaxxJ+suPCahoG7UY88oZTVw==
+filepond@^4.3.0:
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/filepond/-/filepond-4.3.3.tgz#0d8f360c9891783cc3bafb4f5707ed37e96b5cf1"
+  integrity sha512-o+qYwtQryjby9jtuRfrQiZDc8uc51c4sKfmYTBWbi6772hzHpvjT7lpq5y8LS/lP7wr7yNfjbWnIeO+rtDgUCw==
 
 filesize@^3.6.1:
   version "3.6.1"
@@ -7892,12 +7892,10 @@ vue-eslint-parser@^2.0.3:
     esquery "^1.0.0"
     lodash "^4.17.4"
 
-vue-filepond@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/vue-filepond/-/vue-filepond-4.0.0.tgz#65a1f1515cccadfce39fa5205e0173ee7f137230"
-  integrity sha512-4Oysuowt7ZiddexpmJXKfeE6Z1glpe8wueH8vBQaRXkhyGexFkKLorwxraIiavSoamme9mcOysTRYNloqJh3zA==
-  dependencies:
-    filepond "^3.0.2"
+vue-filepond@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/vue-filepond/-/vue-filepond-5.0.0.tgz#c3d9362fc41ee9dcb44f7962c1d41ff8e29e8cd2"
+  integrity sha512-8ka3ms8WU0vNQKSL1jgF24tCQUw+pA0CLgRRHe9AZ3l1yrehSXGEZZBQbC374PgzFW8CkJOr3cpM+7ZBNSVBvQ==
 
 vue-hot-reload-api@^2.3.0:
   version "2.3.1"

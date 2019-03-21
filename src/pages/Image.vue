@@ -65,13 +65,14 @@ export default {
       id: this.$route.params.id,
       image: this.$fiery(this.$firebase.view('image', this.$route.params.id), {
         onSuccess: () => {
-          // if (this.image.source === 'upload') {
-          //   this.$firebase.imagesRef.child(this.id).getDownloadURL().then((url) => {
-          //     this.image.thumbURL = url
-          //     this.image.imageURL = url
-          //     this.image.pageURL = url
-          //   })
-          // }
+          if (this.image.source === 'upload') {
+            this.$firebase.imagesRef.child(this.id).getDownloadURL().then((url) => {
+              this.image.thumbURL = url
+              this.image.imageURL = url
+              this.image.pageURL = url
+              this.update()
+            })
+          }
           if (this.image.status) {
             if (!this.image.tags) {
               this.image.tags = []
