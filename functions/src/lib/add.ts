@@ -179,7 +179,7 @@ function articleExtractor(articleURL) {
       postDate: data.date_published === null ? new Date() : new Date(data.date_published),
       domain: data.domain || articleURL,
       description: data.excerpt.replace('&hellip;', '...') || '',
-      thumbURL: data.lead_image_url || '',
+      thumbURL: data.lead_image_url || 'https://picsum.photos/200/300/?blur',
       pageURL: data.url || articleURL,
       wordCount: data.word_count || 0,
       text: text,

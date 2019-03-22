@@ -15,7 +15,7 @@ export default [
       { path: 'document/:id', name: 'document', component: () => import('pages/Document') },
       { path: 'discourse/:id', name: 'discourse', component: () => import('pages/Discourse') },
       { path: 'composition/:id', name: 'composition', component: () => import('pages/Composition') },
-      { path: 'addarticle', name: 'addarticle', component: () => import('components/RLAddArticle') }
+      { path: 'quickadd', name: 'quickadd', component: () => import('components/QuickAdd') }
     ],
     meta: {
       requiresAuth: true
