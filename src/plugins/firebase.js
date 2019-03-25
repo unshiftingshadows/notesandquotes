@@ -49,16 +49,15 @@ async function lookup (term, type) {
   return result.data
 }
 
-var topicid = null
-var topicResources = []
+var topicResources = {}
 
 async function getTopicResources (id) {
   console.log('getTopicResources...')
-  if (topicid === id) {
-    return topicResources
+  if (topicResources[id]) {
+    return topicResources[id]
   } else {
-    topicid = id
-    topicResources = new Promise((resolve, reject) => {
+    topicResources[id] = {}
+    topicResources[id] = new Promise((resolve, reject) => {
       firestore.collection('topics').doc(id).collection('resources').get().then((originalRes) => {
         var res = originalRes.docs.map(e => { return { key: e.id, ...e.data() } })
         console.log('resources acquired', res)
@@ -67,8 +66,14 @@ async function getTopicResources (id) {
           resProms.push(view(resource.type, resource.id).get())
         })
         return Promise.all(resProms).then((docs) => {
+          console.log('all docs', docs)
           var snipProms = []
           res.forEach((resource, index) => {
+            if (!docs[index].exists) {
+              console.log(docs[index], '!!!!does not exist!!!!!')
+              firestore.collection('topics').doc(id).collection('resources').doc(resource.key).delete()
+              return
+            }
             resource.media = docs[index].data()
             if (types.SNIPPET.includes(resource.type)) {
               snipProms.push({
@@ -91,40 +96,38 @@ async function getTopicResources (id) {
         // console.log('resources loaded')
         // return res.docs.map(e => { return { id: e.id, ...e.data() } })
       }).catch((err) => {
-        topicid = null
-        topicResources = []
+        topicResources[id] = false
         console.error('topic resources error', err)
         resolve([])
       })
     })
-    return topicResources
+    return topicResources[id]
   }
 }
 
-async function useTopicResource (id) {
-  console.log('use resource', id, await topicResources)
-  topicResources = await topicResources
-  const index = topicResources.findIndex(e => { return e.key === id })
+async function useTopicResource (topicid, id) {
+  console.log('use resource', id, await topicResources[topicid])
+  const currentResources = await topicResources[topicid]
+  const index = currentResources.findIndex(e => { return e.key === id })
   console.log('index', index)
-  topicResources[index].used = true
+  currentResources[index].used = true
   firestore.collection('topics').doc(topicid).collection('resources').doc(id).update({
     used: true
   })
 }
 
-async function unuseTopicResource (id) {
-  topicResources = await topicResources
-  const index = topicResources.findIndex(e => { return e.key === id })
+async function unuseTopicResource (topicid, id) {
+  const currentResources = await topicResources[topicid]
+  const index = currentResources.findIndex(e => { return e.key === id })
   console.log('index', index)
-  topicResources[index].used = false
+  currentResources[index].used = false
   firestore.collection('topics').doc(topicid).collection('resources').doc(id).update({
     used: false
   })
 }
 
 function resetTopicResources () {
-  topicid = null
-  topicResources = []
+  topicResources = {}
 }
 
 export default ({ app, router, Vue }) => {

@@ -1,46 +1,89 @@
 <template>
-  <div>
-    <div class="row gutter-sm">
-      <div class="col-12">
-        <q-select
+  <div style="padding: 5px; position: relative;">
+    <div class="sticky-bar">
+      <q-toolbar color="secondary" style="z-index: 10;">
+        <!-- <q-select
           multiple
           v-model="selectedTypes"
           :options="types"
           dark
-        />
-      </div>
-      <div class="col-12">
-        <div v-masonry transition-duration="0.3s" item-selector=".media-iteml">
-          <!-- <draggable :list="showItems" @change="onMediaDrag" ref="mediaDrag" :options="{ swapThreshold: 0.5, dragClass: 'media-ghost', handle: '.media-drag-handle', group: { name: 'media', pull: 'clone' }, disabled: $q.platform.is.mobile }"> -->
-          <q-card inline v-bind:class="[item.type] + 'l'" v-masonry-tile v-for="item in showItems" :key="item.id" class="media-cardl media-iteml" @click.native="openItem(item.media, item.type, $event)">
-            <!-- Drag Handle -->
-            <!-- <div class="round-borders bg-primary media-drag-handle" v-if="!$q.platform.is.mobile || $q.platform.is.ipad">
-              <q-icon name="fas fa-arrows-alt" size="1rem" />
-            </div> -->
-            <!-- Add button -->
-            <!-- <div class="bg-primary add-handle" v-if="!$q.platform.is.mobile || $q.platform.is.ipad" @click.native="addMedia(item.key)" v-bind:class="{ hidden: item.used }">
-              <q-icon name="fas fa-plus" size="1rem" />
-            </div> -->
-            <q-btn class="add-handle" round color="primary" v-if="!$q.platform.is.mobile || $q.platform.is.ipad" @click.native="addMedia(item.key)" v-bind:class="{ hidden: item.used }" icon="fas fa-plus" size=".8rem" />
-            <q-card-media v-if="imageTypes.includes(item.type) || titleTypes.includes(item.type)" style="border-radius: 3px;">
-              <img :src="item.media.thumbURL" class="image-cardl" />
-              <q-card-title slot="overlay" v-if="titleTypes.includes(item.type)">{{ item.media.title }}</q-card-title>
-            </q-card-media>
-            <q-card-title v-if="textTypes.includes(item.type)">{{ item.media.title }}</q-card-title>
-            <q-card-main v-if="textTypes.includes(item.type)">
-              <p>| <span v-for="author in item.media.author" :key="author">{{ author }} | </span></p>
-            </q-card-main>
-            <q-card-main v-if="listTypes.includes(item.type)">
-              <p v-if="item.type !== 'outline'">{{ item.media.text }}</p>
-              <p v-if="item.type === 'outline'"><span v-for="point in item.media.points" :key="point">{{ point }}</span></p>
-              <p class="q-caption text-weight-thin">{{ item.media.media.title }} | {{ item.media.media.author.join(', ') }}</p>
-              <div v-if="item.media.notes">
-                <blockquote class="q-caption">{{ item.media.notes }}</blockquote>
+        /> -->
+        <q-btn icon="fas fa-filter" label="Filter">
+          <q-popover>
+            <div class="row" style="padding: 10px;">
+              <div class="col-12">
+                <q-checkbox v-model="selectedTypes" val="all" label="All" />
               </div>
-            </q-card-main>
-          </q-card>
-          <!-- </draggable> -->
-        </div>
+              <div class="col-6">
+                <q-checkbox v-model="selectedTypes" val="book" label="Book" /><br/>
+                <q-checkbox v-model="selectedTypes" val="movie" label="Movie" /><br/>
+                <q-checkbox v-model="selectedTypes" val="image" label="Image" /><br/>
+                <q-checkbox v-model="selectedTypes" val="video" label="Video" /><br/>
+                <q-checkbox v-model="selectedTypes" val="article" label="Article" /><br/>
+                <q-checkbox v-model="selectedTypes" val="document" label="Document" /><br/>
+                <q-checkbox v-model="selectedTypes" val="discourse" label="Discourse" /><br/>
+                <q-checkbox v-model="selectedTypes" val="composition" label="Composition" /><br/>
+                <q-checkbox v-model="selectedTypes" val="note" label="Note" />
+              </div>
+              <div class="col-6">
+                <q-checkbox v-model="selectedTypes" val="quote" label="Quote" /><br/>
+                <q-checkbox v-model="selectedTypes" val="idea" label="Idea" /><br/>
+                <q-checkbox v-model="selectedTypes" val="illustration" label="Illustration" /><br/>
+                <q-checkbox v-model="selectedTypes" val="outline" label="Outline" />
+              </div>
+            </div>
+          </q-popover>
+        </q-btn>
+        <q-btn icon="fas fa-sort" label="Sort" class="on-right">
+          <q-popover @hide="redrawMasonry">
+            <div class="row" style="padding: 10px; min-width: 250px;">
+              <div class="col-6">
+                <q-radio v-model="sortType" val="title" label="Title" /><br/>
+                <q-radio v-model="sortType" val="dateAdded" label="Date" />
+              </div>
+              <div class="col-6">
+                <q-radio v-model="sortDirection" val="asc" label="Ascending" /><br/>
+                <q-radio v-model="sortDirection" val="desc" label="Descending" />
+              </div>
+            </div>
+          </q-popover>
+        </q-btn>
+      </q-toolbar>
+    </div>
+    <div class="row gutter-sm" style="z-index: 1;">
+      <div class="col-12">
+        <q-scroll-area style="width: 100%; height: 100vh;">
+          <div v-masonry transition-duration="0.3s" item-selector=".media-iteml" ref="masonry">
+            <q-card inline v-bind:class="[item.type] + 'l'" v-masonry-tile v-for="item in showItems" :key="item.id" class="media-cardl media-iteml" @click.native="openItem(item.media, item.type, $event)">
+              <q-btn class="add-handle" round color="primary" v-if="!$q.platform.is.mobile || $q.platform.is.ipad" @click.native="addMedia(item.key)" v-bind:class="{ hidden: item.used }" icon="fas fa-plus" size=".8rem" />
+              <q-card-media v-if="imageTypes.includes(item.type) || titleTypes.includes(item.type)" style="border-radius: 3px;">
+                <img :src="item.media.thumbURL" class="image-cardl" />
+                <q-card-title slot="overlay" v-if="titleTypes.includes(item.type)">{{ item.media.title }}</q-card-title>
+              </q-card-media>
+              <q-card-title v-if="textTypes.includes(item.type)">{{ item.media.title }}</q-card-title>
+              <q-card-main v-if="textTypes.includes(item.type)">
+                <p>| <span v-for="author in item.media.author" :key="author">{{ author }} | </span></p>
+              </q-card-main>
+              <q-card-main v-if="listTypes.includes(item.type)">
+                <p v-if="item.type !== 'outline'">{{ item.media.text }}</p>
+                <ol v-if="item.type === 'outline' && item.media.numbered" style="padding-left: 10px;">
+                  <li v-for="point in item.media.points" :key="point" style="padding-top: 5px;">
+                    {{ point.split('%%')[0] }}<br/><span class="q-caption">{{ point.split('%%')[1] }}</span>
+                  </li>
+                </ol>
+                <ol v-if="item.type === 'outline' && !item.media.numbered" style="padding-left: 10px;">
+                  <li v-for="point in item.media.points" :key="point" style="padding-top: 5px;">
+                    {{ point.split('%%')[0] }}<br/><span class="q-caption">{{ point.split('%%')[1] }}</span>
+                  </li>
+                </ol>
+                <p class="q-caption text-weight-thin">{{ item.media.media.title }} | {{ item.media.media.author.join(', ') }}</p>
+                <div v-if="item.media.notes">
+                  <blockquote class="q-caption">{{ item.media.notes }}</blockquote>
+                </div>
+              </q-card-main>
+            </q-card>
+          </div>
+        </q-scroll-area>
       </div>
     </div>
     <q-modal v-model="resourceOpen" content-classes="resource-modal">
@@ -58,7 +101,7 @@ export default {
     Draggable,
     ResourcePreview
   },
-  // name: 'ComponentName',
+  name: 'MediaList',
   props: ['items', 'width'],
   data () {
     return {
@@ -74,6 +117,8 @@ export default {
       titleTypes: [ 'video', 'article' ],
       textTypes: [ 'document', 'discourse', 'composition', 'note' ],
       listTypes: [ 'quote', 'idea', 'illustration', 'outline' ],
+      sortType: 'title',
+      sortDirection: 'asc',
       selectedTypes: [ 'all' ],
       types: [
         {
@@ -146,21 +191,23 @@ export default {
           }
         }
       }
-      this.showItems = this.items.filter(this.checkType)
+      this.sortFilter()
+    },
+    'sortType': function (newVal, oldVal) {
+      this.sortFilter()
+    },
+    'sortDirection': function (newVal, oldVal) {
+      this.sortFilter()
     },
     'items': function (value) {
       this.showItems = value.filter(this.checkType)
     }
   },
   mounted () {
-    this.showItems = this.items.filter(this.checkType)
-  },
-  updated () {
-    console.log('updated')
+    this.sortFilter()
   },
   methods: {
     openItem (item, type, e) {
-      // console.log(e.srcElement)
       if (e.srcElement.nodeName !== 'I' && e.srcElement.nodeName !== 'BUTTON' && !e.srcElement.classList.contains('q-btn-inner')) {
         console.log(e)
         console.log(item)
@@ -181,15 +228,36 @@ export default {
         return this.selectedTypes.includes(item.type)
       }
     },
-    loaded (item) {
-      if (this.listTypes.includes(item.type)) {
-        return item.media && item.media.media && item.media.media.status
-      } else {
-        return item.media && item.media.status
-      }
-    },
     onMediaDrag (val, id) {
       console.log('some media dragged', val)
+    },
+    sortFilter () {
+      this.showItems = this.items.filter(this.checkType).sort((a, b) => {
+        var valA, valB
+        if (this.sortType === 'title') {
+          valA = this.$types.SNIPPET.includes(a.type) ? a.media.media.title.toUpperCase() : a.media.title.toUpperCase()
+          valB = this.$types.SNIPPET.includes(b.type) ? b.media.media.title.toUpperCase() : b.media.title.toUpperCase()
+        } else if (this.sortType === 'dateAdded') {
+          valA = a.dateAdded
+          valB = b.dateAdded
+        }
+        var comparisonA = 0
+        if (valA > valB) {
+          comparisonA = 1
+        } else if (valA < valB) {
+          comparisonA = -1
+        }
+        var comparisonB = 0
+        if (a.type.toUpperCase() > b.type.toUpperCase()) {
+          comparisonB = 1
+        } else if (a.type.toUpperCase() < b.type.toUpperCase()) {
+          comparisonB = -1
+        }
+        return (this.sortDirection === 'asc' ? comparisonA : (comparisonA * -1)) || comparisonB
+      })
+    },
+    redrawMasonry () {
+      this.$redrawVueMasonry()
     }
   }
 }
@@ -197,11 +265,16 @@ export default {
 
 <style>
 
+.sticky-bar {
+  width: 100%;
+  z-index: 10;
+}
+
 .media-cardl {
   background-color: var(--q-color-dark);
   border-radius: 3px !important;
   margin: 5px;
-  width: 95%;
+  width: 31%;
   cursor: pointer;
   opacity: 0.5;
   transition: opacity .25s;
@@ -226,7 +299,7 @@ export default {
 
 @media screen and (min-width: 1200px) {
   .media-cardl {
-    width: 95% !important;
+    width: 31% !important;
   }
   .resource-modal {
     min-width: 650px;

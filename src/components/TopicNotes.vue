@@ -158,7 +158,7 @@ export default {
         key: this.generateid()
       })
       this.$fiery.update(this.sections[id])
-      this.$firebase.useTopicResource(mediaid)
+      this.$firebase.useTopicResource(this.$route.params.id, mediaid)
       this.tmpMedia = ''
     },
     async getBible (ref) {
@@ -185,7 +185,7 @@ export default {
     },
     removeMod (sectionid, index) {
       if (this.sections[sectionid].modules[index].type === 'media') {
-        this.$firebase.unuseTopicResource(this.sections[sectionid].modules[index].id)
+        this.$firebase.unuseTopicResource(this.$route.params.id, this.sections[sectionid].modules[index].id)
       }
       console.log('removeMod')
       this.sections[sectionid].modules.splice(index, 1)

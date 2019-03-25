@@ -55,17 +55,18 @@
       v-model="rightDrawer"
       content-class="bg-grey-9 lg-drawer"
       :breakpoint="1200"
+      :width="width !== 0 ? width/2.5 : 400"
     >
       <!-- QScrollArea is optional -->
-      <q-scroll-area class="fit q-pa-sm">
-        <topic-resources v-if="pageType == 'topic'" :resources="resourceList"></topic-resources>
-      </q-scroll-area>
+      <topic-resources v-if="pageType == 'topic'" />
     </q-layout-drawer>
 
     <q-page-container>
       <!-- This is where pages get injected -->
       <router-view />
     </q-page-container>
+
+    <q-window-resize-observable @resize="onResize" />
 
   </q-layout>
 </template>
@@ -91,17 +92,15 @@ export default {
     return {
       rightDrawer: this.$route.name !== 'researchlist' && this.$q.platform.is.desktop,
       pageType: this.$route.name,
-      resourceList: []
+      width: 0
     }
   },
   methods: {
     switchNQ () {
       this.$router.push({ name: 'dashboard' })
     },
-    updateResourceList (type, id) {
-      this.database.resources(type, id, (res) => {
-        console.log(res)
-      })
+    onResize (size) {
+      this.width = size.width
     }
   }
 }
@@ -115,7 +114,7 @@ export default {
 
 @media screen and (min-width: 1200px) {
   .lg-drawer {
-    width: 35%
+    width: 45%
   }
 }
 
