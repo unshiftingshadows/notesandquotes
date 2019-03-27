@@ -48,6 +48,18 @@
             </div>
           </q-popover>
         </q-btn>
+        <q-btn icon="fas fa-filter" label="Resource" class="on-right">
+          <q-popover @hide="redrawMasonry">
+            <div class="row" style="padding: 10px;">
+              <div class="col-12">
+                <q-radio v-model="filterResource" val="" label="Show All" /><br/>
+                <span v-for="resource in resources" :key="resource.id">
+                  <q-radio v-model="filterResource" :val="resource.id" :label="resource.title" /><br/>
+                </span>
+              </div>
+            </div>
+          </q-popover>
+        </q-btn>
       </q-toolbar>
     </div>
     <div class="row gutter-sm" style="z-index: 1;">
@@ -119,6 +131,7 @@ export default {
       listTypes: [ 'quote', 'idea', 'illustration', 'outline' ],
       sortType: 'title',
       sortDirection: 'asc',
+      filterResource: '',
       selectedTypes: [ 'all' ],
       types: [
         {
@@ -199,8 +212,22 @@ export default {
     'sortDirection': function (newVal, oldVal) {
       this.sortFilter()
     },
+    'filterResource': function (newVal, oldVal) {
+      this.sortFilter()
+    },
     'items': function (value) {
-      this.showItems = value.filter(this.checkType)
+      this.showItems = value.filter(this.checkFilter)
+    }
+  },
+  computed: {
+    resources: function () {
+      const arr = []
+      this.items.forEach(item => {
+        if (this.$types.SNIPPET.includes(item.type) && item.media.media && !arr.map(e => { return e.id }).includes(item.media.media.id)) {
+          arr.push(item.media.media)
+        }
+      })
+      return arr
     }
   },
   mounted () {
@@ -221,7 +248,10 @@ export default {
       console.log('add media from MediaList')
       this.$root.$emit('add-topic-media', id)
     },
-    checkType (item) {
+    checkFilter (item) {
+      if (this.filterResource !== '') {
+        return item.media.media && item.media.media.id === this.filterResource
+      }
       if (this.selectedTypes.includes('all')) {
         return true
       } else {
@@ -232,7 +262,7 @@ export default {
       console.log('some media dragged', val)
     },
     sortFilter () {
-      this.showItems = this.items.filter(this.checkType).sort((a, b) => {
+      this.showItems = this.items.filter(this.checkFilter).sort((a, b) => {
         var valA, valB
         if (this.sortType === 'title') {
           valA = this.$types.SNIPPET.includes(a.type) ? a.media.media.title.toUpperCase() : a.media.title.toUpperCase()

@@ -85,7 +85,7 @@ async function getTopicResources (id) {
           if (snipProms.length > 0) {
             return Promise.all(snipProms.map(e => { return e.prom })).then((snips) => {
               snips.forEach((snipMedia, index) => {
-                res[snipProms[index].index].media.media = snipMedia.data()
+                res[snipProms[index].index].media.media = { id: snipMedia.id, ...snipMedia.data() }
               })
               resolve(res)
             })
