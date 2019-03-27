@@ -1,12 +1,22 @@
 <template>
   <q-page padding>
-    <h1>Dashboard</h1>
+    <recent-video />
+    <recent-article />
   </q-page>
 </template>
 
 <script>
+import RecentVideo from 'components/dashpanels/RecentVideo'
+// import RecentDiscourse from 'components/dashpanels/RecentDiscourse'
+import RecentArticle from 'components/dashpanels/RecentArticle'
+
 export default {
-  // name: 'PageName',
+  components: {
+    RecentVideo,
+    // RecentDiscourse,
+    RecentArticle
+  },
+  name: 'Dashboard',
   data () {
     return {
     }
