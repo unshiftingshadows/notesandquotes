@@ -9,6 +9,8 @@ import * as htmlToText from 'html-to-text'
 // const { Book, Movie, Image, Video, Article, Note, Document, Discourse, Composition } = NQTypes.MediaClasses
 // const { Quote, Idea, Illustration, Outline } = NQTypes.SnippetClasses
 
+const Mercury = require('@postlight/mercury-parser')
+
 function parseDuration(duration) {
   let a = duration.match(/\d+/g)
   if (duration.indexOf('M') >= 0 && duration.indexOf('H') === -1 && duration.indexOf('S') === -1) {
@@ -159,17 +161,18 @@ function wikiImageSearch(title) {
 }
 
 function articleExtractor(articleURL) {
-  return axios({
-    method: 'get',
-    url: 'https://mercury.postlight.com/parser?url=' + articleURL,
-    responseType: 'json',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      'x-api-key': functions.config().mercury.key
-    }
-  }).then((res) => {
-    console.log('response', res.data)
-    const data = res.data
+  // return axios({
+  //   method: 'get',
+  //   url: 'https://mercury.postlight.com/parser?url=' + articleURL,
+  //   responseType: 'json',
+  //   headers: {
+  //     'Content-Type': 'application/json; charset=utf-8',
+  //     'x-api-key': functions.config().mercury.key
+  //   }
+  // }).then((res) => {
+  return Mercury.parse(articleURL).then(res => {
+    console.log('response', res)
+    const data = res
     // console.log(data)
     const text = htmlToText.fromString(data.content)
     console.log('article text', text)

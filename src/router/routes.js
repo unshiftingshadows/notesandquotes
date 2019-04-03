@@ -1,5 +1,7 @@
 
 export default [
+  { path: '/', redirect: '/dashboard' },
+
   {
     path: '/',
     component: () => import('layouts/NQ'),
