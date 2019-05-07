@@ -76,12 +76,12 @@
     <q-modal v-model="addOpen" content-classes="add-quote-modal">
       <!-- <q-icon name="fas fa-close" size="2rem" @click.native="closeAdd" class="float-right cursor-pointer" /> -->
       <q-tabs v-model="tabSelection" position="top" align="center" no-pane-border>
-        <q-tab default v-if="mediaType !=='article'" slot="title" label="Quote" name="quote-tab" icon="fas fa-quote-right" />
-        <q-tab :default="mediaType === 'article'" slot="title" label="Outline" name="outline-tab" icon="fas fa-list-ul" />
+        <q-tab default v-if="mediaType !=='article' && mediaType !== 'document'" slot="title" label="Quote" name="quote-tab" icon="fas fa-quote-right" />
+        <q-tab :default="mediaType === 'article' || mediaType === 'document'" slot="title" label="Outline" name="outline-tab" icon="fas fa-list-ul" />
         <q-tab slot="title" label="Idea" name="idea-tab" icon="fas fa-lightbulb" />
         <q-tab slot="title" label="Illustration" name="illustration-tab" icon="fas fa-info" />
         <q-tab slot="title" name="close" icon="fas fa-times" :hidden="!isMobile" @click.native="closeAdd()" />
-        <q-tab-pane name="quote-tab" v-if="mediaType !=='article'">
+        <q-tab-pane name="quote-tab" v-if="mediaType !=='article' && mediaType !== 'document'">
           <quote-form ref="quoteForm" :mediaid="id" :media="mediaObj" :media-type="type" form-type="Add" :modal-fin="closeAdd" />
         </q-tab-pane>
         <q-tab-pane name="outline-tab">

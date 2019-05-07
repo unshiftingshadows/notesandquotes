@@ -5,7 +5,7 @@
         <h4>{{ formType }} Quote</h4>
       </div>
       <div class="col-12">
-        <q-input v-model="text" type="textarea" :max-height="100" :min-rows="3" float-label="Quote Text" autofocus ref="quoteInput" dark @keydown="keydown" />
+        <q-input v-model="text" type="textarea" :max-height="100" :min-rows="3" float-label="Quote Text" autofocus ref="quoteInput" dark @keydown="keydown" :disable="disable === ''" />
       </div>
       <div class="col-12" v-if="type === 'movie'">
         <q-input v-model="character" float-label="Character" dark @keydown="keydown" />
@@ -41,7 +41,7 @@
 
 <script>
 export default {
-  props: ['mediaid', 'media', 'mediaType', 'quote', 'modalFin', 'formType'],
+  props: ['mediaid', 'media', 'mediaType', 'quote', 'modalFin', 'formType', 'disable'],
   data () {
     return {
       id: this.mediaid,

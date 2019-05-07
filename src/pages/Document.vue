@@ -11,12 +11,14 @@
         </span>
         <q-btn v-if="fileTypes.includes(document.fileType) && fileURL !== ''" @click.native="wordRead = true">read</q-btn>
         <q-btn v-if="document.fileType === 'application/pdf' && fileURL !== ''" @click.native="pdfRead = true">read</q-btn>
+        <q-btn v-if="fullText !== ''" @click.native="pdfText = true">text</q-btn>
         <q-btn v-if="document.fileType === 'application/pdf' && fileURL !== ''" @click.native="$refs.pdf.print()">print</q-btn>
         <!-- <q-btn v-if="document.fileType === 'text/html' && fileURL !== ''" @click.native="htmlRead = true">read</q-btn>
         <q-btn v-if="document.fileType === 'text/csv' && fileURL !== ''" @click.native="textRead = true">read</q-btn> -->
       </div>
       <div class="col-xs-12">
         <h3>{{ document.title }}</h3>
+        <!-- <div id="svgContainer"></div> -->
         <div class="row gutter-sm">
           <div class="col-12">
             <q-input v-model="document.description" type="textarea" :max-height="100" :min-rows="2" float-label="Description" dark />
@@ -40,11 +42,14 @@
         </div>
       </div>
       <div class="col-12">
+        <quote-list :mediaid="id" :media="document" media-type="document" ref="snippets" />
+      </div>
+      <div class="col-12">
         <media-notes :user-notes="document.notes" :update="updateNotes" :mediaid="id" media-type="document"></media-notes>
       </div>
     </div>
     <q-modal v-if="document.fileType === 'application/pdf' && fileURL !== ''" v-model="pdfRead" maximized>
-      <q-btn class="overlay-button fixed z-max" style="top: 20px; right: 20px;" color="primary" icon="fas fa-times" @click.native="pdfRead = false" />
+      <q-btn class="overlay-button fixed z-max" style="top: 20px; right: 20px;" color="primary" icon="fas fa-times" @click.native="pdfRead = false; selectedText = ''" />
       <q-btn color="primary" size="xl" class="overlay-button fixed z-max" style="left: 0px; top: 50%; transform: translate(50%, -50%); -webkit-transform: translate(50%, -50%);" icon="fas fa-chevron-left" @click="prevPage" />
       <q-btn color="primary" size="xl" class="overlay-button fixed z-max" style="right: 0px; top: 50%; transform: translate(-50%, -50%); -webkit-transform: translate(-50%, -50%);" icon="fas fa-chevron-right" @click="nextPage" />
       <!-- <q-btn-group class="fixed z-max" style="bottom: 0px; left: 50%; transform: translate(-50%, -50%); -webkit-transform: translate(-50%, -50%);">
@@ -55,11 +60,19 @@
         :src="fileURL"
         :page="currentPage"
         ref="pdf"
+        @loaded="loaded"
         @num-pages="pageCount = $event"
-        @page-loaded="currentPage = $event"
+        @page-loaded="loadSVG($event)"
         @link-clicked="currentPage = $event"
         v-touch-swipe.horizontal="handleSwipe"
       />
+      <div id="textLayer" class="textLayer"></div>
+    </q-modal>
+    <q-modal v-if="fullText !== ''" v-model="pdfText" maximized>
+      <q-btn class="overlay-button fixed z-max" style="top: 20px; right: 20px;" color="primary" icon="fas fa-times" @click.native="pdfText = false; selectedText = ''" />
+      <div style="padding: 40px;">
+        <span>{{ fullText }}</span>
+      </div>
     </q-modal>
     <q-modal v-if="fileTypes.includes(document.fileType) && fileURL !== ''" v-model="wordRead" maximized>
       <q-btn class="overlay-button fixed z-max" style="top: 20px; right: 20px;" color="primary" icon="fas fa-times" @click.native="wordRead = false" />
@@ -73,19 +86,37 @@
       <q-btn class="overlay-button fixed z-max" style="top: 20px; right: 20px;" color="primary" icon="fas fa-times" @click.native="textRead = false" />
       <embed :src="fileURL" width="100%" type="text/plain" id="text-object">
     </q-modal> -->
+    <q-btn
+      round
+      color="primary"
+      @click="openAddQuote"
+      class="fixed"
+      icon="fas fa-plus"
+      style="right: 18px; bottom: 18px; z-index: 10000;"
+      v-if="selectedText !== ''"
+    />
+    <q-modal v-model="addQuoteOpen" content-classes="add-quote-modal">
+      <quote-form ref="quoteForm" :mediaid="id" :media="document" media-type="document" form-type="Add" :quote="{ text: selectedText }" :modal-fin="closeAddQuote" disable />
+    </q-modal>
   </q-page>
 </template>
 
 <script>
 import { Notify } from 'quasar'
 import pdf from 'vue-pdf'
-// import pdf from 'pdfjs-dist'
+import pdfjs from 'pdfjs-dist'
 import MediaNotes from 'components/MediaNotes.vue'
+import QuoteForm from 'components/QuoteForm.vue'
+import QuoteList from 'components/QuoteList.vue'
+
+// const textLayer = document.getElementsByClassName('textLayer').item(0)
 
 export default {
   components: {
     pdf,
-    MediaNotes
+    MediaNotes,
+    QuoteForm,
+    QuoteList
   },
   name: 'Document',
   fiery: true,
@@ -130,31 +161,47 @@ export default {
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       ],
       pdfRead: false,
+      pdfText: false,
       wordRead: false,
       htmlRead: false,
       textRead: false,
       fileURL: '',
       currentPage: 1,
+      loadedPage: 1,
       pageCount: 0,
-      addState: this.$selectedTopic.get() && !this.$selectedTopic.find(this.$route.params.id) ? 'n' : 'y'
+      addState: this.$selectedTopic.get() && !this.$selectedTopic.find(this.$route.params.id) ? 'n' : 'y',
+      textContent: [],
+      viewports: [],
+      selectedText: '',
+      addQuoteOpen: false
+    }
+  },
+  watch: {
+    loadedPage: function (curPage) {
+      if (curPage === this.pageCount) {
+        console.log('fully loaded', this.textContent.map(e => e.items))
+        this.loadSVG(1)
+      }
+    }
+  },
+  computed: {
+    fullText: function () {
+      return this.textContent.map(e => e.items.map(f => f.str).join(' ')).join(' ').replace(/  +/g, ' ')
     }
   },
   mounted () {
-    // this.init()
+    this.init()
   },
   methods: {
     init () {
-      // this.database.view('document', this.id, (resource, userData) => {
-      //   this.document = resource
-      //   this.userData = userData
-      //   this.firebase.documentsRef.child(this.id).getDownloadURL().then((url) => {
-      //     this.fileURL = url
-      //     // pdf.createLoadingTask(url)
-      //     // this.fileURL.then(pdf => {
-      //     //   console.log(pdf)
-      //     // })
-      //   })
-      // })
+      document.addEventListener('selectionchange', () => {
+        // console.log(window.getSelection().toString().replace(/  +/g, ' '))
+        if (window.getSelection().toString() === '' || this.$q.platform.is.mobile) {
+
+        } else {
+          this.selectedText = window.getSelection().toString().replace(/  +/g, ' ')
+        }
+      })
     },
     nextPage () {
       if (this.currentPage !== this.pageCount) {
@@ -164,6 +211,64 @@ export default {
     prevPage () {
       if (this.currentPage !== 1) {
         this.currentPage--
+      }
+    },
+    loaded () {
+      console.log(this.$refs.pdf.pdf, pdf, pdfjs)
+      // console.log(this.$refs.pdf.pdf.getResolutionScale())
+      this.$refs.pdf.pdf.forEachPage((page) => {
+        console.log(page)
+        this.loadedPage = page.pageNumber
+        page.getTextContent().then((content) => {
+          this.textContent.push({
+            ...content,
+            items: content.items.map(e => {
+              e.str += ' '
+              return e
+            })
+          })
+        })
+        this.viewports.push(page.getViewport(window.screen.width / page.getViewport(1.0).width))
+      })
+      console.log('something', this.pageCount)
+      // console.log(this.$refs.pdf.pdf.loadPage(1, 180))
+    },
+    buildSVG (viewport, textContent) {
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg:svg')
+      svg.setAttribute('width', viewport.width + 'px')
+      svg.setAttribute('height', viewport.height + 'px')
+      // items are transformed to have 1px font size
+      svg.setAttribute('font-size', 1)
+
+      // processing all items
+      textContent.items.forEach(function (textItem) {
+        // we have to take in account viewport transform, which includes scale,
+        // rotation and Y-axis flip, and not forgetting to flip text.
+        var tx = pdfjs.Util.transform(
+          pdfjs.Util.transform(viewport.transform, textItem.transform),
+          [1, 0, 0, -1, 0, 0])
+        var style = textContent.styles[textItem.fontName]
+        // adding text element
+        var text = document.createElementNS('http://www.w3.org/2000/svg', 'svg:text')
+        text.setAttribute('transform', 'matrix(' + tx.join(' ') + ')')
+        text.setAttribute('font-family', style.fontFamily)
+        text.textContent = textItem.str
+        svg.appendChild(text)
+      })
+
+      return svg
+    },
+    loadSVG (pg) {
+      this.currentPage = pg
+      // var svg = this.buildSVG(this.viewports[0], this.textContent[0])
+      // document.getElementById('svgContainer').appendChild(svg)
+      if (this.textContent[pg - 1]) {
+        pdfjs.renderTextLayer({
+          textContent: this.textContent[pg - 1],
+          container: document.getElementById('textLayer'),
+          viewport: this.viewports[pg - 1],
+          textDivs: []
+        })
       }
     },
     handleSwipe (obj) {
@@ -227,6 +332,17 @@ export default {
       this.$selectedTopic.add(obj).then((ans) => {
         this.addState = ans ? 'y' : 'n'
       })
+    },
+    openAddQuote () {
+      // Clean up selected text
+      this.addQuoteOpen = true
+    },
+    closeAddQuote (newItem) {
+      // NOTE: Would normally push a new item to the Quotes array here...
+      if (newItem && this.$refs.snippets.showQuotes) {
+        this.$refs.snippets.quotes.push(newItem)
+      }
+      this.addQuoteOpen = false
     }
   }
 }
@@ -249,6 +365,75 @@ export default {
 
 #text-object pre {
   color: var(--q-color-white) !important;
+}
+
+/* Hack for textLayer style... */
+.textLayer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  opacity: 0.2;
+  line-height: 1.0;
+}
+
+.textLayer > div {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  -webkit-transform-origin: 0% 0%;
+  -moz-transform-origin: 0% 0%;
+  -o-transform-origin: 0% 0%;
+  -ms-transform-origin: 0% 0%;
+  transform-origin: 0% 0%;
+}
+
+.textLayer .highlight {
+  margin: -1px;
+  padding: 1px;
+
+  background-color: rgb(180, 0, 170);
+  border-radius: 4px;
+}
+
+.textLayer .highlight.begin {
+  border-radius: 4px 0px 0px 4px;
+}
+
+.textLayer .highlight.end {
+  border-radius: 0px 4px 4px 0px;
+}
+
+.textLayer .highlight.middle {
+  border-radius: 0px;
+}
+
+.textLayer .highlight.selected {
+  background-color: rgb(0, 100, 0);
+}
+
+.textLayer ::selection { background: rgb(0,0,255); }
+.textLayer ::-moz-selection { background: rgb(0,0,255); }
+
+.textLayer .endOfContent {
+  display: block;
+  position: absolute;
+  left: 0px;
+  top: 100%;
+  right: 0px;
+  bottom: 0px;
+  z-index: -1;
+  cursor: default;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+}
+
+.textLayer .endOfContent.active {
+  top: 0px;
 }
 
 </style>

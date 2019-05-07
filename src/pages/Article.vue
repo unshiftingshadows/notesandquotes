@@ -128,7 +128,7 @@ export default {
   methods: {
     init () {
       document.addEventListener('selectionchange', () => {
-        if (window.getSelection().toString() === '' && this.$q.platform.is.mobile) {
+        if (window.getSelection().toString() === '' || this.$q.platform.is.mobile) {
 
         } else {
           this.selectedText = window.getSelection().toString()
