@@ -16,6 +16,7 @@
           <span v-html="article.html"></span>
           <br />
           <q-btn icon="fas fa-link" color="primary" class="float-right" @click.native="openLink">&nbsp;&nbsp;Original Article</q-btn>
+          <q-btn icon="fas fa-edit" color="primary" class="float-right on-left" @click.native="editArticleOpen = true">&nbsp;&nbsp;Edit Article</q-btn>
         </div>
       </div>
       <div class="col-xs-12">
@@ -59,6 +60,10 @@
     />
     <q-modal v-model="addQuoteOpen" content-classes="add-quote-modal">
       <quote-form ref="quoteForm" :mediaid="id" :media="article" media-type="article" form-type="Add" :quote="{ text: selectedText }" :modal-fin="closeAddQuote" />
+    </q-modal>
+    <q-modal v-model="editArticleOpen" content-classes="add-quote-modal">
+      <q-input type="textarea" v-model="article.html" dark />
+      <q-btn color="primary" @click="update">Update</q-btn>
     </q-modal>
   </q-page>
 </template>
@@ -110,6 +115,7 @@ export default {
       selectedText: '',
       showAddQuote: false,
       addQuoteOpen: false,
+      editArticleOpen: false,
       addState: this.$selectedTopic.get() && !this.$selectedTopic.find(this.$route.params.id) ? 'n' : 'y'
     }
   },
@@ -167,6 +173,7 @@ export default {
           position: 'bottom-left'
         })
       })
+      this.editArticleOpen = false
       // var resource = {
       //   description: this.article.description,
       //   author: this.article.author

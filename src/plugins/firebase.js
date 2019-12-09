@@ -130,6 +130,26 @@ function resetTopicResources () {
   topicResources = {}
 }
 
+const tools = {
+  async listMusix (page, cat) {
+    var listMusixFunc = firebase.functions().httpsCallable('tools-lyrics-listMusix')
+    return listMusixFunc({ page, cat }).catch(err => console.log('function listMusix error', err))
+  },
+  async addMusix (page, cat) {
+    var addMusixFunc = firebase.functions().httpsCallable('tools-lyrics-addMusix')
+    return addMusixFunc({ page, cat }).catch(err => console.log('function addMusix error', err))
+  },
+  async runLyrics (docs) {
+    var runLyricsFunc = firebase.functions().httpsCallable('tools-lyrics-runLyrics')
+    return runLyricsFunc({ songs: docs }).catch(err => console.log('function runLyrics error', err))
+  }
+}
+
+async function getArticleFeed () {
+  let articleFunc = firebase.functions().httpsCallable('articlefeed-all')
+  return articleFunc().catch(err => console.log('function article feed error', err))
+}
+
 export default ({ app, router, Vue }) => {
   Vue.use(VueFiery)
   Vue.prototype.$firebase = {
@@ -146,7 +166,9 @@ export default ({ app, router, Vue }) => {
     getTopicResources,
     useTopicResource,
     unuseTopicResource,
-    resetTopicResources
+    resetTopicResources,
+    tools,
+    getArticleFeed
   }
 }
 

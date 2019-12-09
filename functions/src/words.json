@@ -1,0 +1,122 @@
+{
+  "lists": {
+    "firstPerson": {
+      "set": [
+        "i",
+        "me",
+        "my",
+        "mine",
+        "myself",
+        "we",
+        "our",
+        "ours",
+        "ourself",
+        "ourselves"
+      ]
+    },
+    "secondPerson": {
+      "set": [
+        "you",
+        "your",
+        "yours",
+        "yourself",
+        "yourselves",
+        "ye",
+        "thou",
+        "thee",
+        "thy",
+        "thine",
+        "thyself"
+      ]
+    },
+    "thirdPerson": {
+      "set": [
+        "he",
+        "she",
+        "they",
+        "him",
+        "her",
+        "them",
+        "his",
+        "hers",
+        "theirs",
+        "himself",
+        "herself",
+        "themselves",
+        "who",
+        "whoever",
+        "whom",
+        "whomever",
+        "whose",
+        "whosoever",
+        "whomsoever",
+        "whomso"
+      ]
+    },
+    "otherPerson": {
+      "set": [
+        "anyone",
+        "anybody",
+        "everyone",
+        "everybody",
+        "someone",
+        "somebody",
+        "no one",
+        "nobody",
+        "one another",
+        "each other"
+      ]
+    },
+    "godTitles": {
+      "set": [
+        "god",
+        "jesus",
+        "lord",
+        "father",
+        "thee",
+        "thy",
+        "savior",
+        "saviour",
+        "friend",
+        "holy spirit",
+        "spirit",
+        "holy ghost",
+        "christ",
+        "king",
+        "lamb",
+        "redeemer",
+        "maker",
+        "creator",
+        "master",
+        "prince",
+        "deliverer",
+        "almighty",
+        "healer",
+        "counselor",
+        "shepherd",
+        "yahweh",
+        "yhwh",
+        "el",
+        "eloah",
+        "elohim",
+        "elohai",
+        "el shaddai",
+        "tzevaot",
+        "jah",
+        "adonai",
+        "adoshem",
+        "baal",
+        "ehyeh asher ehyeh",
+        "elah",
+        "el roi",
+        "elyon",
+        "eternal one",
+        "hashem",
+        "shalom",
+        "shekhinah",
+        "most high",
+        "ancient of days"
+      ]
+    }
+  }
+}

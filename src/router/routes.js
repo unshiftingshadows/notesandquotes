@@ -55,6 +55,19 @@ export default [
     }
   },
 
+  {
+    path: '/tools',
+    component: () => import('layouts/Tools'),
+    children: [
+      { path: 'repeatinglyrics', name: 'repeatinglyrics', component: () => import('pages/tools/RepeatingLyrics') },
+      { path: 'lyricanalysis', name: 'lyricanalysis', component: () => import('pages/tools/LyricAnalysis') },
+      { path: 'wordlists', name: 'wordlists', component: () => import('pages/tools/WordLists') }
+    ],
+    meta: {
+      requiresAuth: true
+    }
+  },
+
   { // Always leave this as last one
     path: '*',
     component: () => import('pages/404')

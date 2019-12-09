@@ -107,6 +107,7 @@ module.exports = function (ctx) {
         'QModal',
         'QPopover',
         'QVideo',
+        'QTooltip',
         'QResizeObservable',
         'QWindowResizeObservable',
         'QPageSticky',

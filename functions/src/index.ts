@@ -19,3 +19,6 @@ exports.search = require('./lib/search')
 exports.index = require('./lib/indexing')
 exports.tags = require('./lib/tags')
 exports.bible = require('./lib/bible')
+exports.articlefeed = require('./lib/articlefeed')
+exports.tools = {}
+exports.tools.lyrics = require('./lib/tools/lyrics')
