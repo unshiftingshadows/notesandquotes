@@ -23,7 +23,7 @@
     "genius-api": "^0.4.1",
     "get-video-id": "^3.1.0",
     "html-to-text": "^4.0.0",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "lodash": "^4.17.11",
     "musicmatch": "^0.3.2",
     "scrape-it": "^5.1.4",
