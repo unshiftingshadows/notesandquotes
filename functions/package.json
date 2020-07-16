@@ -24,7 +24,7 @@
     "get-video-id": "^3.1.0",
     "html-to-text": "^4.0.0",
     "jquery": "^3.3.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "musicmatch": "^0.3.2",
     "scrape-it": "^5.1.4",
     "svg-builder": "^1.0.0"
